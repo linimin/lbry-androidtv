@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LBRYtv</string>
+    <string name="home_title">Home</string>
+    <string name="support">Support</string>
+    <string name="subscribe">Subscribe</string>
+    <string name="unsubscribe">Unsubscribe</string>
+    <string name="latest">Latest</string>
+    <string name="latest_videos">Latest Videos</string>
+    <string name="welcome_to_lbry">Welcome to LBRY</string>
+    <string name="enter_the_email_address_associated_with_your_lbry_account">Enter the email address associated with your LBRY account.</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_out">Sign out</string>
+    <string name="enter_email_address">Enter email address</string>
+    <string name="is_not_a_valid_email_address">%s is not a valid email address</string>
+    <string name="email">Email</string>
+    <string name="just_a_second">Just a second…</string>
+    <string name="processing">Processing…</string>
+    <string name="click_the_verification_link_in_the_email">Click the verification link in the email.</string>
+    <string name="close">Close</string>
+    <string name="an_unknown_error_has_occurred">An unknown error has occurred.</string>
+    <string name="a_verification_link_has_been_sent_to_your_email_box">A verification link has been sent to your email box.</string>
+    <string name="trending">Trending</string>
+    <string name="suggested_channels">Suggested channels</string>
+    <string name="settings">Settings</string>
+    <string name="subscriptions">Subscriptions</string>
+    <string name="my_channels">My channels</string>
+    <string name="subscribed_content">Subscribed content</string>
+    <string name="are_you_sure_you_want_to_sign_out_now">Are you sure you want to sign out now?</string>
+    <string name="you_can_sign_in_again_later">You can sign in again later.</string>
+</resources>

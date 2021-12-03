@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.LbryTv" parent="@style/Theme.Leanback">
+        <item name="defaultBrandColor">@color/brandColor</item>
+        <item name="defaultBrandColorDark">@color/brandColorDark</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="searchOrbViewStyle">@style/SearchOrbViewStyle</item>
+        <item name="imageCardViewStyle">@style/StreamCardViewStyle</item>
+        <item name="imageCardViewImageStyle">@style/StreamCardImageStyle</item>
+    </style>
+
+    <style name="Theme.LbryTv.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splashScreenBackground</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_screen_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.LbryTv</item>
+    </style>
+</resources>

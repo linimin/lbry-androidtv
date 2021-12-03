@@ -1,0 +1,86 @@
+[versions]
+android-gradle = '7.0.3'
+kotlin = '1.5.31'
+core = '1.6.0'
+splashscreen = '1.0.0-alpha02'
+leanback-core = '1.2.0-alpha01'
+leanback-paging = '1.1.0-alpha08'
+leanback-tab = '1.1.0-beta01'
+startup = '1.1.0'
+datastore = '1.0.0'
+lbry = '0.100.0'
+protobuf-core = '3.8.0'
+protobuf-gradle = '0.8.17'
+hilt = '2.38.1'
+retrofit = '2.9.0'
+gson = '2.8.9'
+room = '2.3.0'
+room-paging = "2.3.0"
+fragment = "1.3.6"
+navigation = "2.3.5"
+test = "1.4.0"
+test-ext-junit = "1.1.3"
+truth = "1.0.1"
+junit = "4.12"
+mockwebserver = "4.9.1"
+lifecycle = "2.4.0"
+glide = "4.12.0"
+exoplayer = "2.15.1"
+okhttp-loggin-interceptor = "4.9.3"
+timber = "5.0.1"
+
+[libraries]
+exoplayer = { module = "com.google.android.exoplayer:exoplayer", version.ref = "exoplayer" }
+exoplayer-leanback = { module = "com.google.android.exoplayer:extension-leanback", version.ref = "exoplayer" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
+lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "mockwebserver" }
+junit = { module = "junit:junit", version.ref = "junit" }
+test-core = { module = "androidx.test:core", version.ref = "test" }
+test-runner = { module = "androidx.test:runner", version.ref = "test" }
+test-rules = { module = "androidx.test:rules", version.ref = "test" }
+test-ext-junit = { module = "androidx.test.ext:junit", version.ref = "test-ext-junit" }
+test-ext-truth = { module = "androidx.test.ext:truth", version.ref = "test" }
+truth = { module = "com.google.truth:truth", version.ref = "truth" }
+navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }
+navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigation" }
+room = { module = "androidx.room:room-runtime", version.ref = "room" }
+fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragment" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
+room-paging = { module = "androidx.room:room-paging", version.ref = "room-paging" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
+android-gradle = { module = "com.android.tools.build:gradle", version.ref = "android-gradle" }
+kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+core = { module = "androidx.core:core-ktx", version.ref = "core" }
+splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splashscreen" }
+leanback-core = { module = "androidx.leanback:leanback", version.ref = "leanback-core" }
+leanback-preference = { module = "androidx.leanback:leanback-preference", version.ref = "leanback-core" }
+leanback-paging = { module = "androidx.leanback:leanback-paging", version.ref = "leanback-paging" }
+leanback-tab = { module = "androidx.leanback:leanback-tab", version.ref = "leanback-tab" }
+startup = { module = "androidx.startup:startup-runtime", version.ref = "startup" }
+datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+lbry32 = { module = "io.lbry:lbrysdk32", version.ref = "lbry" }
+lbry64 = { module = "io.lbry:lbrysdk64", version.ref = "lbry" }
+protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobuf-core" }
+protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf-core" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+okhttp-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp-loggin-interceptor" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+
+[bundles]
+leanback = ["leanback-core", "leanback-preference", "leanback-paging", "leanback-tab"]
+room = ["room", "room-ktx"]
+navigation = ["navigation-fragment-ktx", "navigation-ui-ktx"]
+test = ["junit", "mockwebserver"]
+lifecycle = ["lifecycle-viewmodel-ktx", "lifecycle-runtime-ktx"]
+exoplayer = ["exoplayer", "exoplayer-leanback"]
+
+[plugins]
+protobuf = { id = "com.google.protobuf", version.ref = "protobuf-gradle" }

@@ -1,0 +1,98 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'dagger.hilt.android.plugin'
+    id 'kotlin-kapt'
+    id 'androidx.navigation.safeargs.kotlin'
+    id 'kotlin-parcelize'
+    alias(libs.plugins.protobuf)
+}
+
+android {
+    compileSdk 31
+
+    defaultConfig {
+        applicationId "app.newproj.lbrytv"
+        minSdk 26
+        targetSdk 31
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    flavorDimensions "default"
+    productFlavors {
+        __32bit {
+            versionCode android.defaultConfig.versionCode * 10 + 1
+            ndk {
+                abiFilter "armeabi-v7a"
+            }
+        }
+        __64bit {
+            versionCode android.defaultConfig.versionCode * 10 + 2
+            ndk {
+                abiFilter "arm64-v8a"
+            }
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+        kotlin {
+            kotlinOptions {
+                freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+            }
+        }
+    }
+    buildFeatures {
+        viewBinding true
+        dataBinding true
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = libs.protoc.get()
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option "lite"
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    __32bitImplementation libs.lbry32
+    __64bitImplementation libs.lbry64
+    implementation libs.bundles.exoplayer
+    implementation libs.bundles.leanback
+    implementation libs.bundles.lifecycle
+    implementation libs.bundles.navigation
+    implementation libs.bundles.room
+    implementation libs.bundles.test
+    implementation libs.core
+    implementation libs.datastore
+    implementation libs.fragment.ktx
+    implementation libs.glide
+    implementation libs.gson
+    implementation libs.hilt.android
+    implementation libs.okhttp.logging.interceptor
+    implementation libs.protobuf.javalite
+    implementation libs.retrofit
+    implementation libs.retrofit.gson
+    implementation libs.splashscreen
+    implementation libs.startup
+    implementation libs.timber
+    kapt libs.glide.compiler
+    kapt libs.hilt.compiler
+    kapt libs.room.compiler
+}

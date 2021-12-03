@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="ui_jump_to_latest_videos" type="id" />
+    <item name="ui_subscribe" type="id" />
+    <item name="ui_unsubscribe" type="id" />
+</resources>

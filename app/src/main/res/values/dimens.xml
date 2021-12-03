@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="stream_card_thumbnail_width">217dp</dimen>
+    <dimen name="stream_card_thumbnail_height">122dp</dimen>
+    <dimen name="lb_browse_title_icon_height">20dp</dimen>
+    <dimen name="channel_details_overview_logo_width">150dp</dimen>
+    <dimen name="channel_details_overview_logo_height">150dp</dimen>
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="windowBackground">#000000</color>
+    <color name="brandColor">#2F9176</color>
+    <color name="brandColorDark">#101010</color>
+    <color name="searchOrbColor">#38D9A9</color>
+    <color name="bannerBackground">#EEEEEE</color>
+    <color name="launcherBackground">#EEEEEE</color>
+    <color name="splashScreenBackground">#151517</color>
+</resources>

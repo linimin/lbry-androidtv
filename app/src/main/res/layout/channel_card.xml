@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="card"
+            type="app.newproj.lbrytv.data.dto.ClaimCard" />
+    </data>
+
+    <androidx.leanback.widget.BaseCardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        app:cardType="mainOnly">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_viewType="main">
+
+            <ImageView
+                android:id="@+id/main_image_view"
+                android:layout_width="144dp"
+                android:layout_height="144dp"
+                android:scaleType="centerCrop"
+                app:imageUri="@{card.claim.thumbnail}"
+                tools:ignore="ContentDescription" />
+
+            <LinearLayout
+                android:layout_width="144dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingLeft="11dp"
+                android:paddingTop="7dp"
+                android:paddingRight="11dp">
+
+                <TextView
+                    android:id="@+id/title_text_view"
+                    style="?attr/imageCardViewTitleStyle"
+                    android:maxLines="2"
+                    android:text="@{card.claim.title}" />
+
+                <TextView
+                    android:id="@+id/description_text_view"
+                    style="?attr/imageCardViewContentStyle"
+                    android:layout_marginTop="4dp"
+                    android:maxLines="5"
+                    android:text="@{card.claim.description}" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.leanback.widget.BaseCardView>
+</layout>

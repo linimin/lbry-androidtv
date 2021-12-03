@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option java_package = "app.newproj.lbrytv.data";
+option java_multiple_files = true;
+
+message AppSettings {
+  string encrypted_auth_token = 1;
+  int32 user_id = 2;
+}
