@@ -46,7 +46,11 @@
     <fragment
         android:id="@+id/searchFragment"
         android:name="app.newproj.lbrytv.fragment.SearchFragment"
-        android:label="SearchFragment" />
+        android:label="SearchFragment" >
+        <action
+            android:id="@+id/action_searchFragment_to_videoPlayerFragment"
+            app:destination="@id/videoPlayerFragment" />
+    </fragment>
     <fragment
         android:id="@+id/channelDetailsFragment"
         android:name="app.newproj.lbrytv.fragment.ChannelDetailsFragment"

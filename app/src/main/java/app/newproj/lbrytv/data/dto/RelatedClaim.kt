@@ -1,5 +1,6 @@
 package app.newproj.lbrytv.data.dto
 
+import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Ignore
 import com.google.gson.annotations.SerializedName
@@ -35,9 +36,9 @@ data class RelatedClaim(
 
     @SerializedName("thumbnail_url")
     @ColumnInfo(name = "thumbnail")
-    val thumbnailUrl: String? = null,
+    val thumbnailUrl: Uri? = null,
 
     @SerializedName("title")
     @ColumnInfo(name = "title")
     val title: String? = null
-)
+): CardPresentable

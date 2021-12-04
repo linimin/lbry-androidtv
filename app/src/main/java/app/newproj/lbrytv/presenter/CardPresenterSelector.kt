@@ -2,10 +2,7 @@ package app.newproj.lbrytv.presenter
 
 import androidx.leanback.widget.Presenter
 import androidx.leanback.widget.PresenterSelector
-import app.newproj.lbrytv.data.dto.CardPresentable
-import app.newproj.lbrytv.data.dto.ClaimCard
-import app.newproj.lbrytv.data.dto.ClaimType
-import app.newproj.lbrytv.data.dto.SettingCard
+import app.newproj.lbrytv.data.dto.*
 
 class CardPresenterSelector : PresenterSelector() {
     override fun getPresenter(item: Any): Presenter {
@@ -17,6 +14,7 @@ class CardPresenterSelector : PresenterSelector() {
                 null -> StreamCardPresenter()
             }
             is SettingCard -> SettingCardPresenter()
+            is RelatedClaim -> RelatedClaimPresenter()
         }
     }
 }

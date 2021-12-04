@@ -50,6 +50,7 @@ class HomeFragment : BrowseSupportFragment() {
                     SettingType.SIGN_IN -> onClickedSignIn()
                     SettingType.SIGN_OUT -> onClickedSignOut()
                 }
+                else -> Unit
             }
         }
     }
@@ -94,11 +95,9 @@ class HomeFragment : BrowseSupportFragment() {
     }
 
     private fun onClickedSearch() {
-        Toast.makeText(
-            requireContext().applicationContext,
-            "Not implemented yet",
-            Toast.LENGTH_SHORT
-        ).show()
+        HomeFragmentDirections
+            .actionHomeFragmentToSearchFragment()
+            .let(findNavController()::navigate)
     }
 
     private fun onClickedSignIn() {
