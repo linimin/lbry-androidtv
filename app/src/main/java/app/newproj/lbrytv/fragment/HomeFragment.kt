@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeFragment : BrowseSupportFragment() {
-    val args: HomeFragmentArgs by navArgs()
+    private val args: HomeFragmentArgs by navArgs()
     private val viewModel: HomeViewModel by viewModels()
     @Inject lateinit var rowsAdapter: PagingDataAdapter<Row>
 
