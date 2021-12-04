@@ -28,7 +28,7 @@ class SuggestedChannelRemoteMediator @Inject constructor(
 
     override suspend fun load(loadType: LoadType, state: PagingState<Int, Claim>): MediatorResult {
         try {
-            val nextPageNumber = when (loadType) {
+            val page = when (loadType) {
                 LoadType.REFRESH -> STARTING_PAGE_INDEX
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
                 LoadType.APPEND -> {
@@ -41,7 +41,7 @@ class SuggestedChannelRemoteMediator @Inject constructor(
                 claimType = listOf("channel"),
                 orderBy = listOf("effective_amount"),
                 hasSource = true,
-                page = nextPageNumber,
+                page = page,
                 pageSize = state.config.pageSize,
             )
             val result = service.searchClaims(request)
@@ -54,7 +54,7 @@ class SuggestedChannelRemoteMediator @Inject constructor(
                 }
                 db.claimDao().insertOrUpdateSearchResult(claims)
                 db.suggestedChannelDao().insertOrUpdate(claims.map { SuggestedChannel(it.claimId) })
-                val nextKey = if (endOfPaginationReached) null else nextPageNumber.inc()
+                val nextKey = if (endOfPaginationReached) null else page.inc()
                 val remoteKey = RemoteKey(REMOTE_KEY_LABEL, nextKey)
                 db.remoteKeyDao().insertOrUpdate(remoteKey)
             }
