@@ -64,7 +64,7 @@ class SignOutFragment : GuidedStepSupportFragment() {
 
     private fun navigateBackToHome() {
         SignOutFragmentDirections
-            .actionSignOutFragmentToHomeFragment(true)
+            .actionSignOutFragmentToHomeFragment()
             .let {
                 findNavController().navigate(it)
             }

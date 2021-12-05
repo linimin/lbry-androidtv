@@ -2,7 +2,6 @@ package app.newproj.lbrytv.fragment
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.leanback.app.BrowseSupportFragment
@@ -11,7 +10,6 @@ import androidx.leanback.widget.Row
 import androidx.leanback.widget.SinglePresenterSelector
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.paging.LoadState
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.data.dto.*
@@ -24,7 +22,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeFragment : BrowseSupportFragment() {
-    private val args: HomeFragmentArgs by navArgs()
     private val viewModel: HomeViewModel by viewModels()
     @Inject lateinit var rowsAdapter: PagingDataAdapter<Row>
 
@@ -52,13 +49,6 @@ class HomeFragment : BrowseSupportFragment() {
                 }
                 else -> Unit
             }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (args.needsRefresh) {
-            rowsAdapter.refresh()
         }
     }
 

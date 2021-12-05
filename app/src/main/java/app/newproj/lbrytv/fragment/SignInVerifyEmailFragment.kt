@@ -62,7 +62,7 @@ class SignInVerifyEmailFragment : GuidedStepSupportFragment() {
 
     private fun onCompleted() {
         SignInVerifyEmailFragmentDirections
-            .actionSignInVerifyEmailFragmentToHomeFragment(true)
+            .actionSignInVerifyEmailFragmentToHomeFragment()
             .let(findNavController()::navigate)
     }
 

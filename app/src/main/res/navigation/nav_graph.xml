@@ -22,10 +22,6 @@
         <action
             android:id="@+id/action_homeFragment_to_signOutFragment"
             app:destination="@id/signOutFragment" />
-        <argument
-            android:name="needsRefresh"
-            app:argType="boolean"
-            android:defaultValue="false" />
     </fragment>
     <fragment
         android:id="@+id/videoPlayerFragment"
