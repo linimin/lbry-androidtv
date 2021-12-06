@@ -11,15 +11,16 @@ import app.newproj.lbrytv.data.typeconverter.UriTypeConverter
 @Database(
     entities = [
         Claim::class,
+        MyChannel::class,
         RelatedClaim::class,
         RemoteKey::class,
         Setting::class,
         SubscribedContent::class,
         Subscription::class,
         SuggestedChannel::class,
+        Tag::class,
         TrendingClaim::class,
         User::class,
-        MyChannel::class,
     ], version = 1
 )
 @TypeConverters(
@@ -30,13 +31,14 @@ import app.newproj.lbrytv.data.typeconverter.UriTypeConverter
 )
 abstract class MainDatabase : RoomDatabase() {
     abstract fun claimDao(): ClaimDao
+    abstract fun myChannelDao(): MyChannelDao
     abstract fun relatedClaimDao(): RelatedClaimDao
     abstract fun remoteKeyDao(): RemoteKeyDao
     abstract fun settingDao(): SettingDao
     abstract fun subscribedContentDao(): SubscribedContentDao
     abstract fun subscriptionDao(): SubscriptionDao
     abstract fun suggestedChannelDao(): SuggestedChannelDao
+    abstract fun tagDao(): TagDao
     abstract fun trendingClaimDao(): TrendingClaimDao
     abstract fun userDao(): UserDao
-    abstract fun myChannelDao(): MyChannelDao
 }
