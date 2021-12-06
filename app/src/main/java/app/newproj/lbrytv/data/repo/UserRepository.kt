@@ -2,12 +2,15 @@ package app.newproj.lbrytv.data.repo
 
 import androidx.room.withTransaction
 import app.newproj.lbrytv.data.MainDatabase
+import app.newproj.lbrytv.data.dto.ApplyWalletSyncRequest
 import app.newproj.lbrytv.data.dto.TokenUser
 import app.newproj.lbrytv.data.entity.User
+import app.newproj.lbrytv.hiltmodule.LbrynetServiceInitJobScope
 import app.newproj.lbrytv.hiltmodule.LbrynetServiceScope
 import app.newproj.lbrytv.service.LbryIncService
 import app.newproj.lbrytv.service.LbrynetService
 import app.newproj.lbrytv.util.AuthTokenEncryptor
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.isActive
 import retrofit2.HttpException
@@ -19,6 +22,7 @@ class UserRepository @Inject constructor(
     private val tokenEncryptor: AuthTokenEncryptor,
     private val lbryIncService: LbryIncService,
     @LbrynetServiceScope private val lbrynetService: LbrynetService,
+    @LbrynetServiceInitJobScope private val lbrynetServiceInitJob: Job,
 ) {
     private val userDao = db.userDao()
 
@@ -54,7 +58,7 @@ class UserRepository @Inject constructor(
                 }
             }
         }
-        return db.withTransaction {
+        val user = db.withTransaction {
             val authToken = userDao.user()?.authToken
             userDao.clear()
             userDao.insertAuthorizedUser(tokenUser!!)
@@ -62,6 +66,25 @@ class UserRepository @Inject constructor(
             userDao.update(user.copy(authToken = authToken))
             userDao.user()!!
         }
+        syncWallet()
+        return user
+    }
+
+    private suspend fun syncWallet() {
+        lbrynetServiceInitJob.join()
+        val hash = lbrynetService.walletSyncHash()
+        val walletSyncData = lbryIncService.walletSyncData(hash)
+        val applyWalletSyncRequest = ApplyWalletSyncRequest(
+            password = "",
+            data = walletSyncData.data,
+            blocking = true
+        )
+        val syncApplyResult = lbrynetService.applyWalletSyncData(applyWalletSyncRequest)
+        lbryIncService.setWalletSyncData(
+            oldHash = walletSyncData.hash,
+            newHash = syncApplyResult.hash,
+            data = syncApplyResult.data
+        )
     }
 
     suspend fun deleteUser() {
