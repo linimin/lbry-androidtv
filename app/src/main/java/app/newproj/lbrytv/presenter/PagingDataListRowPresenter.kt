@@ -31,8 +31,8 @@ class PagingDataListRowPresenter @Inject constructor(
         holder.setFacet(Job::class.java, job)
     }
 
-    override fun onUnbindRowViewHolder(holder: RowPresenter.ViewHolder?) {
+    override fun onUnbindRowViewHolder(holder: RowPresenter.ViewHolder) {
         super.onUnbindRowViewHolder(holder)
-        (holder?.getFacet(Job::class.java) as Job?)?.cancel()
+        (holder.getFacet(Job::class.java) as Job).cancel()
     }
 }
