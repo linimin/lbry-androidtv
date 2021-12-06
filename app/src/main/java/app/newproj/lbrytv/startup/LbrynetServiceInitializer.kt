@@ -5,7 +5,6 @@ import androidx.startup.Initializer
 import app.newproj.lbrytv.data.repo.InstallationIdRepository
 import app.newproj.lbrytv.hiltmodule.ApplicationCoroutineScope
 import app.newproj.lbrytv.hiltmodule.LbrynetServiceScope
-import app.newproj.lbrytv.service.LbryIncService
 import app.newproj.lbrytv.service.LbrynetService
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -21,11 +20,11 @@ class LbrynetServiceInitializer : Initializer<Unit> {
     interface HiltEntryPoint {
         @ApplicationCoroutineScope
         fun applicationScope(): CoroutineScope
+
         fun installationIdRepo(): InstallationIdRepository
 
         @LbrynetServiceScope
         fun lbrynetService(): LbrynetService
-        fun lbryIncService(): LbryIncService
     }
 
     override fun create(context: Context): Unit {

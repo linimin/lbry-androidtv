@@ -27,7 +27,6 @@ class InstallationIdRepository @Inject constructor(
 }
 
 private fun newInstallationId(): String {
-//    return "6wPQzMkfErEfDdT4nKALum1rLRmPKyorFDGQDHdYyjLKpxPoezHr8qnUJfmd99YdAN"
     val byteArray = ByteArray(64)
     Random().nextBytes(byteArray)
     val messageDigest = MessageDigest.getInstance("SHA-384")
