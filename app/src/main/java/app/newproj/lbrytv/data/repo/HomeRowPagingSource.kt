@@ -25,22 +25,22 @@ class HomeRowPagingSource @Inject constructor(
 
         val trending = claimRepo.trending().mapPagingData { ClaimCard(it) }
         val trendingRow = PagingDataList(++id, R.string.trending, trending.cast())
-        
-        val suggestedChannels = claimRepo.suggestedChannels().mapPagingData { ClaimCard(it) }
-        val suggestedChannelRow =
-            PagingDataList(++id, R.string.suggested_channels, suggestedChannels.cast())
 
         val subscription = claimRepo.subscription().mapPagingData { ClaimCard(it) }
         val subscriptionRow =
             PagingDataList(++id, R.string.subscriptions, subscription.cast())
+
+        val suggestedChannels = claimRepo.suggestedChannels().mapPagingData { ClaimCard(it) }
+        val suggestedChannelRow =
+            PagingDataList(++id, R.string.suggested_channels, suggestedChannels.cast())
 
         val settings = settingRepository.settings().mapPagingData { SettingCard(it) }
         val settingRow = PagingDataList(++id, R.string.settings, settings.cast())
 
         return LoadResult.Page(
             listOf(
-                trendingRow,
                 subscribedContentRow,
+                trendingRow,
                 subscriptionRow,
                 suggestedChannelRow,
                 settingRow
