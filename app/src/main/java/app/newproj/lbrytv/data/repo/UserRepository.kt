@@ -4,6 +4,7 @@ import androidx.room.withTransaction
 import app.newproj.lbrytv.data.MainDatabase
 import app.newproj.lbrytv.data.dto.ApplyWalletSyncRequest
 import app.newproj.lbrytv.data.dto.TokenUser
+import app.newproj.lbrytv.data.entity.Tag
 import app.newproj.lbrytv.data.entity.User
 import app.newproj.lbrytv.hiltmodule.LbrynetServiceInitJobScope
 import app.newproj.lbrytv.hiltmodule.LbrynetServiceScope
@@ -67,6 +68,7 @@ class UserRepository @Inject constructor(
             userDao.user()!!
         }
         syncWallet()
+        loadPreference()
         return user
     }
 
@@ -87,7 +89,19 @@ class UserRepository @Inject constructor(
         )
     }
 
+    private suspend fun loadPreference() {
+        val preference = lbrynetService.preference()
+        val tags = preference.shared?.value?.tags?.filterNotNull() ?: emptyList()
+        db.withTransaction {
+            val tagEntities = tags.map { Tag(it, true) }
+            db.tagDao().insertOrUpdate(tagEntities)
+        }
+    }
+
     suspend fun deleteUser() {
-        userDao.clear()
+        db.withTransaction {
+            userDao.clear()
+            db.tagDao().clear()
+        }
     }
 }

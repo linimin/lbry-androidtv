@@ -45,7 +45,7 @@ data class UserPreference(
             val subscriptions: List<String?>? = null,
 
             @SerializedName("tags")
-            val tags: List<Any?>? = null,
+            val tags: List<String?>? = null,
 
             @SerializedName("unpublishedCollections")
             val unpublishedCollections: UnpublishedCollections? = null

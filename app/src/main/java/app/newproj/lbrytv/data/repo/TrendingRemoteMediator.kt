@@ -37,10 +37,12 @@ class TrendingRemoteMediator @Inject constructor(
                         ?: return MediatorResult.Success(endOfPaginationReached = true)
                 }
             }
+            val tags = db.withTransaction { db.tagDao().tags() }
             val request = ClaimSearchRequest(
                 claimType = listOf("stream"),
                 orderBy = listOf("trending_group", "trending_mixed"),
                 hasSource = true,
+                anyTags = tags.map { it.name },
                 page = page,
                 pageSize = state.config.pageSize,
             )
