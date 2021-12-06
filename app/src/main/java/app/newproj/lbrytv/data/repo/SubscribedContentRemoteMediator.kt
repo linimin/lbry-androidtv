@@ -7,6 +7,7 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import app.newproj.lbrytv.data.MainDatabase
 import app.newproj.lbrytv.data.dto.ClaimSearchRequest
+import app.newproj.lbrytv.data.dto.ClaimSearchResult
 import app.newproj.lbrytv.data.entity.*
 import app.newproj.lbrytv.hiltmodule.LbrynetServiceProxyScope
 import app.newproj.lbrytv.service.LbrynetService
@@ -46,17 +47,21 @@ class SubscribedContentRemoteMediator(
                 }
             }
             val channelIds = subscriptions.mapNotNull { it.claimId }
-            if (channelIds.isEmpty()) return MediatorResult.Success(endOfPaginationReached = true)
-            val searchRequest = ClaimSearchRequest(
-                claimType = listOf("stream", "repost"),
-                channelIds = channelIds,
-                orderBy = listOf("release_time"),
-                page = page,
-                hasSource = true,
-                pageSize = state.config.pageSize,
-            )
-            val claimSearchResult = service.searchClaims(searchRequest)
-            val claims = claimSearchResult.items?.filterNotNull() ?: emptyList()
+            val claims = mutableListOf<ClaimSearchResult.Item>()
+            if (channelIds.isNotEmpty()) {
+                val searchRequest = ClaimSearchRequest(
+                    claimType = listOf("stream", "repost"),
+                    channelIds = channelIds,
+                    orderBy = listOf("release_time"),
+                    page = page,
+                    hasSource = true,
+                    pageSize = state.config.pageSize,
+                )
+                val claimSearchResult = service.searchClaims(searchRequest)
+                claimSearchResult.items?.filterNotNull()?.let {
+                    claims.addAll(0, it)
+                }
+            }
             val endOfPaginationReached = claims.isEmpty()
             db.withTransaction {
                 if (loadType == LoadType.REFRESH) {
