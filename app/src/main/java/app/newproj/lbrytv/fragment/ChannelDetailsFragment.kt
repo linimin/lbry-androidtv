@@ -42,9 +42,7 @@ class ChannelDetailsFragment : DetailsSupportFragment() {
                 else -> Unit
             }
             when ((item as? Action)?.id?.toInt()) {
-                R.id.ui_jump_to_latest_videos -> {
-                    findLatestVideosRowPosition()?.let(::setSelectedPosition)
-                }
+                R.id.ui_jump_to_latest_videos -> scrollToLatestVideoRow()
                 R.id.ui_subscribe -> viewModel.subscribe()
                 R.id.ui_unsubscribe -> viewModel.unsubscribe()
             }
@@ -87,6 +85,10 @@ class ChannelDetailsFragment : DetailsSupportFragment() {
         ChannelDetailsFragmentDirections
             .actionGlobalErrorFragment(error.localizedMessage)
             .let(findNavController()::navigate)
+    }
+
+    private fun scrollToLatestVideoRow() {
+        findLatestVideosRowPosition()?.let(::setSelectedPosition)
     }
 
     private fun findLatestVideosRowPosition(): Int? {
