@@ -87,4 +87,11 @@ interface LbrynetService {
     @JsonRpc("sync_apply")
     @POST("/")
     suspend fun applyWalletSyncData(@Body request: ApplyWalletSyncRequest): ApplyWalletSyncResult
+
+    /**
+     * Get preference value for key or all values if not key is passed in.
+     */
+    @JsonRpc("preference_get")
+    @POST("/")
+    suspend fun preference(): UserPreference
 }
