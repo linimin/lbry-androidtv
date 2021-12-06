@@ -10,6 +10,7 @@
         <item name="searchOrbViewStyle">@style/SearchOrbViewStyle</item>
         <item name="imageCardViewStyle">@style/StreamCardViewStyle</item>
         <item name="imageCardViewImageStyle">@style/StreamCardImageStyle</item>
+        <item name="browseTitleViewLayout">@layout/lbc_title_view</item>
     </style>
 
     <style name="Theme.LbryTv.SplashScreen" parent="Theme.SplashScreen">

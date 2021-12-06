@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|end"
+    android:orientation="horizontal"
+    tools:visibility="visible"
+    android:visibility="gone">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/lbc" />
+
+    <TextView
+        android:id="@+id/wallet_balance_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="100.0" />
+</LinearLayout>

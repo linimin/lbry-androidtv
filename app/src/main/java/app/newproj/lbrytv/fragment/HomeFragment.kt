@@ -11,6 +11,7 @@ import androidx.leanback.widget.SinglePresenterSelector
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
+import app.newproj.lbrytv.LbcTitleView
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.data.dto.*
 import app.newproj.lbrytv.presenter.PagingDataListRowHeaderPresenter
@@ -24,6 +25,7 @@ import javax.inject.Inject
 class HomeFragment : BrowseSupportFragment() {
     private val viewModel: HomeViewModel by viewModels()
     @Inject lateinit var rowsAdapter: PagingDataAdapter<Row>
+    private val lbcTitleView get() = titleView as LbcTitleView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +71,9 @@ class HomeFragment : BrowseSupportFragment() {
         }
         viewLifecycleScope.launch {
             viewModel.rows.collectLatest(rowsAdapter::submitData)
+        }
+        viewLifecycleScope.launch {
+            viewModel.totalWalletBalance.collectLatest(lbcTitleView::setWalletBalance)
         }
     }
 
