@@ -32,7 +32,7 @@ class HomeFragment : BrowseSupportFragment() {
         if (savedInstanceState == null) {
             prepareEntranceTransition()
         }
-        headersState = HEADERS_ENABLED
+        headersState = HEADERS_ENABLED // https://issuetracker.google.com/issues/147614095
         isHeadersTransitionOnBackEnabled = true
         title = getString(R.string.app_name)
         badgeDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.logo_with_text_light)
