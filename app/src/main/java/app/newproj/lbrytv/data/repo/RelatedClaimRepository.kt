@@ -7,7 +7,7 @@ import app.newproj.lbrytv.data.dto.RelatedClaim
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-private const val PAGE_SIZE = 100
+private const val PAGE_SIZE = 25
 
 class RelatedClaimRepository @Inject constructor(
     private val searchPagingSourceFactory: SearchPagingSource.Factory,

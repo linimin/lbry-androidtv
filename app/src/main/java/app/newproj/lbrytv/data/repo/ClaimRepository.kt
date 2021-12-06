@@ -20,7 +20,6 @@ class ClaimRepository @Inject constructor(
     private val db: MainDatabase,
     private val trendingRemoteMediator: TrendingRemoteMediator,
     private val suggestedChannelRemoteMediator: SuggestedChannelRemoteMediator,
-    private val searchRemoteMediatorFactory: SearchRemoteMediator.Factory,
     private val subscriptionRemoteMediator: SubscriptionRemoteMediator,
     private val subscribedContentRemoteMediatorFactory: SubscribedContentRemoteMediator.Factory,
     private val channelRemoteMediatorFactory: ChannelRemoteMediator.Factory,
@@ -58,12 +57,6 @@ class ClaimRepository @Inject constructor(
         config = PagingConfig(pageSize = PAGE_SIZE),
         remoteMediator = suggestedChannelRemoteMediator,
         pagingSourceFactory = { db.claimDao().suggestedChannels() }
-    ).flow
-
-    fun search(query: String): Flow<PagingData<Claim>> = Pager(
-        config = PagingConfig(pageSize = PAGE_SIZE),
-        remoteMediator = searchRemoteMediatorFactory.create(query),
-        pagingSourceFactory = { db.claimDao().related() }
     ).flow
 
     fun claimsByChannelId(channelId: String): Flow<PagingData<Claim>> = Pager(

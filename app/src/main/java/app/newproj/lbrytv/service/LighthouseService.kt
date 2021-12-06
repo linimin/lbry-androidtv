@@ -11,10 +11,10 @@ interface LighthouseService {
     @GET("search")
     suspend fun search(
         @Query("s") query: String,
-        @Query("resolve") resolve: Boolean = false,
+        @Query("resolve") resolve: Boolean?,
         @Query("size") pageSize: Int,
         @Query("from") page: Int,
         @Query("related_to") relatedTo: String? = null,
-        @Query("nsfw") canShowMatureContent: Boolean = false,
+        @Query("nsfw") canShowMatureContent: Boolean? = null,
     ): List<RelatedClaim>
 }
