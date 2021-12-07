@@ -14,6 +14,7 @@ import javax.inject.Inject
 class HomeRowPagingSource @Inject constructor(
     private val claimRepo: ClaimRepository,
     private val settingRepository: SettingRepository,
+    private val userRepo: UserRepository,
 ) : PagingSource<Int, RowPresentable>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, RowPresentable> {
@@ -37,15 +38,26 @@ class HomeRowPagingSource @Inject constructor(
         val settings = settingRepository.settings().mapPagingData { SettingCard(it) }
         val settingRow = PagingDataList(++id, R.string.settings, settings.cast())
 
-        return LoadResult.Page(
-            listOf(
-                subscribedContentRow,
-                trendingRow,
-                subscriptionRow,
-                suggestedChannelRow,
-                settingRow
-            ), null, null
-        )
+        val user = userRepo.user()
+        if (user.hasVerifiedEmail == true) {
+            return LoadResult.Page(
+                listOf(
+                    subscribedContentRow,
+                    trendingRow,
+                    subscriptionRow,
+                    suggestedChannelRow,
+                    settingRow
+                ), null, null
+            )
+        } else {
+            return LoadResult.Page(
+                listOf(
+                    trendingRow,
+                    suggestedChannelRow,
+                    settingRow
+                ), null, null
+            )
+        }
     }
 
     override fun getRefreshKey(state: PagingState<Int, RowPresentable>): Int? = null
