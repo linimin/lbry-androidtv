@@ -39,6 +39,7 @@ class VideoPlayerFragment : VideoSupportFragment() {
         ).apply {
             host = VideoSupportFragmentGlueHost(this@VideoPlayerFragment)
             host.setOnKeyInterceptListener(KeyHandler())
+            isSeekEnabled = true
         }
         adapter = ArrayObjectAdapter(playerGlue.playbackRowPresenter).apply {
             add(playerGlue.controlsRow)
