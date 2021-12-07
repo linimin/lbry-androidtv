@@ -11,11 +11,11 @@ import androidx.leanback.widget.SinglePresenterSelector
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
-import app.newproj.lbrytv.LbcTitleView
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.data.dto.*
 import app.newproj.lbrytv.presenter.PagingDataListRowHeaderPresenter
 import app.newproj.lbrytv.viewmodel.HomeViewModel
+import app.newproj.lbrytv.widget.LbcTitleView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

@@ -1,4 +1,4 @@
-package app.newproj.lbrytv
+package app.newproj.lbrytv.widget
 
 import android.content.Context
 import android.util.AttributeSet
