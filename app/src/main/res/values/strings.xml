@@ -29,4 +29,5 @@
     <string name="are_you_sure_you_want_to_sign_out_now">Are you sure you want to sign out now?</string>
     <string name="you_can_sign_in_again_later">You can sign in again later.</string>
     <string name="search_result">Search Result</string>
+    <string name="the_background_service_is_initializing">The background service is initializing…</string>
 </resources>

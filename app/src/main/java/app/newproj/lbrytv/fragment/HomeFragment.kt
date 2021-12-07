@@ -2,6 +2,7 @@ package app.newproj.lbrytv.fragment
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.leanback.app.BrowseSupportFragment
@@ -13,10 +14,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.data.dto.*
+import app.newproj.lbrytv.hiltmodule.LbrynetServiceInitJobScope
 import app.newproj.lbrytv.presenter.PagingDataListRowHeaderPresenter
 import app.newproj.lbrytv.viewmodel.HomeViewModel
 import app.newproj.lbrytv.widget.LbcTitleView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,6 +29,10 @@ class HomeFragment : BrowseSupportFragment() {
     private val viewModel: HomeViewModel by viewModels()
     @Inject lateinit var rowsAdapter: PagingDataAdapter<Row>
     private val lbcTitleView get() = titleView as LbcTitleView
+
+    @LbrynetServiceInitJobScope
+    @Inject
+    lateinit var lbrynetServiceInitJob: Job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,9 +103,17 @@ class HomeFragment : BrowseSupportFragment() {
     }
 
     private fun onClickedSignIn() {
-        HomeFragmentDirections
-            .actionHomeFragmentToSignInEmailInputFragment()
-            .let(findNavController()::navigate)
+        if (lbrynetServiceInitJob.isActive) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.the_background_service_is_initializing),
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            HomeFragmentDirections
+                .actionHomeFragmentToSignInEmailInputFragment()
+                .let(findNavController()::navigate)
+        }
     }
 
     private fun onClickedSignOut() {
