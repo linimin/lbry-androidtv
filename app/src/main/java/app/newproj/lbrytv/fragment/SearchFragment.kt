@@ -2,12 +2,15 @@ package app.newproj.lbrytv.fragment
 
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.leanback.app.ProgressBarManager
 import androidx.leanback.app.SearchSupportFragment
 import androidx.leanback.paging.PagingDataAdapter
 import androidx.leanback.widget.*
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.data.comparator.CardPresentableComparator
 import app.newproj.lbrytv.data.dto.CardPresentable
@@ -24,6 +27,7 @@ class SearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchResu
     private val rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
     private val searchResultAdapter =
         PagingDataAdapter(CardPresenterSelector(), CardPresentableComparator)
+    private val progressBarManager = ProgressBarManager()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +45,18 @@ class SearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchResu
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        progressBarManager.setRootView(view as ViewGroup)
+        viewLifecycleOwner.lifecycleScope.launch {
+            searchResultAdapter.loadStateFlow.collectLatest { loadStates ->
+                when (val refreshState = loadStates.refresh) {
+                    is LoadState.NotLoading -> {
+                        progressBarManager.hide()
+                    }
+                    LoadState.Loading -> progressBarManager.show()
+                    is LoadState.Error -> displayError(refreshState.error)
+                }
+            }
+        }
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.searchResult.collectLatest(searchResultAdapter::submitData)
         }
@@ -62,6 +78,12 @@ class SearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchResu
     private fun onClickedVideo(claim: RelatedClaim) {
         SearchFragmentDirections
             .actionSearchFragmentToVideoPlayerFragment(claim.id)
+            .let(findNavController()::navigate)
+    }
+
+    private fun displayError(error: Throwable) {
+        SearchFragmentDirections
+            .actionGlobalErrorFragment(error.localizedMessage)
             .let(findNavController()::navigate)
     }
 }
