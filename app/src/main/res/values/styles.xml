@@ -27,4 +27,8 @@
     <style name="GuidedStepStyle" parent="Theme.Leanback.GuidedStep">
         <item name="guidedActionsSelectorDrawable">@null</item>
     </style>
+
+    <style name="HeaderVerticalGridViewStyle" parent="Widget.Leanback.Headers.VerticalGridView">
+        <item name="android:background">@drawable/header_background</item>
+    </style>
 </resources>

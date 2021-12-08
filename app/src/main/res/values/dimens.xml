@@ -5,4 +5,7 @@
     <dimen name="lb_browse_title_icon_height">20dp</dimen>
     <dimen name="channel_details_overview_logo_width">150dp</dimen>
     <dimen name="channel_details_overview_logo_height">150dp</dimen>
+    <dimen name="browsePaddingStart">70dp</dimen>
+    <dimen name="headerIconBrowsePaddingStart">10dp</dimen>
+    <dimen name="headerIconRowWidth">50dp</dimen>
 </resources>

@@ -32,7 +32,7 @@ class ChannelDetailsRowPagingSource private constructor(
             LoadResult.Page(
                 listOf(
                     ChannelDetailsOverview(++id, claim, isFollowing),
-                    PagingDataList(++id, R.string.latest_videos, latestVideos.cast()),
+                    PagingDataList(++id, R.string.latest_videos, null, latestVideos.cast()),
                 ), null, null
             )
         } catch (e: IOException) {

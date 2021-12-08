@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.fragment.app.FragmentContainerView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/browse_header_icons_dock"
+    android:layout_width="?attr/headerIconRowWidth"
+    android:layout_height="match_parent" />

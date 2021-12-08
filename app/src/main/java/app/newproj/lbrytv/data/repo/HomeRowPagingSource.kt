@@ -22,21 +22,21 @@ class HomeRowPagingSource @Inject constructor(
 
         val subscribedContent = claimRepo.subscribedContent().mapPagingData { ClaimCard(it) }
         val subscribedContentRow =
-            PagingDataList(++id, R.string.subscribed_content, subscribedContent.cast())
+            PagingDataList(++id, R.string.subscribed_content, R.drawable.lbc, subscribedContent.cast())
 
         val trending = claimRepo.trending().mapPagingData { ClaimCard(it) }
-        val trendingRow = PagingDataList(++id, R.string.trending, trending.cast())
+        val trendingRow = PagingDataList(++id, R.string.trending, R.drawable.trending, trending.cast())
 
         val subscription = claimRepo.subscription().mapPagingData { ClaimCard(it) }
         val subscriptionRow =
-            PagingDataList(++id, R.string.subscriptions, subscription.cast())
+            PagingDataList(++id, R.string.subscriptions, R.drawable.subscriptions, subscription.cast())
 
         val suggestedChannels = claimRepo.suggestedChannels().mapPagingData { ClaimCard(it) }
         val suggestedChannelRow =
-            PagingDataList(++id, R.string.suggested_channels, suggestedChannels.cast())
+            PagingDataList(++id, R.string.suggested_channels, R.drawable.recommend, suggestedChannels.cast())
 
         val settings = settingRepository.settings().mapPagingData { SettingCard(it) }
-        val settingRow = PagingDataList(++id, R.string.settings, settings.cast())
+        val settingRow = PagingDataList(++id, R.string.settings, R.drawable.settings, settings.cast())
 
         val user = userRepo.user()
         if (user.hasVerifiedEmail == true) {

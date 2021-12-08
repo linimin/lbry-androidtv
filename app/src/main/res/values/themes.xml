@@ -11,6 +11,14 @@
         <item name="imageCardViewStyle">@style/StreamCardViewStyle</item>
         <item name="imageCardViewImageStyle">@style/StreamCardImageStyle</item>
         <item name="browseTitleViewLayout">@layout/lbc_title_view</item>
+        <item name="headersVerticalGridStyle">@style/HeaderVerticalGridViewStyle</item>
+        <item name="browsePaddingStart">@dimen/browsePaddingStart</item>
+        <item name="headerIconRowWidth">@dimen/headerIconRowWidth</item>
+    </style>
+
+    <style name="HeaderIconsTheme" parent="Theme.LbryTv">
+        <item name="browsePaddingStart">@dimen/headerIconBrowsePaddingStart</item>
+        <item name="rowsVerticalGridStyle">?attr/headersVerticalGridStyle</item>
     </style>
 
     <style name="Theme.LbryTv.SplashScreen" parent="Theme.SplashScreen">

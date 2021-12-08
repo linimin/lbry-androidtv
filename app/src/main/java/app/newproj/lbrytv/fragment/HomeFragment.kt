@@ -1,7 +1,9 @@
 package app.newproj.lbrytv.fragment
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -15,6 +17,7 @@ import androidx.paging.LoadState
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.data.dto.*
 import app.newproj.lbrytv.hiltmodule.LbrynetServiceInitJobScope
+import app.newproj.lbrytv.presenter.HeaderIconPresenter
 import app.newproj.lbrytv.presenter.PagingDataListRowHeaderPresenter
 import app.newproj.lbrytv.viewmodel.HomeViewModel
 import app.newproj.lbrytv.widget.LbcTitleView
@@ -33,6 +36,10 @@ class HomeFragment : BrowseSupportFragment() {
     @LbrynetServiceInitJobScope
     @Inject
     lateinit var lbrynetServiceInitJob: Job
+
+    private var headerIconsFragment: HeaderIconsFragment? = null
+
+    override fun onCreateHeadersSupportFragment() = HeaderFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,8 +68,28 @@ class HomeFragment : BrowseSupportFragment() {
         }
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val view = super.onCreateView(inflater, container, savedInstanceState)
+        inflater.inflate(R.layout.browse_header_icons_dock, view as ViewGroup, true)
+        val headerIconsFragment = HeaderIconsFragment().apply {
+            adapter = rowsAdapter
+            presenterSelector = SinglePresenterSelector(HeaderIconPresenter())
+        }
+        childFragmentManager
+            .beginTransaction()
+            .replace(R.id.browse_header_icons_dock, headerIconsFragment)
+            .commit()
+        this.headerIconsFragment = headerIconsFragment
+        return view
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (headersSupportFragment as HeaderFragment).headerIconsFragment= headerIconsFragment
         val viewLifecycleScope = viewLifecycleOwner.lifecycleScope
         viewLifecycleScope.launch {
             rowsAdapter.loadStateFlow.collectLatest { loadStates ->
@@ -82,6 +109,11 @@ class HomeFragment : BrowseSupportFragment() {
         viewLifecycleScope.launch {
             viewModel.totalWalletBalance.collectLatest(lbcTitleView::setWalletBalance)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        headerIconsFragment = null
     }
 
     private fun onClickedChannel(card: ClaimCard) {
