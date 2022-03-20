@@ -26,7 +26,6 @@ package app.newproj.lbrytv.data.paging
 
 import app.newproj.lbrytv.data.AppDatabase
 import app.newproj.lbrytv.data.dto.ClaimSearchRequest
-import app.newproj.lbrytv.di.LbrynetProxyService
 import app.newproj.lbrytv.service.LbryIncService
 import app.newproj.lbrytv.service.LbrynetService
 import dagger.assisted.Assisted
@@ -35,7 +34,7 @@ import dagger.assisted.AssistedInject
 
 class ChannelVideosRemoteMediator @AssistedInject constructor(
     @Assisted private val channelId: String,
-    @LbrynetProxyService private val lbrynetService: LbrynetService,
+    private val lbrynetService: LbrynetService,
     private val lbryIncService: LbryIncService,
     db: AppDatabase,
 ) : SearchClaimsRemoteMediator(lbrynetService, db) {

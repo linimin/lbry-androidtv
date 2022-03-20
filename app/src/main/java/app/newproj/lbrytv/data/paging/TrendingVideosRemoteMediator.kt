@@ -27,12 +27,11 @@ package app.newproj.lbrytv.data.paging
 import app.newproj.lbrytv.data.AppDatabase
 import app.newproj.lbrytv.data.dto.ClaimLookupLabel
 import app.newproj.lbrytv.data.dto.ClaimSearchRequest
-import app.newproj.lbrytv.di.LbrynetProxyService
 import app.newproj.lbrytv.service.LbrynetService
 import javax.inject.Inject
 
 class TrendingVideosRemoteMediator @Inject constructor(
-    @LbrynetProxyService private val lbrynetService: LbrynetService,
+    lbrynetService: LbrynetService,
     db: AppDatabase,
 ) : SearchClaimsRemoteMediator(lbrynetService, db) {
 

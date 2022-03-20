@@ -26,8 +26,8 @@ package app.newproj.lbrytv.ui.presenter
 
 import androidx.leanback.widget.Presenter
 import androidx.leanback.widget.PresenterSelector
-import app.newproj.lbrytv.data.dto.Channel
 import app.newproj.lbrytv.data.dto.BrowseCategoryItem
+import app.newproj.lbrytv.data.dto.Channel
 import app.newproj.lbrytv.data.dto.Setting
 import app.newproj.lbrytv.data.dto.Video
 

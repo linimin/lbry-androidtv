@@ -24,8 +24,10 @@
 
 package app.newproj.lbrytv.di
 
+import app.newproj.lbrytv.auth.LbrynetServiceAuthInterceptor
 import app.newproj.lbrytv.service.JsonRpcBodyConverterFactory
 import app.newproj.lbrytv.service.JsonRpcBodyFiller
+import app.newproj.lbrytv.service.LbrynetProxyServiceInterceptor
 import app.newproj.lbrytv.service.LbrynetService
 import dagger.Module
 import dagger.Provides
@@ -35,7 +37,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
@@ -43,18 +44,20 @@ import javax.inject.Singleton
 object LbrynetServiceModule {
     @Provides
     @Singleton
-    @LbrynetSdkService
     fun lbrynetService(
         jsonRpcBodyFiller: JsonRpcBodyFiller,
         httpLoggingInterceptor: HttpLoggingInterceptor,
         gsonConverterFactory: GsonConverterFactory,
+        authInterceptor: LbrynetServiceAuthInterceptor,
     ): LbrynetService {
         val client = OkHttpClient.Builder()
             .addInterceptor(httpLoggingInterceptor)
+            .addInterceptor(authInterceptor)
+            .addInterceptor(LbrynetProxyServiceInterceptor)
             .addInterceptor(jsonRpcBodyFiller)
             .build()
         return Retrofit.Builder()
-            .baseUrl("http://127.0.0.1:5279/")
+            .baseUrl("https://api.lbry.tv/")
             .client(client)
             .addConverterFactory(JsonRpcBodyConverterFactory)
             .addConverterFactory(gsonConverterFactory)
@@ -62,7 +65,3 @@ object LbrynetServiceModule {
             .create(LbrynetService::class.java)
     }
 }
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class LbrynetSdkService

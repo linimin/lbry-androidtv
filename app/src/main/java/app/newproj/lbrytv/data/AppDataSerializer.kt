@@ -26,7 +26,6 @@ package app.newproj.lbrytv.data
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
-import app.newproj.lbrytv.data.AppData
 import com.google.protobuf.InvalidProtocolBufferException
 import java.io.InputStream
 import java.io.OutputStream

@@ -28,12 +28,11 @@ import app.newproj.lbrytv.data.AppDatabase
 import app.newproj.lbrytv.data.dto.ClaimLookupLabel
 import app.newproj.lbrytv.data.dto.ClaimResolveRequest
 import app.newproj.lbrytv.data.entity.FollowingChannel
-import app.newproj.lbrytv.di.LbrynetProxyService
 import app.newproj.lbrytv.service.LbrynetService
 import javax.inject.Inject
 
 class SubscriptionChannelsRemoteMediator @Inject constructor(
-    @LbrynetProxyService private val lbrynetService: LbrynetService,
+    private val lbrynetService: LbrynetService,
     private val db: AppDatabase,
 ) : ResolveClaimsRemoteMediator(lbrynetService, db) {
     override val label: String = ClaimLookupLabel.SUBSCRIPTION_CHANNELS.name

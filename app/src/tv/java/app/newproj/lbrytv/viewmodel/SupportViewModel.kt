@@ -34,7 +34,6 @@ import app.newproj.lbrytv.data.dto.SupportOption
 import app.newproj.lbrytv.data.repo.SupportAmountRepository
 import app.newproj.lbrytv.data.repo.SupportOptionsRepository
 import app.newproj.lbrytv.di.ApplicationCoroutineScope
-import app.newproj.lbrytv.di.LbrynetProxyService
 import app.newproj.lbrytv.fragment.SupportFragmentArgs
 import app.newproj.lbrytv.service.LbrynetService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,7 +53,7 @@ class SupportViewModel @Inject constructor(
     supportOptionsRepo: SupportOptionsRepository,
     amountRepo: SupportAmountRepository,
     @ApplicationCoroutineScope private val externalScope: CoroutineScope,
-    @LbrynetProxyService private val lbrynetService: LbrynetService,
+    private val lbrynetService: LbrynetService,
 ) : ViewModel() {
     private val args = SupportFragmentArgs.fromSavedStateHandle(savedStateHandle)
 

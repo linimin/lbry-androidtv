@@ -25,7 +25,6 @@
 package app.newproj.lbrytv.data.repo
 
 import app.newproj.lbrytv.data.dto.Wallet
-import app.newproj.lbrytv.di.LbrynetProxyService
 import app.newproj.lbrytv.service.LbrynetService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -35,7 +34,7 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 class WalletRepository @Inject constructor(
-    @LbrynetProxyService private val lbrynetService: LbrynetService,
+    private val lbrynetService: LbrynetService,
 ) {
     fun wallet(): Flow<Wallet> = flow {
         while (true) {

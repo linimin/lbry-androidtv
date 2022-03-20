@@ -28,12 +28,11 @@ import app.newproj.lbrytv.data.AppDatabase
 import app.newproj.lbrytv.data.dto.ClaimLookupLabel
 import app.newproj.lbrytv.data.dto.ClaimSearchRequest
 import app.newproj.lbrytv.data.dto.LbryUri
-import app.newproj.lbrytv.di.LbrynetProxyService
 import app.newproj.lbrytv.service.LbrynetService
 import javax.inject.Inject
 
 class SubscriptionVideosRemoteMediator @Inject constructor(
-    @LbrynetProxyService private val lbrynetService: LbrynetService,
+    private val lbrynetService: LbrynetService,
     db: AppDatabase,
 ) : SearchClaimsRemoteMediator(lbrynetService, db) {
 
