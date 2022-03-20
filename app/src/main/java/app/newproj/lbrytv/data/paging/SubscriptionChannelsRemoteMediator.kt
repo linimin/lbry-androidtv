@@ -27,27 +27,24 @@ package app.newproj.lbrytv.data.paging
 import app.newproj.lbrytv.data.AppDatabase
 import app.newproj.lbrytv.data.dto.ClaimLookupLabel
 import app.newproj.lbrytv.data.dto.ClaimResolveRequest
-import app.newproj.lbrytv.data.entity.FollowingChannel
+import app.newproj.lbrytv.data.dto.LbryUri
 import app.newproj.lbrytv.service.LbrynetService
 import javax.inject.Inject
 
 class SubscriptionChannelsRemoteMediator @Inject constructor(
     private val lbrynetService: LbrynetService,
-    private val db: AppDatabase,
+    db: AppDatabase,
 ) : ResolveClaimsRemoteMediator(lbrynetService, db) {
     override val label: String = ClaimLookupLabel.SUBSCRIPTION_CHANNELS.name
 
     override suspend fun onCreateInitialRequest(): ClaimResolveRequest {
-        val followingChannels =
-            lbrynetService.preference().shared?.value?.following?.mapNotNull {
-                val uri = it?.uri ?: return@mapNotNull null
-                val notificationsDisabled =
-                    it.notificationsDisabled ?: return@mapNotNull null
-                FollowingChannel(uri, notificationsDisabled)
-            }?.also {
-                db.followingChannelDao().upsert(it)
-            }
-        val lbryUrls = followingChannels?.map { it.uri.toString() } ?: emptyList()
-        return ClaimResolveRequest(lbryUrls)
+        val subscriptionUris = lbrynetService.preference()
+            .shared
+            ?.value
+            ?.subscriptions
+            ?.map {
+                LbryUri.parse(LbryUri.normalize(it)).toString()
+            } ?: emptyList()
+        return ClaimResolveRequest(subscriptionUris)
     }
 }

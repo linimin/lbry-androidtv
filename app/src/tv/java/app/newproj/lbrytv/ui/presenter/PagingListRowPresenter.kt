@@ -72,6 +72,7 @@ class PagingListRowPresenter : ListRowPresenter() {
                 row.pagingDataAdapter.submitData(pagingData.map { it })
             }
         }
+        row.pagingDataAdapter.refresh()
         viewHolder.setFacet(Job::class.java, job)
     }
 
