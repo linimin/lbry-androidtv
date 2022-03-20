@@ -1,11 +1,56 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2022 LIN I MIN
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package app.newproj.lbrytv.service
 
-import app.newproj.lbrytv.data.dto.*
+import app.newproj.lbrytv.data.dto.AccountList
+import app.newproj.lbrytv.data.dto.ApplyWalletSyncRequest
+import app.newproj.lbrytv.data.dto.ApplyWalletSyncResult
+import app.newproj.lbrytv.data.dto.ClaimResolveRequest
+import app.newproj.lbrytv.data.dto.ClaimSearchRequest
+import app.newproj.lbrytv.data.dto.ClaimSearchResult
+import app.newproj.lbrytv.data.dto.JsonRpc
+import app.newproj.lbrytv.data.dto.LbrynetDaemonStatus
+import app.newproj.lbrytv.data.dto.LbrynetVersion
+import app.newproj.lbrytv.data.dto.MyClaimSearchRequest
+import app.newproj.lbrytv.data.dto.MyClaimSearchResult
+import app.newproj.lbrytv.data.dto.ResolvedClaim
+import app.newproj.lbrytv.data.dto.SupportCreateRequest
+import app.newproj.lbrytv.data.dto.SupportCreateResponse
+import app.newproj.lbrytv.data.dto.UserPreference
+import app.newproj.lbrytv.data.dto.UserPreferenceUpdateRequest
+import app.newproj.lbrytv.data.dto.WalletBalance
+import app.newproj.lbrytv.data.dto.WalletCreateRequest
+import app.newproj.lbrytv.data.dto.WalletList
+import app.newproj.lbrytv.data.dto.WalletRemoveRequest
+import app.newproj.lbrytv.data.dto.WalletStatus
 import retrofit2.http.Body
 import retrofit2.http.POST
 
 /**
  * A JSON-RPC API to interact with the LBRY network.
+ * API documentation: https://lbry.tech/api/sdk
  */
 interface LbrynetService {
     /**
@@ -33,6 +78,8 @@ interface LbrynetService {
      * equality constraint such as '>', '>=', '<' and '<=' eg. height=">400000" would limit
      * results to only claims above 400k block height.
      *
+     * [Link to Postman](https://web.postman.co/workspace/LBRYtv~7307462d-f6f1-45d0-9455-7e36e7983a8c/request/19881064-13bf5d74-291b-4d60-8c69-cbfdca39cc49)
+     *
      * @param[request] A [ClaimSearchRequest] includes the request parameters.
      * @return a [ClaimSearchResult] contains the search result.
      */
@@ -42,6 +89,8 @@ interface LbrynetService {
 
     /**
      * Return the balance of a wallet.
+     *
+     * [Link to Postman](https://web.postman.co/workspace/LBRYtv~7307462d-f6f1-45d0-9455-7e36e7983a8c/request/19881064-ee295056-3aa4-4e1e-a6fd-a50efe491675)
      *
      * @return a [WalletBalance] includes amount of lbry credits in wallet.
      */
@@ -90,8 +139,59 @@ interface LbrynetService {
 
     /**
      * Get preference value for key or all values if not key is passed in.
+     *
+     * [Link to Postman](https://web.postman.co/workspace/LBRYtv~7307462d-f6f1-45d0-9455-7e36e7983a8c/request/19881064-fcfe7e6e-5d80-4743-99d6-a82c72d157e7)
+     *
      */
     @JsonRpc("preference_get")
     @POST("/")
     suspend fun preference(): UserPreference
+
+    @JsonRpc("preference_set")
+    @POST("/")
+    suspend fun setPreference(@Body request: UserPreferenceUpdateRequest): UserPreference
+
+    /**
+     * Return an address containing no balance, will create a new address if there is none.
+     */
+    @JsonRpc("address_unused")
+    @POST("/")
+    suspend fun addressUnused(): String
+
+    /**
+     * List details of all of the accounts or a specific account.
+     */
+    @JsonRpc("account_list")
+    @POST("/")
+    suspend fun accounts(): AccountList
+
+    /**
+     * List wallets.
+     */
+    @JsonRpc("wallet_list")
+    @POST("/")
+    suspend fun wallets(): WalletList
+
+    /**
+     * Get lbrynet API server version information
+     */
+    @JsonRpc("version")
+    @POST("/")
+    suspend fun version(): LbrynetVersion
+
+    @JsonRpc("wallet_remove")
+    @POST("/")
+    suspend fun removeWallet(@Body request: WalletRemoveRequest): WalletList.Item
+
+    @JsonRpc("wallet_create")
+    @POST("/")
+    suspend fun createWallet(@Body request: WalletCreateRequest)
+
+    @JsonRpc("wallet_add")
+    @POST("/")
+    suspend fun addWallet(@Body request: WalletRemoveRequest)
+
+    @JsonRpc("support_create")
+    @POST("/")
+    suspend fun supportCreate(@Body request: SupportCreateRequest): SupportCreateResponse
 }

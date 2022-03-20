@@ -1,53 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ MIT License
+  ~
+  ~ Copyright (c) 2022 LIN I MIN
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<!-- [App Manifest Overview](https://developer.android.com/guide/topics/manifest/manifest-intro) -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="app.newproj.lbrytv">
+    package="app.newproj.lbrytv"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-feature
-        android:name="android.software.leanback"
-        android:required="true" />
-    <uses-feature
-        android:name="android.hardware.touchscreen"
-        android:required="false" />
-    <uses-feature
-        android:name="android.hardware.microphone"
-        android:required="false" />
-
+    <!-- [Permissions](https://developer.android.com/guide/topics/permissions/overview) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- [Provide a home screen banner](https://developer.android.com/training/tv/start/start#banner) -->
     <application
-        android:name="app.newproj.lbrytv.MainApplication"
+        android:name=".MainApplication"
         android:allowBackup="true"
-        android:banner="@drawable/banner"
-        android:fullBackupContent="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/launcher"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
-        android:theme="@style/Theme.LbryTv"
-        android:usesCleartextTraffic="true">
-        <activity
-            android:name="app.newproj.lbrytv.MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.LbryTv.SplashScreen">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
-            </intent-filter>
-        </activity>
+        tools:targetApi="s">
+
+        <!-- [App Startup](https://developer.android.com/topic/libraries/app-startup#manifest-entries) -->
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
             android:exported="false"
             tools:node="merge">
             <meta-data
-                android:name="app.newproj.lbrytv.startup.LbrynetServiceInitializer"
-                android:value="androidx.startup" />
-            <meta-data
                 android:name="app.newproj.lbrytv.startup.TimberInitializer"
                 android:value="androidx.startup" />
         </provider>
+
+        <!-- [Create an authenticator service](https://developer.android.com/training/id-auth/custom_auth#TaskFour) -->
+        <service
+            android:name=".auth.LbryAccountAuthenticatorService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
     </application>
 </manifest>

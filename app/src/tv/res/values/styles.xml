@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ MIT License
+  ~
+  ~ Copyright (c) 2022 LIN I MIN
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<resources>
+
+    <style name="Widget.Headers.VerticalGridView" parent="Widget.Leanback.Headers.VerticalGridView">
+        <item name="android:background">?attr/colorPrimaryDark</item>
+        <item name="android:paddingStart">@dimen/header_collapsed_width</item>
+    </style>
+
+    <style name="Widget.HeaderIcons.VerticalGridView" parent="Widget.Leanback.Headers.VerticalGridView">
+        <item name="android:background">@color/color_surface_80</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="Widget.HeaderIcons.ImageView" parent="">
+        <item name="android:layout_height">@dimen/header_icon_height</item>
+        <item name="android:layout_width">@dimen/header_icon_width</item>
+    </style>
+
+    <style name="Widget.Row.HorizontalGridView" parent="Widget.Leanback.Row.HorizontalGridView">
+        <item name="android:horizontalSpacing">@dimen/horizontal_spacing</item>
+    </style>
+
+    <style name="Widget.BaseCardViewStyle" parent="Widget.Leanback.BaseCardViewStyle">
+        <item name="cardBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="Widget.CardView.Outlined" parent="Widget.Material3.CardView.Outlined">
+        <item name="strokeColor">@color/card_border</item>
+        <item name="strokeWidth">@dimen/card_view_stroke_width</item>
+    </style>
+
+    <style name="Widget.CardView.Outlined.Video">
+        <item name="android:layout_height">@dimen/video_card_height</item>
+        <item name="android:layout_width">@dimen/video_card_width</item>
+    </style>
+
+    <style name="Widget.CardView.Outlined.Channel">
+        <item name="android:layout_width">@dimen/channel_card_width</item>
+        <item name="android:layout_height">@dimen/channel_card_height</item>
+    </style>
+
+    <style name="Widget.CardView.Outlined.Setting">
+        <item name="android:layout_height">@dimen/setting_card_height</item>
+        <item name="android:layout_width">@dimen/setting_card_width</item>
+    </style>
+
+    <style name="Widget.GridItems.VerticalGridView" parent="Widget.Leanback.GridItems.VerticalGridView">
+        <item name="android:horizontalSpacing">@dimen/horizontal_spacing</item>
+        <item name="android:verticalSpacing">@dimen/vertical_spacing</item>
+    </style>
+
+    <style name="Widget.HeaderIcons.Dock" parent="">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">@dimen/header_collapsed_width</item>
+    </style>
+</resources>

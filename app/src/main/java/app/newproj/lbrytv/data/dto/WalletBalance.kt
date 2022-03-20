@@ -1,37 +1,53 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2022 LIN I MIN
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package app.newproj.lbrytv.data.dto
 
-import androidx.room.ColumnInfo
-import androidx.room.Embedded
 import com.google.gson.annotations.SerializedName
+import java.math.BigDecimal
 
 data class WalletBalance(
     @SerializedName("available")
-    @ColumnInfo(name = "available")
-    val available: String? = null,
+    val available: BigDecimal? = null,
 
     @SerializedName("reserved")
-    @ColumnInfo(name = "reserved")
-    val reserved: String? = null,
+    val reserved: BigDecimal? = null,
 
     @SerializedName("reserved_subtotals")
-    @Embedded
     val reservedSubtotals: ReservedSubtotals? = null,
 
     @SerializedName("total")
-    @ColumnInfo(name = "total")
-    val total: String? = null
+    val total: BigDecimal? = null
 ) {
     data class ReservedSubtotals(
         @SerializedName("claims")
-        @ColumnInfo(name = "claims")
-        val claims: String? = null,
+        val claims: BigDecimal? = null,
 
         @SerializedName("supports")
-        @ColumnInfo(name = "supports")
-        val supports: String? = null,
+        val supports: BigDecimal? = null,
 
         @SerializedName("tips")
-        @ColumnInfo(name = "tips")
-        val tips: String? = null
+        val tips: BigDecimal? = null
     )
 }

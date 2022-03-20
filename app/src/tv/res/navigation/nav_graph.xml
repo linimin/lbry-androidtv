@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ MIT License
+  ~
+  ~ Copyright (c) 2022 LIN I MIN
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<!--
+Create a navigation graph
+https://developer.android.com/guide/navigation/navigation-getting-started#create-nav-graph
+-->
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/browseCategoriesFragment">
+    <fragment
+        android:id="@+id/browseCategoriesFragment"
+        android:name="app.newproj.lbrytv.fragment.BrowseCategoriesFragment"
+        android:label="BrowseCategoriesFragment">
+        <action
+            android:id="@+id/action_browseCategoriesFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_browseCategoriesFragment_to_channelFragment"
+            app:destination="@id/channelVideosFragment" />
+        <action
+            android:id="@+id/action_browseCategoriesFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/videoPlayerFragment"
+        android:name="app.newproj.lbrytv.fragment.VideoPlayerFragment"
+        android:label="VideoPlayerFragment">
+        <argument
+            android:name="claimId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_videoPlayerFragment_to_supportFragment"
+            app:destination="@id/supportFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="app.newproj.lbrytv.fragment.SearchFragment"
+        android:label="SearchFragment"/>
+    <fragment
+        android:id="@+id/errorFragment"
+        android:name="app.newproj.lbrytv.fragment.ErrorFragment"
+        android:label="ErrorFragment">
+        <argument
+            android:name="message"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_errorFragment_to_browseCategoriesFragment"
+            app:destination="@id/browseCategoriesFragment"
+            app:popUpTo="@id/browseCategoriesFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_errorFragment"
+        app:destination="@id/errorFragment" />
+    <fragment
+        android:id="@+id/channelVideosFragment"
+        android:name="app.newproj.lbrytv.fragment.ChannelVideosFragment"
+        android:label="ChannelVideosFragment">
+        <argument
+            android:name="channelId"
+            app:argType="string" />
+    </fragment>
+    <action android:id="@+id/action_global_videoPlayerFragment" app:destination="@id/videoPlayerFragment" />
+    <navigation
+        android:id="@+id/addAccount"
+        android:label="AddAccount"
+        app:startDestination="@id/emailInputFragment">
+
+        <!-- FIXME: https://issuetracker.google.com/issues/109505019 -->
+        <argument
+            android:name="authResponse"
+            app:argType="android.accounts.AccountAuthenticatorResponse"
+            app:nullable="true" />
+
+        <fragment
+            android:id="@+id/emailInputFragment"
+            android:name="app.newproj.lbrytv.fragment.EmailInputFragment"
+            android:label="EmailInputFragment">
+            <action
+                android:id="@+id/action_emailInputFragment_to_emailVerifyFragment"
+                app:destination="@id/emailVerifyFragment" />
+            <deepLink
+                android:id="@+id/deepLink"
+                app:uri="https://lbrytv.newproj.app/signin" />
+            <argument
+                android:name="authResponse"
+                app:argType="android.accounts.AccountAuthenticatorResponse"
+                app:nullable="true" />
+        </fragment>
+        <fragment
+            android:id="@+id/emailVerifyFragment"
+            android:name="app.newproj.lbrytv.fragment.EmailVerifyFragment"
+            android:label="EmailVerifyFragment">
+            <argument
+                android:name="email"
+                app:argType="string" />
+            <action
+                android:id="@+id/action_emailVerifyFragment_to_browseCategoriesFragment"
+                app:destination="@id/browseCategoriesFragment"
+                app:popUpTo="@id/browseCategoriesFragment"
+                app:popUpToInclusive="true" />
+            <argument
+                android:name="authResponse"
+                app:argType="android.accounts.AccountAuthenticatorResponse"
+                app:nullable="true" />
+        </fragment>
+    </navigation>
+    <fragment
+        android:id="@+id/accountsFragment"
+        android:name="app.newproj.lbrytv.fragment.AccountsFragment"
+        android:label="AccountsFragment" >
+        <action
+            android:id="@+id/action_accountsFragment_to_browseCategoriesFragment"
+            app:destination="@id/browseCategoriesFragment"
+            app:popUpTo="@id/browseCategoriesFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_accountsFragment_to_addAccount"
+            app:destination="@id/addAccount" />
+    </fragment>
+    <fragment
+        android:id="@+id/supportFragment"
+        android:name="app.newproj.lbrytv.fragment.SupportFragment"
+        android:label="SupportFragment" >
+        <argument
+            android:name="claimId"
+            app:argType="string" />
+    </fragment>
+</navigation>

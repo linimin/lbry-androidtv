@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option java_package = "app.newproj.lbrytv.data";
+option java_multiple_files = true;
+
+message AppData {
+  string installation_id = 1;
+  string account_name = 2;
+  string wallpaper_url = 3;
+}

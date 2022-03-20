@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2022 LIN I MIN
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package app.newproj.lbrytv.data.dao
 
 import androidx.room.Insert
@@ -5,7 +29,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
 import androidx.room.Update
 
-abstract class BaseDao<T> {
+private const val ROW_ID_ON_CONFLICT = -1L
+
+abstract class BaseDao<T : Any> {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract suspend fun insert(item: T): Long
 
@@ -18,38 +44,19 @@ abstract class BaseDao<T> {
     @Update
     abstract suspend fun update(items: List<T>)
 
-    suspend fun insertOrUpdate(items: List<T>) {
-        insertOrUpdate(items, ::insert, ::update)
-    }
-
-    suspend fun insertOrUpdate(item: T) {
-        insertOrUpdate(item, ::insert, ::update)
-    }
-
     @Transaction
-    open suspend fun <T> insertOrUpdate(
-        item: T,
-        insert: suspend (T) -> Long,
-        update: suspend (T) -> Unit,
-    ) {
-        if (insert(item) == -1L) {
+    open suspend fun upsert(item: T) {
+        if (insert(item) == ROW_ID_ON_CONFLICT) {
             update(item)
         }
     }
 
     @Transaction
-    open suspend fun <T> insertOrUpdate(
-        items: List<T>,
-        insert: suspend (List<T>) -> List<Long>,
-        update: suspend (List<T>) -> Unit,
-    ) {
-        val insertResult = insert(items)
-        val updateList = mutableListOf<T>()
-
-        for (i in insertResult.indices) {
-            if (insertResult[i] == -1L) updateList.add(items[i])
+    open suspend fun upsert(items: List<T>) {
+        insert(items).mapIndexedNotNull { index, rowId ->
+            items[index].takeIf { rowId == ROW_ID_ON_CONFLICT }
+        }.takeIf { it.isNotEmpty() }?.let {
+            update(it)
         }
-
-        if (updateList.isNotEmpty()) update(updateList)
     }
 }

@@ -1,0 +1,112 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2022 LIN I MIN
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+package app.newproj.lbrytv.data.paging
+
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadType
+import androidx.paging.PagingState
+import androidx.paging.RemoteMediator
+import androidx.room.withTransaction
+import app.newproj.lbrytv.data.AppDatabase
+import app.newproj.lbrytv.data.entity.Claim
+import app.newproj.lbrytv.data.entity.ClaimLookup
+import app.newproj.lbrytv.data.entity.RemoteKey
+import app.newproj.lbrytv.service.ApiException
+import app.newproj.lbrytv.service.LighthouseService
+import app.newproj.lbrytv.service.NoDataApiException
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import retrofit2.HttpException
+import java.io.IOException
+
+private const val STARTING_PAGE_INDEX = 1
+private const val STARTING_SORTING_ORDER = 1
+
+@OptIn(ExperimentalPagingApi::class)
+class RelatedClaimsRemoteMediator @AssistedInject constructor(
+    @Assisted("label") private val label: String,
+    @Assisted("query") private val query: String?,
+    private val lighthouseService: LighthouseService,
+    private val db: AppDatabase,
+) : RemoteMediator<Int, Claim>() {
+    @AssistedFactory
+    interface Factory {
+        fun RelatedClaimsRemoteMediator(
+            @Assisted("label") label: String,
+            @Assisted("query") query: String?,
+        ): RelatedClaimsRemoteMediator
+    }
+
+    override suspend fun load(loadType: LoadType, state: PagingState<Int, Claim>): MediatorResult {
+        try {
+            val page: Int
+            var nextSortingOrder: Int
+            val remoteKeyLabel = label
+            when (loadType) {
+                LoadType.REFRESH -> {
+                    page = STARTING_PAGE_INDEX
+                    nextSortingOrder = STARTING_SORTING_ORDER
+                }
+                LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
+                LoadType.APPEND -> {
+                    val remoteKey = db.remoteKeyDao().remoteKey(remoteKeyLabel)
+                    page = remoteKey?.nextKey
+                        ?: return MediatorResult.Success(endOfPaginationReached = true)
+                    nextSortingOrder = remoteKey.nextSortingOrder
+                }
+            }
+            val relatedClaims = lighthouseService.search(
+                query,
+                true,
+                state.config.pageSize,
+                page
+            )
+            db.withTransaction {
+                if (loadType == LoadType.REFRESH) {
+                    db.remoteKeyDao().delete(remoteKeyLabel)
+                    db.claimLookupDao().deleteAll(remoteKeyLabel)
+                }
+                db.relatedClaimDao().insert(relatedClaims)
+                val claimLookups = relatedClaims.map {
+                    ClaimLookup(remoteKeyLabel, it.id, nextSortingOrder++)
+                }
+                db.claimLookupDao().upsert(claimLookups)
+                val nextKey = if (relatedClaims.isEmpty()) null else page.inc()
+                val remoteKey = RemoteKey(remoteKeyLabel, nextKey, nextSortingOrder)
+                db.remoteKeyDao().upsert(remoteKey)
+            }
+            return MediatorResult.Success(endOfPaginationReached = relatedClaims.isEmpty())
+        } catch (e: NoDataApiException) {
+            return MediatorResult.Success(endOfPaginationReached = true)
+        } catch (e: ApiException) {
+            return MediatorResult.Error(e)
+        } catch (e: IOException) {
+            return MediatorResult.Error(e)
+        } catch (e: HttpException) {
+            return MediatorResult.Error(e)
+        }
+    }
+}

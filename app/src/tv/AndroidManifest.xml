@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ MIT License
+  ~
+  ~ Copyright (c) 2022 LIN I MIN
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<!-- [App Manifest Overview](https://developer.android.com/guide/topics/manifest/manifest-intro) -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="app.newproj.lbrytv">
+
+    <!-- [Declare Leanback support](https://developer.android.com/training/tv/start/start#leanback-req) -->
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="true" />
+
+    <!-- [Declare touchscreen not required](https://developer.android.com/training/tv/start/start#no-touchscreen) -->
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <!-- [Declaring hardware requirements for TV](https://developer.android.com/training/tv/start/hardware#declare-hardware-requirements) -->
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
+
+    <!-- [Provide a home screen banner](https://developer.android.com/training/tv/start/start#banner) -->
+    <application>
+
+        <!-- [Declare a TV activity](https://developer.android.com/training/tv/start/start#tv-activity) -->
+        <!-- [Splash screen](https://developer.android.com/guide/topics/ui/splash-screen/migrate) -->
+        <activity
+            android:name=".TvActivity"
+            android:banner="@drawable/banner"
+            android:exported="true"
+            android:theme="@style/SplashScreenTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+            <nav-graph android:value="@navigation/nav_graph" />
+        </activity>
+    </application>
+</manifest>

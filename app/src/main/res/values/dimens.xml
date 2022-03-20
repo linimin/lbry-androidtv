@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ MIT License
+  ~
+  ~ Copyright (c) 2022 LIN I MIN
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
 <resources>
-    <dimen name="stream_card_thumbnail_width">217dp</dimen>
-    <dimen name="stream_card_thumbnail_height">122dp</dimen>
-    <dimen name="lb_browse_title_icon_height">20dp</dimen>
-    <dimen name="channel_details_overview_logo_width">150dp</dimen>
-    <dimen name="channel_details_overview_logo_height">150dp</dimen>
-    <dimen name="browsePaddingStart">70dp</dimen>
-    <dimen name="headerIconBrowsePaddingStart">10dp</dimen>
-    <dimen name="headerIconRowWidth">50dp</dimen>
+    <dimen name="browse_padding_start">60dp</dimen>
+    <dimen name="browse_rows_margin_start">262dp</dimen>
+    <dimen name="card_view_stroke_width">2dp</dimen>
+    <dimen name="channel_card_height">120dp</dimen>
+    <dimen name="channel_card_width">120dp</dimen>
+    <dimen name="header_collapsed_width">40dp</dimen>
+    <dimen name="header_icon_height">27dp</dimen>
+    <dimen name="header_icon_width">27dp</dimen>
+    <dimen name="horizontal_spacing">20dp</dimen>
+    <dimen name="lb_rounded_rect_corner_radius">8dp</dimen>
+    <dimen name="setting_card_height">80dp</dimen>
+    <dimen name="setting_card_width">196dp</dimen>
+    <dimen name="vertical_spacing">20dp</dimen>
+    <dimen name="video_card_height">110dp</dimen>
+    <dimen name="video_card_width">196dp</dimen>
+    <dimen name="qrcode_size">256dp</dimen>
 </resources>

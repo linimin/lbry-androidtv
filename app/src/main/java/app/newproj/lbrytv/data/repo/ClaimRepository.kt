@@ -1,92 +1,57 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2022 LIN I MIN
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package app.newproj.lbrytv.data.repo
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.room.withTransaction
-import app.newproj.lbrytv.data.MainDatabase
-import app.newproj.lbrytv.data.entity.Claim
-import app.newproj.lbrytv.service.LbryIncService
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import androidx.paging.map
+import app.newproj.lbrytv.data.AppDatabase
+import app.newproj.lbrytv.data.dto.ClaimLookupLabel
+import app.newproj.lbrytv.data.dto.Video
+import app.newproj.lbrytv.data.paging.RelatedClaimsRemoteMediator
+import app.newproj.lbrytv.di.LargePageSize
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-
-private const val PAGE_SIZE = 100
 
 @OptIn(ExperimentalPagingApi::class)
 class ClaimRepository @Inject constructor(
-    private val db: MainDatabase,
-    private val trendingRemoteMediator: TrendingRemoteMediator,
-    private val suggestedChannelRemoteMediator: SuggestedChannelRemoteMediator,
-    private val subscriptionRemoteMediator: SubscriptionRemoteMediator,
-    private val subscribedContentRemoteMediatorFactory: SubscribedContentRemoteMediator.Factory,
-    private val channelRemoteMediatorFactory: ChannelRemoteMediator.Factory,
-    private val myChannelRemoteMediator: MyChannelRemoteMediator,
-    private val lbryIncService: LbryIncService,
+    private val db: AppDatabase,
+    private val relatedClaimsMediatorFactory: RelatedClaimsRemoteMediator.Factory,
+    @LargePageSize private val pagingConfig: PagingConfig,
 ) {
-    fun claim(id: String): Flow<Claim> {
-        return db.claimDao().claimById(id)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun subscribedContent(): Flow<PagingData<Claim>> = db.subscriptionDao()
-        .subscriptionsFlow()
-        .flatMapLatest {
-            Pager(
-                config = PagingConfig(pageSize = PAGE_SIZE),
-                remoteMediator = subscribedContentRemoteMediatorFactory.create(it),
-                pagingSourceFactory = { db.claimDao().subscribedContent() }
-            ).flow
+    fun search(query: String?): Flow<PagingData<Video>> = Pager(
+        config = pagingConfig,
+        remoteMediator = relatedClaimsMediatorFactory.RelatedClaimsRemoteMediator(
+            ClaimLookupLabel.SEARCH_RESULT.name,
+            query
+        ),
+        pagingSourceFactory = {
+            db.claimDao().claimsAscendingSorted(ClaimLookupLabel.SEARCH_RESULT.name)
         }
-
-    fun trending(): Flow<PagingData<Claim>> = Pager(
-        config = PagingConfig(pageSize = PAGE_SIZE),
-        remoteMediator = trendingRemoteMediator,
-        pagingSourceFactory = { db.claimDao().trending() }
-    ).flow
-
-    fun subscription(): Flow<PagingData<Claim>> = Pager(
-        config = PagingConfig(pageSize = PAGE_SIZE),
-        remoteMediator = subscriptionRemoteMediator,
-        pagingSourceFactory = { db.claimDao().subscriptions() }
-    ).flow
-
-    fun suggestedChannels(): Flow<PagingData<Claim>> = Pager(
-        config = PagingConfig(pageSize = PAGE_SIZE),
-        remoteMediator = suggestedChannelRemoteMediator,
-        pagingSourceFactory = { db.claimDao().suggestedChannels() }
-    ).flow
-
-    fun claimsByChannelId(channelId: String): Flow<PagingData<Claim>> = Pager(
-        config = PagingConfig(pageSize = PAGE_SIZE),
-        remoteMediator = channelRemoteMediatorFactory.create(channelId),
-        pagingSourceFactory = { db.claimDao().claimsByChannelId(channelId) }
-    ).flow
-
-    fun myChannels(): Flow<PagingData<Claim>> = Pager(
-        config = PagingConfig(pageSize = PAGE_SIZE),
-        remoteMediator = myChannelRemoteMediator,
-        pagingSourceFactory = { db.claimDao().myChannels() }
-    ).flow
-
-    suspend fun deleteUserRelatedClaims() {
-        db.subscriptionDao().clear()
-        db.subscribedContentDao().clear()
-    }
-
-    suspend fun addSubscription(claim: Claim) {
-        val subscription = lbryIncService.subscribeChannel(claim.id, claim.name!!, false)
-        db.withTransaction {
-            db.subscriptionDao().insertSubscriptions(listOf(subscription))
-        }
-    }
-
-    suspend fun removeSubscription(claim: Claim) {
-        lbryIncService.unsubscribeChannel(claim.id)
-        db.withTransaction {
-            db.subscriptionDao().deleteByClaimId(claim.id)
-        }
-    }
+    ).flow.map { pagingData -> pagingData.map { Video(it) } }
 }
