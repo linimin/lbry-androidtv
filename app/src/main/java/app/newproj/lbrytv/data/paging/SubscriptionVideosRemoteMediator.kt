@@ -39,15 +39,15 @@ class SubscriptionVideosRemoteMediator @Inject constructor(
     override val label: String = ClaimLookupLabel.SUBSCRIPTION_VIDEOS.name
 
     override suspend fun onCreateInitialRequest(): ClaimSearchRequest? {
-        val channelIds = lbrynetService.preference()
+        val subscriptionChannelIds = lbrynetService.preference()
             .shared
             ?.value
             ?.subscriptions
-            ?.mapNotNull { LbryUri.parse(it).channelClaimId }
-            ?.takeIf { it.isNotEmpty() }
-            ?: return null
+            ?.mapNotNull {
+                LbryUri.parse(LbryUri.normalize(it)).channelClaimId
+            } ?: return null
         return ClaimSearchRequest(
-            channelIds = channelIds,
+            channelIds = subscriptionChannelIds,
             claimTypes = listOf("stream", "repost"),
             streamTypes = listOf("video"),
             orderBy = listOf("release_time"),
