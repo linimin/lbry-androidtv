@@ -51,7 +51,7 @@ class SearchViewModel @Inject constructor(
         LocalizableHeaderItem(NO_ID.toLong(), null, R.string.search_result),
         PagingDataAdapter(ItemPresenterSelector, ItemComparator()),
         query.flatMapLatest {
-            claimRepo.search(it)
+            claimRepo.query(it)
         }
     )
 

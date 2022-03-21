@@ -27,6 +27,7 @@ package app.newproj.lbrytv.data.paging
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
+import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import app.newproj.lbrytv.data.AppDatabase
 import app.newproj.lbrytv.data.dto.ClaimResolveRequest
@@ -36,19 +37,31 @@ import app.newproj.lbrytv.data.entity.RemoteKey
 import app.newproj.lbrytv.service.ApiException
 import app.newproj.lbrytv.service.LbrynetService
 import app.newproj.lbrytv.service.NoDataApiException
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import retrofit2.HttpException
 import java.io.IOException
 
 private const val STARTING_SORTING_ORDER = 1
 
 @OptIn(ExperimentalPagingApi::class)
-abstract class ResolveClaimsRemoteMediator(
-    private val lbrynetService: LbrynetService,
+class ClaimResolveRemoteMediator @AssistedInject constructor(
+    @Assisted private val remoteKeyLabel: String,
+    @Assisted private val request: ClaimResolveRequest,
     private val db: AppDatabase,
-) : BaseRemoteMediator<ClaimResolveRequest, Claim>() {
+    private val lbrynetService: LbrynetService,
+) : RemoteMediator<Int, Claim>() {
+    @AssistedFactory
+    interface Factory {
+        fun ClaimResolveRemoteMediator(
+            remoteKeyLabel: String,
+            request: ClaimResolveRequest,
+        ): ClaimResolveRemoteMediator
+    }
+
     override suspend fun load(loadType: LoadType, state: PagingState<Int, Claim>): MediatorResult {
         try {
-            val remoteKeyLabel = label
             var nextSortingOrder = when (loadType) {
                 LoadType.REFRESH -> STARTING_SORTING_ORDER
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
@@ -59,9 +72,7 @@ abstract class ResolveClaimsRemoteMediator(
                     remoteKey.nextSortingOrder
                 }
             }
-            val request = onCreateInitialRequest()
-            val claims = request?.let { lbrynetService.resolveClaims(request).values.toList() }
-                ?: emptyList()
+            val claims = lbrynetService.resolveClaims(request).values.toList()
             db.withTransaction {
                 if (loadType == LoadType.REFRESH) {
                     db.remoteKeyDao().delete(remoteKeyLabel)

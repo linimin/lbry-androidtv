@@ -27,6 +27,7 @@ package app.newproj.lbrytv.data.paging
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
+import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import app.newproj.lbrytv.data.AppDatabase
 import app.newproj.lbrytv.data.dto.ClaimSearchRequest
@@ -36,6 +37,9 @@ import app.newproj.lbrytv.data.entity.RemoteKey
 import app.newproj.lbrytv.service.ApiException
 import app.newproj.lbrytv.service.LbrynetService
 import app.newproj.lbrytv.service.NoDataApiException
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -43,22 +47,29 @@ private const val STARTING_PAGE_INDEX = 1
 private const val STARTING_SORTING_ORDER = 1
 
 @OptIn(ExperimentalPagingApi::class)
-abstract class SearchClaimsRemoteMediator(
+class ClaimSearchRemoteMediator @AssistedInject constructor(
+    @Assisted private val remoteKeyLabel: String,
+    @Assisted private val request: ClaimSearchRequest,
     private val lbrynetService: LbrynetService,
     private val db: AppDatabase,
-) : BaseRemoteMediator<ClaimSearchRequest, Claim>() {
-    private var request: ClaimSearchRequest? = null
+) : RemoteMediator<Int, Claim>() {
+
+    @AssistedFactory
+    interface Factory {
+        fun ClaimSearchRemoteMediator(
+            remoteKeyLabel: String,
+            request: ClaimSearchRequest,
+        ): ClaimSearchRemoteMediator
+    }
 
     override suspend fun load(loadType: LoadType, state: PagingState<Int, Claim>): MediatorResult {
         try {
             val page: Int
             var nextSortingOrder: Int
-            val remoteKeyLabel = label
             when (loadType) {
                 LoadType.REFRESH -> {
                     page = STARTING_PAGE_INDEX
                     nextSortingOrder = STARTING_SORTING_ORDER
-                    request = onCreateInitialRequest()
                 }
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
                 LoadType.APPEND -> {
@@ -68,8 +79,9 @@ abstract class SearchClaimsRemoteMediator(
                     nextSortingOrder = remoteKey.nextSortingOrder
                 }
             }
-            request = request?.copy(page = page, pageSize = state.config.pageSize)
-            val claims = request?.let { lbrynetService.searchClaims(it).items } ?: emptyList()
+            val claims = request.copy(page = page, pageSize = state.config.pageSize).run {
+                lbrynetService.searchClaims(this).items
+            } ?: emptyList()
             db.withTransaction {
                 if (loadType == LoadType.REFRESH) {
                     db.remoteKeyDao().delete(remoteKeyLabel)

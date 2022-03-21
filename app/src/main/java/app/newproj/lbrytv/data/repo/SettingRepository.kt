@@ -28,24 +28,20 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.map
-import app.newproj.lbrytv.data.AppDatabase
 import app.newproj.lbrytv.data.dto.Setting
-import app.newproj.lbrytv.data.paging.SettingRemoteMediator
+import app.newproj.lbrytv.data.paging.SettingPagingSource
 import app.newproj.lbrytv.di.LargePageSize
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import javax.inject.Provider
 
 @OptIn(ExperimentalPagingApi::class)
 class SettingRepository @Inject constructor(
-    private val db: AppDatabase,
-    private val settingRemoteMediator: SettingRemoteMediator,
+    private val settingPagingSourceProvider: Provider<SettingPagingSource>,
     @LargePageSize private val pagingConfig: PagingConfig,
 ) {
     fun settings(): Flow<PagingData<Setting>> = Pager(
         config = pagingConfig,
-        remoteMediator = settingRemoteMediator,
-        pagingSourceFactory = { db.settingDao().settings() }
-    ).flow.map { pagingData -> pagingData.map { Setting(it) } }
+        pagingSourceFactory = settingPagingSourceProvider::get
+    ).flow
 }

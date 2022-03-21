@@ -26,6 +26,6 @@ package app.newproj.lbrytv.data.dto
 
 import app.newproj.lbrytv.data.entity.Claim
 
-data class Video(val streamClaim: Claim) : BrowseCategoryItem {
-    override val id: String = streamClaim.id
+data class Video(val claim: Claim) : BrowseCategoryItem {
+    override val id: String = claim.id
 }

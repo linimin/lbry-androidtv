@@ -26,9 +26,6 @@ package app.newproj.lbrytv.data.dto
 
 import app.newproj.lbrytv.data.entity.Claim
 
-data class Channel(
-    val channelClaim: Claim,
-    val isFollowing: Boolean = false,
-) : BrowseCategoryItem {
-    override val id: String = channelClaim.id
+data class Channel(val claim: Claim) : BrowseCategoryItem {
+    override val id: String = claim.id
 }

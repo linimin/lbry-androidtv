@@ -28,9 +28,8 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import app.newproj.lbrytv.data.AppDatabase
-import app.newproj.lbrytv.data.entity.BrowseCategory
-import app.newproj.lbrytv.data.paging.BrowseCategoriesRemoteMediator
+import app.newproj.lbrytv.data.dto.BrowseCategory
+import app.newproj.lbrytv.data.paging.BrowseCategoryPagingSource
 import app.newproj.lbrytv.di.SmallPageSize
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -38,13 +37,11 @@ import javax.inject.Provider
 
 @OptIn(ExperimentalPagingApi::class)
 class BrowseCategoryRepository @Inject constructor(
-    private val db: AppDatabase,
-    private val categoryMediatorProvider: Provider<BrowseCategoriesRemoteMediator>,
     @SmallPageSize private val pagingConfig: PagingConfig,
+    private val browseCategoryPagingSourceProvider: Provider<BrowseCategoryPagingSource>,
 ) {
     fun browseCategories(): Flow<PagingData<BrowseCategory>> = Pager(
         config = pagingConfig,
-        remoteMediator = categoryMediatorProvider.get(),
-        pagingSourceFactory = { db.browseCategoryDao().browseCategories() }
+        pagingSourceFactory = browseCategoryPagingSourceProvider::get
     ).flow
 }

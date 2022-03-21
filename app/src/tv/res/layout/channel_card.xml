@@ -48,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                app:imageUri="@{channel.channelClaim.thumbnail}"
+                app:imageUri="@{channel.claim.thumbnail}"
                 tools:ignore="ContentDescription" />
         </com.google.android.material.card.MaterialCardView>
 
@@ -63,7 +63,7 @@
                 style="?attr/imageCardViewTitleStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{channel.channelClaim.title}"
+                android:text="@{channel.claim.title}"
                 tools:text="Bitcoin" />
 
             <TextView
@@ -71,7 +71,7 @@
                 style="?attr/imageCardViewContentStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{channel.channelClaim.name}"
+                android:text="@{channel.claim.name}"
                 android:textAppearance="?attr/textAppearanceCaption"
                 tools:text="Bitcoin" />
         </LinearLayout>

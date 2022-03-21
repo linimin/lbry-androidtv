@@ -48,8 +48,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:drawablePadding="8dp"
-                android:text="@{setting.entity.titleRes}"
-                app:drawableStartCompat="@{setting.entity.iconRes}"
+                android:text="@{setting.titleRes}"
+                app:drawableStartCompat="@{setting.iconRes}"
                 tools:drawableStartCompat="@drawable/login"
                 tools:text="@string/sign_in" />
         </com.google.android.material.card.MaterialCardView>

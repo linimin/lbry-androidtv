@@ -31,12 +31,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import app.newproj.lbrytv.data.dto.BrowseCategory
 import app.newproj.lbrytv.data.dto.ItemComparator
 import app.newproj.lbrytv.data.dto.LocalizableHeaderItem
 import app.newproj.lbrytv.data.dto.PagingListRow
 import app.newproj.lbrytv.data.dto.Wallet
-import app.newproj.lbrytv.data.entity.BrowseCategory
-import app.newproj.lbrytv.data.repo.BrowseCategoryItemRepository
 import app.newproj.lbrytv.data.repo.BrowseCategoryRepository
 import app.newproj.lbrytv.data.repo.WalletRepository
 import app.newproj.lbrytv.ui.presenter.ItemPresenterSelector
@@ -55,7 +54,6 @@ import javax.inject.Inject
 class BrowseCategoriesViewModel @Inject constructor(
     walletRepo: WalletRepository,
     categoryRepo: BrowseCategoryRepository,
-    private val categoryItemRepo: BrowseCategoryItemRepository,
 ) : ViewModel() {
     sealed class UiState {
         object Initial : UiState()
@@ -97,12 +95,12 @@ class BrowseCategoriesViewModel @Inject constructor(
         _selectedHeaderPosition.tryEmit(position)
     }
 
-    private suspend fun PagingData<BrowseCategory>.toRows(): PagingData<Row> = map { category ->
+    private fun PagingData<BrowseCategory>.toRows(): PagingData<Row> = map { category ->
         PagingListRow(
             category.id,
             LocalizableHeaderItem(category.id, category.iconResId, category.nameResId),
             PagingDataAdapter(ItemPresenterSelector, ItemComparator()),
-            categoryItemRepo.items(category)
+            category.items
         )
     }
 }

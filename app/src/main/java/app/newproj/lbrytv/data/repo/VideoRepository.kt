@@ -24,63 +24,67 @@
 
 package app.newproj.lbrytv.data.repo
 
-import android.accounts.Account
-import androidx.paging.ExperimentalPagingApi
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
-import app.newproj.lbrytv.data.AppDatabase
+import app.newproj.lbrytv.data.dto.ClaimLookupLabel
+import app.newproj.lbrytv.data.dto.ClaimSearchRequest
+import app.newproj.lbrytv.data.dto.LbryUri
 import app.newproj.lbrytv.data.dto.Video
-import app.newproj.lbrytv.data.paging.ChannelVideosRemoteMediator
-import app.newproj.lbrytv.data.paging.SubscriptionVideosRemoteMediator
-import app.newproj.lbrytv.data.paging.TrendingVideosRemoteMediator
-import app.newproj.lbrytv.di.LargePageSize
+import app.newproj.lbrytv.service.LbrynetService
+import app.newproj.lbrytv.service.OdyseeService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-@OptIn(ExperimentalPagingApi::class)
 class VideoRepository @Inject constructor(
-    private val db: AppDatabase,
-    @LargePageSize private val pagingConfig: PagingConfig,
-    private val trendingVideosMediator: TrendingVideosRemoteMediator,
-    private val subscriptionVideosMediator: SubscriptionVideosRemoteMediator,
-    private val channelVideosMediatorFactory: ChannelVideosRemoteMediator.Factory,
+    private val claimRepo: ClaimRepository,
+    private val odyseeService: OdyseeService,
+    private val lbrynetService: LbrynetService,
 ) {
-    fun video(id: String): Flow<Video> = db.claimDao().claim(id).map { Video(it) }
+    fun video(id: String): Flow<Video> = claimRepo.claim(id).map { Video(it) }
 
-    fun trendingVideos(): Flow<PagingData<Video>> = Pager(
-        config = pagingConfig,
-        remoteMediator = trendingVideosMediator,
-        pagingSourceFactory = {
-            db.claimDao().claimsAscendingSorted(trendingVideosMediator.label)
-        }
-    ).flow.map { pagingData -> pagingData.map { Video(it) } }
+    fun channelVideos(channelId: String): Flow<PagingData<Video>> = claimRepo.claims(
+        channelId,
+        ClaimSearchRequest(
+            channelIds = listOf(channelId),
+            claimTypes = listOf("stream", "repost"),
+            streamTypes = listOf("video"),
+            orderBy = listOf("release_time"),
+            hasSource = true,
+        )
+    ).map { pagingData -> pagingData.map { Video(it) } }
 
-    fun subscriptionVideos(): Flow<PagingData<Video>> = Pager(
-        config = pagingConfig,
-        remoteMediator = subscriptionVideosMediator,
-        pagingSourceFactory = {
-            db.claimDao().claimsAscendingSorted(subscriptionVideosMediator.label)
-        }
-    ).flow.map { pagingData -> pagingData.map { Video(it) } }
-
-    fun channelVideos(channelId: String): Flow<PagingData<Video>> =
-        channelVideosMediatorFactory.ChannelVideosRemoteMediator(channelId).let { mediator ->
-            Pager(
-                config = pagingConfig,
-                remoteMediator = mediator,
-                pagingSourceFactory = {
-                    db.claimDao().claimsAscendingSorted(mediator.label)
-                }
+    suspend fun featuredVideos(): Flow<PagingData<Video>>? {
+        val primaryContent = odyseeService.content()["en"]?.get("PRIMARY_CONTENT") ?: return null
+        return claimRepo.claims(
+            ClaimLookupLabel.FEATURED_VIDEOS.name,
+            ClaimSearchRequest(
+                channelIds = primaryContent?.channelIds,
+                claimTypes = listOf("stream", "repost"),
+                streamTypes = listOf("video"),
+                orderBy = listOf("trending_group", "trending_mixed"),
+                hasSource = true,
             )
-        }.flow.map { pagingData -> pagingData.map { Video(it) } }
+        ).map { pagingData -> pagingData.map { Video(it) } }
+    }
 
-    fun watchHistory(account: Account): Flow<PagingData<Video>> = Pager(
-        config = pagingConfig,
-        pagingSourceFactory = {
-            db.claimDao().claimsDescendingSorted(account.name)
+    suspend fun subscriptionVideos(): Flow<PagingData<Video>>? {
+        val subscriptionChannelIds = try {
+            lbrynetService.preference().shared?.value?.subscriptions?.mapNotNull {
+                LbryUri.parse(LbryUri.normalize(it)).channelClaimId
+            } ?: return null
+        } catch (e: Throwable) {
+            return null
         }
-    ).flow.map { pagingData -> pagingData.map { Video(it) } }
+        return claimRepo.claims(
+            ClaimLookupLabel.SUBSCRIPTION_VIDEOS.name,
+            ClaimSearchRequest(
+                channelIds = subscriptionChannelIds,
+                claimTypes = listOf("stream", "repost"),
+                streamTypes = listOf("video"),
+                orderBy = listOf("trending_group", "trending_mixed"),
+                hasSource = true,
+            )
+        ).map { pagingData -> pagingData.map { Video(it) } }
+    }
 }

@@ -129,7 +129,7 @@ class VideoPlayerFragment : VideoSupportFragment() {
     }
 
     private fun play(video: Video) {
-        val mediaItem = MediaItem.fromUri(video.streamClaim.streamingUrl())
+        val mediaItem = MediaItem.fromUri(video.claim.streamingUrl())
         player.setMediaItem(mediaItem)
         player.prepare()
         player.play()

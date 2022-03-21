@@ -73,8 +73,8 @@
                 style="?attr/browseTitleTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{channel.channelClaim.title}"
-                android:visibility="@{channel.channelClaim.title != null ? View.VISIBLE : View.GONE}"
+                android:text="@{channel.claim.title}"
+                android:visibility="@{channel.claim.title != null ? View.VISIBLE : View.GONE}"
                 tools:text="Title" />
 
         </LinearLayout>

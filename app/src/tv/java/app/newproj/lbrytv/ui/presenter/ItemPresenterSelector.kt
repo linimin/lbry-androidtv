@@ -38,6 +38,7 @@ object ItemPresenterSelector : PresenterSelector() {
             is Video -> VideoCardPresenter()
             is Channel -> ChannelCardPresenter()
             is Setting -> SettingCardPresenter()
+            else -> throw Exception("")
         }
     }
 }

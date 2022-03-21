@@ -26,6 +26,7 @@ package app.newproj.lbrytv.data.dto
 
 enum class ClaimLookupLabel {
     TRENDING_VIDEOS,
+    FEATURED_VIDEOS,
     SUBSCRIPTION_CHANNELS,
     SUBSCRIPTION_VIDEOS,
     SEARCH_RESULT,

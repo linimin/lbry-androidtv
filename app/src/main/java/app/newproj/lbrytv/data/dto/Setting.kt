@@ -24,8 +24,11 @@
 
 package app.newproj.lbrytv.data.dto
 
-typealias SettingEntity = app.newproj.lbrytv.data.entity.Setting
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 
-data class Setting(val entity: SettingEntity) : BrowseCategoryItem {
-    override val id: String = "entity::class.java.name_${entity.id}"
-}
+data class Setting(
+    override val id: String,
+    @StringRes val titleRes: Int,
+    @DrawableRes val iconRes: Int,
+) : BrowseCategoryItem

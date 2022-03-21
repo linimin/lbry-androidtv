@@ -135,15 +135,16 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
 
     private fun handleItemClicked(item: BrowseCategoryItem) {
         when (item) {
-            is Video ->
-                navController.navigate(NavGraphDirections.actionGlobalVideoPlayerFragment(item.id))
+            is Video -> navController.navigate(
+                NavGraphDirections.actionGlobalVideoPlayerFragment(item.id)
+            )
 
             is Channel -> navController.navigate(
                 BrowseCategoriesFragmentDirections
                     .actionBrowseCategoriesFragmentToChannelFragment(item.id)
             )
 
-            is Setting -> when (item.entity.titleRes) {
+            is Setting -> when (item.titleRes) {
                 R.string.switch_account -> navController.navigate(
                     BrowseCategoriesFragmentDirections
                         .actionBrowseCategoriesFragmentToAccountsFragment()

@@ -45,7 +45,7 @@ data class UserPreference(
             @SerializedName("settings") val settings: Settings? = null,
             @SerializedName("sharing_3P") val sharing3P: Boolean? = null,
             @SerializedName("subscriptions") val subscriptions: List<String>? = null,
-            @SerializedName("tags") val tags: List<Any?>? = null,
+            @SerializedName("tags") val tags: List<String>? = null,
             @SerializedName("unpublishedCollections") val unpublishedCollections: UnpublishedCollections? = null,
         ) {
             data class BuiltinCollections(

@@ -50,7 +50,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                app:imageUri="@{video.streamClaim.thumbnail}"
+                app:imageUri="@{video.claim.thumbnail}"
                 tools:ignore="ContentDescription" />
         </com.google.android.material.card.MaterialCardView>
 
@@ -65,7 +65,7 @@
                 style="?attr/imageCardViewTitleStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{video.streamClaim.title}"
+                android:text="@{video.claim.title}"
                 tools:text="Bitcoin" />
 
             <TextView
@@ -73,7 +73,7 @@
                 style="?attr/imageCardViewContentStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{video.streamClaim.channelName}"
+                android:text="@{video.claim.channelName}"
                 android:textAppearance="?attr/textAppearanceCaption"
                 tools:text="Bitcoin" />
 
@@ -82,7 +82,7 @@
                 style="?attr/imageCardViewContentStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{video.streamClaim.name}"
+                android:text="@{video.claim.name}"
                 tools:text="Bitcoin" />
         </LinearLayout>
     </androidx.leanback.widget.BaseCardView>

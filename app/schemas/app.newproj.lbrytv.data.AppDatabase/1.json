@@ -2,46 +2,8 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "f41b4c0ec699e02621abf808c3ad1cba",
+    "identityHash": "5b9b2e5d2b3b40faba33fd82841e653b",
     "entities": [
-      {
-        "tableName": "browse_category",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name_res_id` INTEGER NOT NULL, `icon_res_id` INTEGER NOT NULL, `sorting_order` INTEGER NOT NULL, PRIMARY KEY(`id`))",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "nameResId",
-            "columnName": "name_res_id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "iconResId",
-            "columnName": "icon_res_id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "sortingOrder",
-            "columnName": "sorting_order",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "id"
-          ]
-        },
-        "indices": [],
-        "foreignKeys": []
-      },
       {
         "tableName": "claim",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `thumbnail` TEXT, `title` TEXT, `effective_amount` TEXT, `trending_group` INTEGER, `trending_mixed` REAL, `release_time` INTEGER, `channel_name` TEXT, `description` TEXT, `value_type` TEXT, `permanent_url` TEXT, `short_url` TEXT, `name` TEXT, `cover` TEXT, `channel_id` TEXT, PRIMARY KEY(`id`))",
@@ -180,32 +142,6 @@
         "foreignKeys": []
       },
       {
-        "tableName": "following_channel",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uri` TEXT NOT NULL, `notification_disabled` INTEGER NOT NULL, PRIMARY KEY(`uri`))",
-        "fields": [
-          {
-            "fieldPath": "uri",
-            "columnName": "uri",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "notificationsDisabled",
-            "columnName": "notification_disabled",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "uri"
-          ]
-        },
-        "indices": [],
-        "foreignKeys": []
-      },
-      {
         "tableName": "remote_key",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`label` TEXT NOT NULL, `next_key` INTEGER, `next_sorting_order` INTEGER NOT NULL, PRIMARY KEY(`label`))",
         "fields": [
@@ -236,50 +172,12 @@
         },
         "indices": [],
         "foreignKeys": []
-      },
-      {
-        "tableName": "setting",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `title_res` INTEGER NOT NULL, `icon_res` INTEGER NOT NULL, `enabled` INTEGER NOT NULL, PRIMARY KEY(`id`))",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "titleRes",
-            "columnName": "title_res",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "iconRes",
-            "columnName": "icon_res",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "enabled",
-            "columnName": "enabled",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "id"
-          ]
-        },
-        "indices": [],
-        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f41b4c0ec699e02621abf808c3ad1cba')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5b9b2e5d2b3b40faba33fd82841e653b')"
     ]
   }
 }

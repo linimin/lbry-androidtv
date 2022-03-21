@@ -28,7 +28,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import app.newproj.lbrytv.data.dto.Video
 import app.newproj.lbrytv.data.repo.VideoRepository
-import app.newproj.lbrytv.data.repo.WatchHistoryRepository
 import app.newproj.lbrytv.fragment.VideoPlayerFragmentArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
@@ -38,7 +37,6 @@ import javax.inject.Inject
 class VideoPlayerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val videoRepo: VideoRepository,
-    private val watchHistoryRepo: WatchHistoryRepository,
 ) : ViewModel() {
     private val args = VideoPlayerFragmentArgs.fromSavedStateHandle(savedStateHandle)
     private var video: Video? = null
@@ -46,7 +44,6 @@ class VideoPlayerViewModel @Inject constructor(
     suspend fun video(): Video {
         return video ?: videoRepo.video(args.claimId).first().also {
             video = it
-            watchHistoryRepo.add(it)
         }
     }
 }

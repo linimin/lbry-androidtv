@@ -24,14 +24,9 @@
 
 package app.newproj.lbrytv.data.repo
 
-import androidx.room.withTransaction
 import app.newproj.lbrytv.data.AppDatabase
-import app.newproj.lbrytv.data.dto.Video
-import app.newproj.lbrytv.data.entity.ClaimLookup
-import app.newproj.lbrytv.data.entity.RemoteKey
 import app.newproj.lbrytv.di.ApplicationCoroutineScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private const val STARTING_SORTING_ORDER = 1
@@ -41,32 +36,32 @@ class WatchHistoryRepository @Inject constructor(
     private val accountRepo: AccountRepository,
     @ApplicationCoroutineScope private val externalScope: CoroutineScope,
 ) {
-    suspend fun add(video: Video) {
-        externalScope.launch {
-            accountRepo.currentAccount()?.name?.let { accountName ->
-                db.withTransaction {
-                    val remoteKey = db.remoteKeyDao().remoteKey(accountName)
-                    var nextSortingOrder = remoteKey?.nextSortingOrder ?: STARTING_SORTING_ORDER
-                    db.claimLookupDao().delete(accountName, video.id)
-                    db.claimLookupDao().insert(
-                        ClaimLookup(accountName, video.id, nextSortingOrder++)
-                    )
-                    db.remoteKeyDao().upsert(
-                        RemoteKey(accountName, null, nextSortingOrder)
-                    )
-                }
-            }
-        }.join()
-    }
-
-    suspend fun clear() {
-        externalScope.launch {
-            accountRepo.currentAccount()?.name?.let { accountName ->
-                db.withTransaction {
-                    db.remoteKeyDao().delete(accountName)
-                    db.claimLookupDao().deleteAll(accountName)
-                }
-            }
-        }.join()
-    }
+//    suspend fun add(video: Video) {
+//        externalScope.launch {
+//            accountRepo.currentAccount()?.name?.let { accountName ->
+//                db.withTransaction {
+//                    val remoteKey = db.remoteKeyDao().remoteKey(accountName)
+//                    var nextSortingOrder = remoteKey?.nextSortingOrder ?: STARTING_SORTING_ORDER
+//                    db.claimLookupDao().delete(accountName, video.id)
+//                    db.claimLookupDao().insert(
+//                        ClaimLookup(accountName, video.id, nextSortingOrder++)
+//                    )
+//                    db.remoteKeyDao().upsert(
+//                        RemoteKey(accountName, null, nextSortingOrder)
+//                    )
+//                }
+//            }
+//        }.join()
+//    }
+//
+//    suspend fun clear() {
+//        externalScope.launch {
+//            accountRepo.currentAccount()?.name?.let { accountName ->
+//                db.withTransaction {
+//                    db.remoteKeyDao().delete(accountName)
+//                    db.claimLookupDao().deleteAll(accountName)
+//                }
+//            }
+//        }.join()
+//    }
 }

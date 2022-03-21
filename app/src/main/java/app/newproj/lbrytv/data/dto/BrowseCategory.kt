@@ -22,16 +22,15 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.data.entity
+package app.newproj.lbrytv.data.dto
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
 
-@Entity(tableName = "browse_category")
 data class BrowseCategory(
-    @PrimaryKey val id: Long,
-    @ColumnInfo("name_res_id") val nameResId: Int,
-    @ColumnInfo("icon_res_id") val iconResId: Int,
-    @ColumnInfo("sorting_order") val sortingOrder: Int,
+    val id: Long,
+    val nameResId: Int,
+    val iconResId: Int,
+    val sortingOrder: Int,
+    val items: Flow<PagingData<BrowseCategoryItem>>,
 )

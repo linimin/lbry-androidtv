@@ -31,7 +31,7 @@ import androidx.leanback.widget.ArrayObjectAdapter
 import androidx.leanback.widget.ObjectAdapter
 import androidx.navigation.fragment.findNavController
 import app.newproj.lbrytv.NavGraphDirections
-import app.newproj.lbrytv.data.dto.Video
+import app.newproj.lbrytv.data.entity.Claim
 import app.newproj.lbrytv.ui.presenter.RowPresenterSelector
 import app.newproj.lbrytv.viewmodel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,7 +47,7 @@ class SearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchResu
         setSearchResultProvider(this)
         resultsAdapter.add(viewModel.searchResultRow)
         setOnItemViewClickedListener { _, item, _, _ ->
-            (item as? Video)?.let(::onVideoClicked)
+            (item as? Claim)?.let(::onVideoClicked)
         }
     }
 
@@ -62,7 +62,7 @@ class SearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchResu
         return true
     }
 
-    private fun onVideoClicked(video: Video) {
+    private fun onVideoClicked(video: Claim) {
         navController.navigate(NavGraphDirections.actionGlobalVideoPlayerFragment(video.id))
     }
 }

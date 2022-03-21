@@ -31,32 +31,23 @@ import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import app.newproj.lbrytv.data.dao.BrowseCategoryDao
 import app.newproj.lbrytv.data.dao.ClaimDao
 import app.newproj.lbrytv.data.dao.ClaimLookupDao
 import app.newproj.lbrytv.data.dao.ClaimSearchResultDao
-import app.newproj.lbrytv.data.dao.FollowingChannelDao
 import app.newproj.lbrytv.data.dao.RelatedClaimDao
 import app.newproj.lbrytv.data.dao.RemoteKeyDao
 import app.newproj.lbrytv.data.dao.ResolvedClaimDao
-import app.newproj.lbrytv.data.dao.SettingDao
-import app.newproj.lbrytv.data.entity.BrowseCategory
 import app.newproj.lbrytv.data.entity.Claim
 import app.newproj.lbrytv.data.entity.ClaimLookup
-import app.newproj.lbrytv.data.entity.FollowingChannel
 import app.newproj.lbrytv.data.entity.RemoteKey
-import app.newproj.lbrytv.data.entity.Setting
 import java.math.BigDecimal
 import java.time.Instant
 
 @Database(
     entities = [
-        BrowseCategory::class,
         Claim::class,
         ClaimLookup::class,
-        FollowingChannel::class,
         RemoteKey::class,
-        Setting::class,
     ],
     version = 1
 )
@@ -64,20 +55,30 @@ import java.time.Instant
     value = [
         BigDecimalTypeConverter::class,
         InstantTypeConverter::class,
+        StringListTypeConverter::class,
         UriTypeConverter::class,
     ]
 )
 @RewriteQueriesToDropUnusedColumns
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun browseCategoryDao(): BrowseCategoryDao
     abstract fun claimDao(): ClaimDao
     abstract fun claimLookupDao(): ClaimLookupDao
     abstract fun claimSearchResultDao(): ClaimSearchResultDao
-    abstract fun followingChannelDao(): FollowingChannelDao
     abstract fun relatedClaimDao(): RelatedClaimDao
     abstract fun remoteKeyDao(): RemoteKeyDao
     abstract fun resolvedClaimDao(): ResolvedClaimDao
-    abstract fun settingDao(): SettingDao
+}
+
+object StringListTypeConverter {
+    @TypeConverter
+    fun stringListFromString(value: String?): List<String>? {
+        return value?.split(",")
+    }
+
+    @TypeConverter
+    fun stringListToString(list: List<String>?): String? {
+        return list?.joinToString(",")
+    }
 }
 
 object BigDecimalTypeConverter {

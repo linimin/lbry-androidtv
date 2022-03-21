@@ -76,6 +76,7 @@
     <string name="the_background_service_is_initializing">The background service is initializing…</string>
     <string name="tip">Tip</string>
     <string name="trending">Trending</string>
+    <string name="featured">Featured</string>
     <string name="unsubscribe">Unsubscribe</string>
     <string name="verifying_email_address">Verifying email address</string>
     <string name="wallet">Wallet</string>

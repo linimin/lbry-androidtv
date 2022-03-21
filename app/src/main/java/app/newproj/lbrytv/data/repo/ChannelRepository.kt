@@ -24,43 +24,31 @@
 
 package app.newproj.lbrytv.data.repo
 
-import androidx.paging.ExperimentalPagingApi
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
-import app.newproj.lbrytv.data.AppDatabase
 import app.newproj.lbrytv.data.dto.Channel
-import app.newproj.lbrytv.data.paging.SubscriptionChannelsRemoteMediator
-import app.newproj.lbrytv.di.LargePageSize
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import app.newproj.lbrytv.data.dto.ClaimLookupLabel
+import app.newproj.lbrytv.data.dto.ClaimResolveRequest
+import app.newproj.lbrytv.service.LbrynetService
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-@OptIn(
-    ExperimentalPagingApi::class,
-    ExperimentalCoroutinesApi::class,
-)
 class ChannelRepository @Inject constructor(
-    private val db: AppDatabase,
-    private val subscriptionChannelsMediator: SubscriptionChannelsRemoteMediator,
-    @LargePageSize private val pagingConfig: PagingConfig,
+    private val claimRepo: ClaimRepository,
+    private val lbrynetService: LbrynetService,
 ) {
-    fun channel(id: String): Flow<Channel> {
-        return db.claimDao().claim(id).flatMapLatest { claim ->
-            db.followingChannelDao().followingChannels().map { followings ->
-                Channel(claim, followings.find { it.uri == claim.permanentUrl } != null)
-            }
-        }
-    }
+    fun channel(id: String): Flow<Channel> = claimRepo.claim(id).map { Channel(it) }
 
-    fun subscriptionChannels(): Flow<PagingData<Channel>> = Pager(
-        config = pagingConfig,
-        remoteMediator = subscriptionChannelsMediator,
-        pagingSourceFactory = {
-            db.claimDao().claimsAscendingSorted(subscriptionChannelsMediator.label)
+    suspend fun subscriptions(): Flow<PagingData<Channel>>? {
+        val subscriptionChannelUris = try {
+            lbrynetService.preference().shared?.value?.subscriptions ?: return null
+        } catch (e: Throwable) {
+            return null
         }
-    ).flow.map { pagingData -> pagingData.map { Channel(it, true) } }
+        return claimRepo.claims(
+            ClaimLookupLabel.SUBSCRIPTION_CHANNELS.name,
+            ClaimResolveRequest(subscriptionChannelUris)
+        ).map { pagingData -> pagingData.map { Channel(it) } }
+    }
 }
