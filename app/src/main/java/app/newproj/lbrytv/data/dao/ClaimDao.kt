@@ -28,38 +28,17 @@ import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
 import app.newproj.lbrytv.data.entity.Claim
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class ClaimDao : BaseDao<Claim>() {
-    @Query("SELECT * from claim where id = :id")
-    abstract fun claim(id: String): Flow<Claim>
-
     @Query(
         """
         SELECT * FROM claim 
         INNER JOIN claim_lookup 
-        ON claim_lookup.label = :label 
+        ON claim_lookup.label = 'SEARCH_RESULT' 
         AND claim.id = claim_lookup.claim_id 
         ORDER BY claim_lookup.sorting_order ASC
         """
     )
-    abstract fun claimsAscendingSorted(label: String): PagingSource<Int, Claim>
-
-    @Query(
-        """
-        SELECT * FROM claim 
-        INNER JOIN claim_lookup 
-        ON claim_lookup.label = :label 
-        AND claim.id = claim_lookup.claim_id 
-        ORDER BY claim_lookup.sorting_order DESC
-        """
-    )
-    abstract fun claimsDescendingSorted(label: String): PagingSource<Int, Claim>
-
-    @Query("SELECT * FROM claim WHERE id IN (:ids)")
-    abstract suspend fun claims(ids: List<String>): List<Claim>
-
-    @Query("DELETE FROM claim")
-    abstract suspend fun clear()
+    abstract fun searchResult(): PagingSource<Int, Claim>
 }

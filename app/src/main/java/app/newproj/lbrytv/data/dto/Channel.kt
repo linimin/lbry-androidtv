@@ -24,8 +24,14 @@
 
 package app.newproj.lbrytv.data.dto
 
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Ignore
 import app.newproj.lbrytv.data.entity.Claim
 
-data class Channel(val claim: Claim) : BrowseCategoryItem {
-    override val id: String = claim.id
+data class Channel(
+    @Embedded val claim: Claim,
+    @ColumnInfo("is_following") val isFollowing: Boolean = false,
+) : BrowseItem {
+    @Ignore override val id: String = claim.id
 }

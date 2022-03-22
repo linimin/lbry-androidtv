@@ -24,13 +24,14 @@
 
 package app.newproj.lbrytv.data.dto
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 
 data class BrowseCategory(
     val id: Long,
-    val nameResId: Int,
-    val iconResId: Int,
-    val sortingOrder: Int,
-    val items: Flow<PagingData<BrowseCategoryItem>>,
+    @StringRes val nameResId: Int,
+    @DrawableRes val iconResId: Int,
+    val items: Flow<PagingData<out BrowseItem>>,
 )

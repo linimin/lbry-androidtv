@@ -29,6 +29,9 @@ import com.google.gson.Gson
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,6 +47,7 @@ object GsonModule {
     fun gson(): Gson {
         return Gson().newBuilder()
             .registerTypeAdapter(Uri::class.java, UriDeserializer)
+            .registerTypeAdapter(Uri::class.java, UriSerializer)
             .create()
     }
 }
@@ -52,8 +56,18 @@ object UriDeserializer : JsonDeserializer<Uri> {
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type,
-        context: JsonDeserializationContext
+        context: JsonDeserializationContext,
     ): Uri {
         return Uri.parse(json.asString)
+    }
+}
+
+object UriSerializer : JsonSerializer<Uri> {
+    override fun serialize(
+        src: Uri?,
+        typeOfSrc: Type?,
+        context: JsonSerializationContext?,
+    ): JsonElement {
+        return JsonPrimitive(src?.toString())
     }
 }

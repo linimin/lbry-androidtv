@@ -27,6 +27,7 @@
     <item name="guided_action_processing" type="id" />
     <item name="guided_action_email" type="id" />
     <item name="guided_action_support" type="id" />
+    <item name="guided_action_channel" type="id" />
     <item name="guided_action_support_type" type="id" />
     <item name="guided_action_amount" type="id" />
     <item name="guided_action_send" type="id" />
@@ -40,4 +41,6 @@
     <item name="amount_option_1000_credits" type="id" />
     <item name="support_option_tip" type="id" />
     <item name="support_option_revocable" type="id" />
+    <item name="tip" type="id" />
+    <item name="revocable_support" type="id" />
 </resources>

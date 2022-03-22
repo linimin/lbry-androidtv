@@ -84,6 +84,7 @@
                 android:layout_height="wrap_content"
                 android:text="@{video.claim.name}"
                 tools:text="Bitcoin" />
+
         </LinearLayout>
     </androidx.leanback.widget.BaseCardView>
 </layout>

@@ -35,7 +35,7 @@ object LbryIncServiceBodyConverterFactory : Converter.Factory() {
     override fun responseBodyConverter(
         type: Type,
         annotations: Array<out Annotation>,
-        retrofit: Retrofit
+        retrofit: Retrofit,
     ): Converter<ResponseBody, *> {
         val delegate = retrofit.nextResponseBodyConverter<LbryIncServiceResponse<*>>(
             this,
@@ -46,15 +46,10 @@ object LbryIncServiceBodyConverterFactory : Converter.Factory() {
     }
 
     private class ResponseBodyConverter<T>(
-        private val delegate: Converter<ResponseBody, LbryIncServiceResponse<out T>>
+        private val delegate: Converter<ResponseBody, LbryIncServiceResponse<out T>>,
     ) : Converter<ResponseBody, T> {
         override fun convert(value: ResponseBody): T? {
-            val response = delegate.convert(value) ?: return null
-            if (response.success) {
-                return response.data ?: throw NoDataApiException()
-            } else {
-                throw ApiException(response.error?.toString())
-            }
+            return delegate.convert(value)?.data
         }
     }
 }

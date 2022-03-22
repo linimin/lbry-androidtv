@@ -24,8 +24,12 @@
 
 package app.newproj.lbrytv.data.dto
 
+import androidx.room.Embedded
+import androidx.room.Ignore
 import app.newproj.lbrytv.data.entity.Claim
 
-data class Video(val claim: Claim) : BrowseCategoryItem {
-    override val id: String = claim.id
+data class Video(
+    @Embedded val claim: Claim,
+) : BrowseItem {
+    @Ignore override val id: String = claim.id
 }

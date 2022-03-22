@@ -23,7 +23,7 @@
   ~ SOFTWARE.
   -->
 
-<app.newproj.lbrytv.ui.widget.ChannelTitleView xmlns:android="http://schemas.android.com/apk/res/android"
+<app.newproj.lbrytv.ui.channel.ChannelTitleView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/browse_title_group"
     style="?attr/browseTitleViewStyle"
     android:layout_width="match_parent"

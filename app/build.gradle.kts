@@ -48,6 +48,7 @@ android {
     // https://developer.android.com/studio/build/configure-app-module#set-namespace
     namespace = "app.newproj.lbrytv"
     compileSdk = 31
+    compileSdkPreview = "Tiramisu"
     defaultConfig {
         applicationId = "app.newproj.lbrytv"
         minSdk = 26
@@ -185,6 +186,7 @@ dependencies {
     implementation(libs.swipeRefreshLayout)
     implementation(libs.timber)
     implementation(libs.zxing)
+    implementation(libs.kotlinx.coroutines.core)
 
     kapt(libs.hilt.compiler)
     kapt(libs.room.compiler)

@@ -31,15 +31,18 @@ import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import app.newproj.lbrytv.data.dao.ChannelDao
 import app.newproj.lbrytv.data.dao.ClaimDao
 import app.newproj.lbrytv.data.dao.ClaimLookupDao
 import app.newproj.lbrytv.data.dao.ClaimSearchResultDao
 import app.newproj.lbrytv.data.dao.RelatedClaimDao
 import app.newproj.lbrytv.data.dao.RemoteKeyDao
-import app.newproj.lbrytv.data.dao.ResolvedClaimDao
+import app.newproj.lbrytv.data.dao.SubscriptionDao
+import app.newproj.lbrytv.data.dao.VideoDao
 import app.newproj.lbrytv.data.entity.Claim
 import app.newproj.lbrytv.data.entity.ClaimLookup
 import app.newproj.lbrytv.data.entity.RemoteKey
+import app.newproj.lbrytv.data.entity.Subscription
 import java.math.BigDecimal
 import java.time.Instant
 
@@ -48,6 +51,7 @@ import java.time.Instant
         Claim::class,
         ClaimLookup::class,
         RemoteKey::class,
+        Subscription::class,
     ],
     version = 1
 )
@@ -61,12 +65,14 @@ import java.time.Instant
 )
 @RewriteQueriesToDropUnusedColumns
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun claimDao(): ClaimDao
+    abstract fun channelDao(): ChannelDao
     abstract fun claimLookupDao(): ClaimLookupDao
     abstract fun claimSearchResultDao(): ClaimSearchResultDao
     abstract fun relatedClaimDao(): RelatedClaimDao
     abstract fun remoteKeyDao(): RemoteKeyDao
-    abstract fun resolvedClaimDao(): ResolvedClaimDao
+    abstract fun subscriptionDao(): SubscriptionDao
+    abstract fun videoDao(): VideoDao
+    abstract fun claimDao(): ClaimDao
 }
 
 object StringListTypeConverter {

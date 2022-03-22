@@ -33,9 +33,7 @@ import app.newproj.lbrytv.data.AppDatabase
 import app.newproj.lbrytv.data.entity.Claim
 import app.newproj.lbrytv.data.entity.ClaimLookup
 import app.newproj.lbrytv.data.entity.RemoteKey
-import app.newproj.lbrytv.service.ApiException
 import app.newproj.lbrytv.service.LighthouseService
-import app.newproj.lbrytv.service.NoDataApiException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -89,7 +87,7 @@ class RelatedClaimsRemoteMediator @AssistedInject constructor(
                     db.remoteKeyDao().delete(remoteKeyLabel)
                     db.claimLookupDao().deleteAll(remoteKeyLabel)
                 }
-                db.relatedClaimDao().insert(relatedClaims)
+                db.relatedClaimDao().upsert(relatedClaims)
                 val claimLookups = relatedClaims.map {
                     ClaimLookup(remoteKeyLabel, it.id, nextSortingOrder++)
                 }
@@ -99,13 +97,9 @@ class RelatedClaimsRemoteMediator @AssistedInject constructor(
                 db.remoteKeyDao().upsert(remoteKey)
             }
             return MediatorResult.Success(endOfPaginationReached = relatedClaims.isEmpty())
-        } catch (e: NoDataApiException) {
-            return MediatorResult.Success(endOfPaginationReached = true)
-        } catch (e: ApiException) {
+        } catch (e: HttpException) {
             return MediatorResult.Error(e)
         } catch (e: IOException) {
-            return MediatorResult.Error(e)
-        } catch (e: HttpException) {
             return MediatorResult.Error(e)
         }
     }

@@ -30,12 +30,8 @@
     <data>
 
         <variable
-            name="walletAddress"
-            type="String" />
-
-        <variable
-            name="walletBalance"
-            type="java.math.BigDecimal" />
+            name="wallet"
+            type="app.newproj.lbrytv.data.dto.Wallet" />
     </data>
 
     <merge
@@ -86,7 +82,7 @@
                     android:id="@+id/wallet_address_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{walletAddress}"
+                    android:text="@{wallet.address}"
                     android:textSize="11sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -100,7 +96,7 @@
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="@+id/wallet_address_text_view"
                     app:layout_constraintTop_toBottomOf="@+id/wallet_address_text_view"
-                    app:walletBalance="@{walletBalance}"
+                    app:walletBalance="@{wallet.totalBalance}"
                     tools:text="123,456,789.0" />
 
                 <ImageView
@@ -114,7 +110,7 @@
                     app:layout_constraintStart_toEndOf="@id/wallet_address_text_view"
                     app:layout_constraintTop_toTopOf="@id/wallet_address_text_view"
                     app:qrCodeSize="@{app.newproj.lbrytv.R.attr.walletAddressQrCodeSize}"
-                    app:qrCodeText="@{walletAddress}"
+                    app:qrCodeText="@{wallet.address}"
                     tools:ignore="ContentDescription"
                     tools:src="@sample/lbc_qrcode" />
 
@@ -130,7 +126,6 @@
                     app:layout_constraintTop_toTopOf="@id/wallet_balance_text_view"
                     tools:ignore="ContentDescription" />
             </androidx.constraintlayout.widget.ConstraintLayout>
-
         </LinearLayout>
     </merge>
 </layout>

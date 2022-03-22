@@ -28,5 +28,5 @@ import com.google.gson.annotations.SerializedName
 
 data class UserPreferenceUpdateRequest(
     @SerializedName("key") val key: String,
-    @SerializedName("value") val value: Any
+    @SerializedName("value") val value: Any?,
 )

@@ -77,6 +77,13 @@
                 android:visibility="@{channel.claim.title != null ? View.VISIBLE : View.GONE}"
                 tools:text="Title" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/toggle_follow_button"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{channel.isFollowing ? @string/following : @string/not_following}"
+                android:visibility="@{channel != null ? View.VISIBLE : View.GONE }" />
         </LinearLayout>
     </merge>
 </layout>

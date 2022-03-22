@@ -80,6 +80,20 @@ class AccountRepository @Inject constructor(
         }
     }
 
+    suspend fun setCurrentAccount(name: String?) {
+        appDataStore.updateData {
+            it.toBuilder()
+                .apply {
+                    if (name != null) {
+                        accountName = name
+                    } else {
+                        clearAccountName()
+                    }
+                }
+                .build()
+        }
+    }
+
     suspend fun setCurrentAccount(account: Account?) {
         appDataStore.updateData {
             it.toBuilder()

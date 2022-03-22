@@ -27,15 +27,40 @@ package app.newproj.lbrytv.data.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
+import androidx.room.Transaction
 import androidx.room.Update
 import app.newproj.lbrytv.data.dto.RelatedClaim
 import app.newproj.lbrytv.data.entity.Claim
 
-@Dao
-interface RelatedClaimDao {
-    @Insert(entity = Claim::class, onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(claims: List<RelatedClaim>)
+private const val ROW_ID_ON_CONFLICT = -1L
 
-    @Update(entity = Claim::class)
-    suspend fun update(claims: List<RelatedClaim>)
+@Dao
+abstract class RelatedClaimDao {
+    @Insert(entity = Claim::class, onConflict = OnConflictStrategy.IGNORE)
+    abstract suspend fun insert(claim: RelatedClaim): Long
+
+    @Insert(entity = Claim::class, onConflict = OnConflictStrategy.IGNORE)
+    abstract suspend fun insert(claims: List<RelatedClaim>): List<Long>
+
+    @Update(entity = Claim::class, onConflict = OnConflictStrategy.IGNORE)
+    abstract suspend fun update(claim: RelatedClaim)
+
+    @Update(entity = Claim::class, onConflict = OnConflictStrategy.IGNORE)
+    abstract suspend fun update(claims: List<RelatedClaim>)
+
+    @Transaction
+    open suspend fun upsert(item: RelatedClaim) {
+        if (insert(item) == ROW_ID_ON_CONFLICT) {
+            update(item)
+        }
+    }
+
+    @Transaction
+    open suspend fun upsert(items: List<RelatedClaim>) {
+        insert(items).mapIndexedNotNull { index, rowId ->
+            items[index].takeIf { rowId == ROW_ID_ON_CONFLICT }
+        }.takeIf { it.isNotEmpty() }?.let {
+            update(it)
+        }
+    }
 }

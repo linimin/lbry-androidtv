@@ -103,7 +103,7 @@
         <item name="baseCardViewStyle">@style/Widget.BaseCardViewStyle</item>
         <item name="browsePaddingStart">@dimen/browse_padding_start</item>
         <item name="browseRowsMarginStart">@dimen/browse_rows_margin_start</item>
-        <item name="browseTitleViewLayout">@layout/title_view_layout</item>
+        <item name="browseTitleViewLayout">@layout/wallet_title_view_layout</item>
         <item name="headersVerticalGridStyle">@style/Widget.Headers.VerticalGridView</item>
         <item name="itemsVerticalGridStyle">@style/Widget.GridItems.VerticalGridView</item>
         <item name="rowHorizontalGridStyle">@style/Widget.Row.HorizontalGridView</item>

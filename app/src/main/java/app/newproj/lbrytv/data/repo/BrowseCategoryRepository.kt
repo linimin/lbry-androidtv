@@ -37,11 +37,11 @@ import javax.inject.Provider
 
 @OptIn(ExperimentalPagingApi::class)
 class BrowseCategoryRepository @Inject constructor(
+    private val categoryPagingSourceProvider: Provider<BrowseCategoryPagingSource>,
     @SmallPageSize private val pagingConfig: PagingConfig,
-    private val browseCategoryPagingSourceProvider: Provider<BrowseCategoryPagingSource>,
 ) {
     fun browseCategories(): Flow<PagingData<BrowseCategory>> = Pager(
         config = pagingConfig,
-        pagingSourceFactory = browseCategoryPagingSourceProvider::get
+        pagingSourceFactory = categoryPagingSourceProvider::get
     ).flow
 }

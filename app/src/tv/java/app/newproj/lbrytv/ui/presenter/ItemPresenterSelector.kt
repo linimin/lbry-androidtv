@@ -26,14 +26,14 @@ package app.newproj.lbrytv.ui.presenter
 
 import androidx.leanback.widget.Presenter
 import androidx.leanback.widget.PresenterSelector
-import app.newproj.lbrytv.data.dto.BrowseCategoryItem
+import app.newproj.lbrytv.data.dto.BrowseItem
 import app.newproj.lbrytv.data.dto.Channel
 import app.newproj.lbrytv.data.dto.Setting
 import app.newproj.lbrytv.data.dto.Video
 
 object ItemPresenterSelector : PresenterSelector() {
     override fun getPresenter(item: Any): Presenter {
-        require(item is BrowseCategoryItem)
+        require(item is BrowseItem)
         return when (item) {
             is Video -> VideoCardPresenter()
             is Channel -> ChannelCardPresenter()

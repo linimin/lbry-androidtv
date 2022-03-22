@@ -36,7 +36,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import app.newproj.lbrytv.databinding.TvActivityBinding
-import app.newproj.lbrytv.viewmodel.TvViewModel
 import coil.imageLoader
 import coil.request.ImageRequest
 import dagger.hilt.android.AndroidEntryPoint

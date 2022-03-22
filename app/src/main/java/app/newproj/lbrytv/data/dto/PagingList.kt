@@ -33,5 +33,5 @@ data class PagingList(
     val id: Long,
     @StringRes val nameRes: Int,
     @DrawableRes val iconRes: Int,
-    val items: Flow<PagingData<BrowseCategoryItem>>,
+    val items: Flow<PagingData<BrowseItem>>,
 )

@@ -41,7 +41,7 @@ data class UserPreference(
             @SerializedName("builtinCollections") val builtinCollections: BuiltinCollections? = null,
             @SerializedName("coin_swap_codes") val coinSwapCodes: List<Any?>? = null,
             @SerializedName("editedCollections") val editedCollections: EditedCollections? = null,
-            @SerializedName("following") val following: List<Following?>? = null,
+            @SerializedName("following") val following: List<Following>? = null,
             @SerializedName("settings") val settings: Settings? = null,
             @SerializedName("sharing_3P") val sharing3P: Boolean? = null,
             @SerializedName("subscriptions") val subscriptions: List<String>? = null,

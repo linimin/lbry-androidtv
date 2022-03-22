@@ -35,7 +35,7 @@ object OdyseeServiceBodyConverterFactory : Converter.Factory() {
     override fun responseBodyConverter(
         type: Type,
         annotations: Array<out Annotation>,
-        retrofit: Retrofit
+        retrofit: Retrofit,
     ): Converter<ResponseBody, *> {
         val delegate = retrofit.nextResponseBodyConverter<OdyseeServiceResponse<*>>(
             this,
@@ -46,15 +46,10 @@ object OdyseeServiceBodyConverterFactory : Converter.Factory() {
     }
 
     private class ResponseBodyConverter<T>(
-        private val delegate: Converter<ResponseBody, OdyseeServiceResponse<out T>>
+        private val delegate: Converter<ResponseBody, OdyseeServiceResponse<out T>>,
     ) : Converter<ResponseBody, T> {
         override fun convert(value: ResponseBody): T? {
-            val response = delegate.convert(value) ?: return null
-            if (response.status == "success") {
-                return response.data ?: throw NoDataApiException()
-            } else {
-                throw ApiException(response.status)
-            }
+            return delegate.convert(value)?.data
         }
     }
 }

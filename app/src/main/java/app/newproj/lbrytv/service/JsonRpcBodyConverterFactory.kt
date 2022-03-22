@@ -40,53 +40,52 @@ object JsonRpcBodyConverterFactory : Converter.Factory() {
         type: Type,
         parameterAnnotations: Array<out Annotation>,
         methodAnnotations: Array<out Annotation>,
-        retrofit: Retrofit
+        retrofit: Retrofit,
     ): Converter<*, RequestBody>? {
-        val rpcMethod = methodAnnotations
-            .firstNotNullOfOrNull { it as JsonRpc? }?.method
-            ?: return null
-        val delegate = retrofit.nextRequestBodyConverter<JsonRpcRequest<*>>(
-            this,
-            TypeToken.getParameterized(JsonRpcRequest::class.java, type).type,
-            parameterAnnotations,
-            methodAnnotations
+        return RequestBodyConverter(
+            rpcMethod = methodAnnotations
+                .firstNotNullOfOrNull { it as JsonRpc? }?.method
+                ?: return null,
+            delegate = retrofit.nextRequestBodyConverter<JsonRpcRequest<*>>(
+                this,
+                TypeToken.getParameterized(JsonRpcRequest::class.java, type).type,
+                parameterAnnotations,
+                methodAnnotations
+            )
         )
-        return RequestBodyConverter(rpcMethod, delegate)
     }
 
     override fun responseBodyConverter(
         type: Type,
         annotations: Array<out Annotation>,
-        retrofit: Retrofit
-    ): Converter<ResponseBody, *> {
-        val delegate = retrofit.nextResponseBodyConverter<JsonRpcResponse<*>>(
-            this,
-            TypeToken.getParameterized(JsonRpcResponse::class.java, type).type,
-            annotations
+        retrofit: Retrofit,
+    ): Converter<ResponseBody, *> =
+        ResponseBodyConverter(
+            delegate = retrofit.nextResponseBodyConverter<JsonRpcResponse<*>>(
+                this,
+                TypeToken.getParameterized(JsonRpcResponse::class.java, type).type,
+                annotations
+            )
         )
-        return ResponseBodyConverter(delegate)
-    }
 
     private class RequestBodyConverter<T>(
-        private val method: String,
-        private val delegate: Converter<JsonRpcRequest<out T>, RequestBody>
+        private val rpcMethod: String,
+        private val delegate: Converter<JsonRpcRequest<out T>, RequestBody>,
     ) : Converter<T, RequestBody> {
-        override fun convert(value: T): RequestBody? {
-            val id = System.currentTimeMillis().seconds.inWholeSeconds
-            return delegate.convert(JsonRpcRequest("2.0", id, method, value))
-        }
+        override fun convert(value: T): RequestBody? =
+            delegate.convert(
+                JsonRpcRequest(
+                    jsonrpc = "2.0",
+                    id = System.currentTimeMillis().seconds.inWholeSeconds,
+                    method = rpcMethod,
+                    params = value
+                )
+            )
     }
 
     private class ResponseBodyConverter<T>(
-        private val delegate: Converter<ResponseBody, JsonRpcResponse<out T>>
+        private val delegate: Converter<ResponseBody, JsonRpcResponse<out T>>,
     ) : Converter<ResponseBody, T> {
-        override fun convert(value: ResponseBody): T? {
-            val response = delegate.convert(value) ?: return null
-            when {
-                response.result != null -> return response.result
-                response.error == null -> throw NoDataApiException()
-                else -> throw ApiException(response.error.message)
-            }
-        }
+        override fun convert(value: ResponseBody): T? = delegate.convert(value)?.result
     }
 }

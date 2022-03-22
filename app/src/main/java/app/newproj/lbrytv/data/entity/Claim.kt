@@ -86,6 +86,5 @@ data class Claim(
     val channelId: String? = null,
 )
 
-fun Claim.streamingUrl(): String {
-    return "https://cdn.lbryplayer.xyz/content/claims/$name/$id/stream"
-}
+fun Claim.streamingUrl(): Uri =
+    Uri.parse("https://cdn.lbryplayer.xyz/content/claims/$name/$id/stream")

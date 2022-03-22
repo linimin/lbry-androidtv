@@ -26,13 +26,11 @@ package app.newproj.lbrytv.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import androidx.paging.map
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.data.dto.BrowseCategory
 import app.newproj.lbrytv.data.repo.ChannelRepository
 import app.newproj.lbrytv.data.repo.SettingRepository
 import app.newproj.lbrytv.data.repo.VideoRepository
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class BrowseCategoryPagingSource @Inject constructor(
@@ -41,54 +39,31 @@ class BrowseCategoryPagingSource @Inject constructor(
     private val settingRepo: SettingRepository,
 ) : PagingSource<Int, BrowseCategory>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, BrowseCategory> {
-        var sortingOrder = 0
-        val categories = mutableListOf<BrowseCategory>()
-        val featuredVideos = videoRepo.featuredVideos()
-        if (featuredVideos != null) {
-            categories.add(
+        return LoadResult.Page(
+            data = listOf(
                 BrowseCategory(
-                    R.string.featured.toLong(),
-                    R.string.featured,
-                    R.drawable.whatshot,
-                    sortingOrder++,
-                    featuredVideos.map { pagingData -> pagingData.map { it } }
-                )
-            )
-        }
-        val subscriptionVideos = videoRepo.subscriptionVideos()
-        if (subscriptionVideos != null) {
-            categories.add(
+                    id = R.string.featured.toLong(),
+                    nameResId = R.string.featured, iconResId = R.drawable.whatshot,
+                    items = videoRepo.featuredVideos()
+                ),
                 BrowseCategory(
-                    R.string.subscriptions.toLong(),
-                    R.string.subscriptions,
-                    R.drawable.star,
-                    sortingOrder++,
-                    subscriptionVideos.map { pagingData -> pagingData.map { it } }
-                )
-            )
-        }
-        val subscriptions = channelRepo.subscriptions()
-        if (subscriptions != null) {
-            categories.add(
+                    id = R.string.subscriptions.toLong(),
+                    nameResId = R.string.subscriptions, iconResId = R.drawable.star,
+                    items = videoRepo.subscriptionVideos()
+                ),
                 BrowseCategory(
-                    R.string.channels.toLong(),
-                    R.string.channels,
-                    R.drawable.subscriptions,
-                    sortingOrder++,
-                    subscriptions.map { pagingData -> pagingData.map { it } }
+                    id = R.string.channels.toLong(),
+                    nameResId = R.string.channels, iconResId = R.drawable.subscriptions,
+                    items = channelRepo.followingChannels()
+                ),
+                BrowseCategory(
+                    id = R.string.settings.toLong(),
+                    nameResId = R.string.settings, iconResId = R.drawable.settings,
+                    items = settingRepo.settings()
                 )
-            )
-        }
-        categories.add(
-            BrowseCategory(
-                R.string.settings.toLong(),
-                R.string.settings,
-                R.drawable.settings,
-                sortingOrder,
-                settingRepo.settings().map { pagingData -> pagingData.map { it } }
-            )
+            ),
+            prevKey = null, nextKey = null
         )
-        return LoadResult.Page(categories, null, null)
     }
 
     override fun getRefreshKey(state: PagingState<Int, BrowseCategory>): Int? = null

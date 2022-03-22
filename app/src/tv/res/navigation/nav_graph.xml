@@ -33,7 +33,7 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
     app:startDestination="@id/browseCategoriesFragment">
     <fragment
         android:id="@+id/browseCategoriesFragment"
-        android:name="app.newproj.lbrytv.fragment.BrowseCategoriesFragment"
+        android:name="app.newproj.lbrytv.ui.browsecategories.BrowseCategoriesFragment"
         android:label="BrowseCategoriesFragment">
         <action
             android:id="@+id/action_browseCategoriesFragment_to_searchFragment"
@@ -47,7 +47,7 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
     </fragment>
     <fragment
         android:id="@+id/videoPlayerFragment"
-        android:name="app.newproj.lbrytv.fragment.VideoPlayerFragment"
+        android:name="app.newproj.lbrytv.ui.player.VideoPlayerFragment"
         android:label="VideoPlayerFragment">
         <argument
             android:name="claimId"
@@ -55,14 +55,17 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
         <action
             android:id="@+id/action_videoPlayerFragment_to_supportFragment"
             app:destination="@id/supportFragment" />
+        <action
+            android:id="@+id/action_videoPlayerFragment_to_channelVideosFragment"
+            app:destination="@id/channelVideosFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
-        android:name="app.newproj.lbrytv.fragment.SearchFragment"
-        android:label="SearchFragment"/>
+        android:name="app.newproj.lbrytv.ui.search.SearchFragment"
+        android:label="SearchFragment" />
     <fragment
         android:id="@+id/errorFragment"
-        android:name="app.newproj.lbrytv.fragment.ErrorFragment"
+        android:name="app.newproj.lbrytv.ui.error.ErrorFragment"
         android:label="ErrorFragment">
         <argument
             android:name="message"
@@ -73,19 +76,26 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
             app:destination="@id/browseCategoriesFragment"
             app:popUpTo="@id/browseCategoriesFragment"
             app:popUpToInclusive="true" />
+        <argument
+            android:name="requestKey"
+            android:defaultValue="null"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <action
         android:id="@+id/action_global_errorFragment"
         app:destination="@id/errorFragment" />
     <fragment
         android:id="@+id/channelVideosFragment"
-        android:name="app.newproj.lbrytv.fragment.ChannelVideosFragment"
+        android:name="app.newproj.lbrytv.ui.channel.ChannelVideosFragment"
         android:label="ChannelVideosFragment">
         <argument
             android:name="channelId"
             app:argType="string" />
     </fragment>
-    <action android:id="@+id/action_global_videoPlayerFragment" app:destination="@id/videoPlayerFragment" />
+    <action
+        android:id="@+id/action_global_videoPlayerFragment"
+        app:destination="@id/videoPlayerFragment" />
     <navigation
         android:id="@+id/addAccount"
         android:label="AddAccount"
@@ -99,7 +109,7 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
 
         <fragment
             android:id="@+id/emailInputFragment"
-            android:name="app.newproj.lbrytv.fragment.EmailInputFragment"
+            android:name="app.newproj.lbrytv.ui.accounts.EmailInputFragment"
             android:label="EmailInputFragment">
             <action
                 android:id="@+id/action_emailInputFragment_to_emailVerifyFragment"
@@ -114,7 +124,7 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
         </fragment>
         <fragment
             android:id="@+id/emailVerifyFragment"
-            android:name="app.newproj.lbrytv.fragment.EmailVerifyFragment"
+            android:name="app.newproj.lbrytv.ui.accounts.EmailVerifyFragment"
             android:label="EmailVerifyFragment">
             <argument
                 android:name="email"
@@ -132,8 +142,8 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
     </navigation>
     <fragment
         android:id="@+id/accountsFragment"
-        android:name="app.newproj.lbrytv.fragment.AccountsFragment"
-        android:label="AccountsFragment" >
+        android:name="app.newproj.lbrytv.ui.accounts.AccountsFragment"
+        android:label="AccountsFragment">
         <action
             android:id="@+id/action_accountsFragment_to_browseCategoriesFragment"
             app:destination="@id/browseCategoriesFragment"
@@ -145,8 +155,8 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
     </fragment>
     <fragment
         android:id="@+id/supportFragment"
-        android:name="app.newproj.lbrytv.fragment.SupportFragment"
-        android:label="SupportFragment" >
+        android:name="app.newproj.lbrytv.ui.support.SupportFragment"
+        android:label="SupportFragment">
         <argument
             android:name="claimId"
             app:argType="string" />

@@ -32,6 +32,6 @@ import kotlinx.coroutines.flow.Flow
 class PagingListRow(
     id: Long,
     override val localizableHeader: LocalizableHeaderItem,
-    val pagingDataAdapter: PagingDataAdapter<BrowseCategoryItem>,
-    val items: Flow<PagingData<out BrowseCategoryItem>>
+    val pagingDataAdapter: PagingDataAdapter<BrowseItem>,
+    val items: Flow<PagingData<out BrowseItem>>
 ) : ListRow(id, null, pagingDataAdapter), HasLocalizableHeader

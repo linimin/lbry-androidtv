@@ -25,5 +25,5 @@
 
 <androidx.fragment.app.FragmentContainerView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/browse_header_icons_dock"
-    android:name="app.newproj.lbrytv.fragment.BrowseCategoryHeaderIconsFragment"
+    android:name="app.newproj.lbrytv.ui.browsecategories.BrowseCategoryHeaderIconsFragment"
     style="?attr/headerIconDockStyle" />

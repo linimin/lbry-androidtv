@@ -24,31 +24,51 @@
 
 package app.newproj.lbrytv.data.repo
 
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.map
+import app.newproj.lbrytv.data.datasource.ChannelLocalDataSource
+import app.newproj.lbrytv.data.datasource.ChannelRemoteDataSource
 import app.newproj.lbrytv.data.dto.Channel
-import app.newproj.lbrytv.data.dto.ClaimLookupLabel
-import app.newproj.lbrytv.data.dto.ClaimResolveRequest
-import app.newproj.lbrytv.service.LbrynetService
+import app.newproj.lbrytv.data.paging.SubscriptionRemoteMediator
+import app.newproj.lbrytv.di.LargePageSize
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
+@OptIn(ExperimentalPagingApi::class)
 class ChannelRepository @Inject constructor(
-    private val claimRepo: ClaimRepository,
-    private val lbrynetService: LbrynetService,
+    private val channelLocalDataSource: ChannelLocalDataSource,
+    private val channelRemoteDataSource: ChannelRemoteDataSource,
+    private val subscriptionRemoteMediator: SubscriptionRemoteMediator,
+    @LargePageSize private val pagingConfig: PagingConfig,
 ) {
-    fun channel(id: String): Flow<Channel> = claimRepo.claim(id).map { Channel(it) }
-
-    suspend fun subscriptions(): Flow<PagingData<Channel>>? {
-        val subscriptionChannelUris = try {
-            lbrynetService.preference().shared?.value?.subscriptions ?: return null
-        } catch (e: Throwable) {
-            return null
+    fun channel(id: String): Flow<Channel> = flow {
+        channelRemoteDataSource.channel(id)?.let {
+            channelLocalDataSource.upsert(it)
         }
-        return claimRepo.claims(
-            ClaimLookupLabel.SUBSCRIPTION_CHANNELS.name,
-            ClaimResolveRequest(subscriptionChannelUris)
-        ).map { pagingData -> pagingData.map { Channel(it) } }
+        emitAll(channelLocalDataSource.channel(id))
+    }
+
+    fun followingChannels(): Flow<PagingData<Channel>> = Pager(
+        config = pagingConfig,
+        remoteMediator = subscriptionRemoteMediator,
+        pagingSourceFactory = { channelLocalDataSource.followingChannelPagingSource() }
+    ).flow
+
+    suspend fun follow(channel: Channel) {
+        channelLocalDataSource.follow(channel)
+        channel.claim.permanentUrl?.let {
+            channelRemoteDataSource.follow(it)
+        }
+    }
+
+    suspend fun unfollow(channel: Channel) {
+        channelLocalDataSource.unfollow(channel)
+        channel.claim.permanentUrl?.let {
+            channelRemoteDataSource.unfollow(it)
+        }
     }
 }

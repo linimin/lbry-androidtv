@@ -31,7 +31,7 @@ data class LbryIncServiceResponse<T>(
     val success: Boolean,
 
     @SerializedName("error")
-    val error: Any? = null,
+    val error: String? = null,
 
     @SerializedName("data")
     val data: T? = null,
