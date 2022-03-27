@@ -24,7 +24,36 @@
 
 package app.newproj.lbrytv.ui.presenter
 
-import app.newproj.lbrytv.BR
-import app.newproj.lbrytv.R
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.annotation.IdRes
+import androidx.annotation.LayoutRes
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
+import androidx.leanback.widget.Presenter
 
-class VideoCardPresenter : ItemDataBindingPresenter(R.layout.video_card, BR.video)
+open class DataBindingPresenter(
+    @LayoutRes private val layoutId: Int,
+    @IdRes private val itemVariableId: Int,
+) : Presenter() {
+    private inner class ViewHolder(
+        val binding: ViewDataBinding,
+    ) : Presenter.ViewHolder(binding.root)
+
+    override fun onCreateViewHolder(parent: ViewGroup): Presenter.ViewHolder {
+        return ViewHolder(
+            DataBindingUtil.inflate(
+                LayoutInflater.from(parent.context),
+                layoutId,
+                parent,
+                false
+            )
+        )
+    }
+
+    override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any) {
+        (viewHolder as ViewHolder).binding.setVariable(itemVariableId, item)
+    }
+
+    override fun onUnbindViewHolder(viewHolder: Presenter.ViewHolder) = Unit
+}

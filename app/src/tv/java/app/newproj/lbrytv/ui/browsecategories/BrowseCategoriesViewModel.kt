@@ -24,21 +24,21 @@
 
 package app.newproj.lbrytv.ui.browsecategories
 
-import androidx.leanback.paging.PagingDataAdapter
-import androidx.leanback.widget.Row
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import app.newproj.lbrytv.data.dto.BrowseCategory
-import app.newproj.lbrytv.data.dto.ItemComparator
-import app.newproj.lbrytv.data.dto.LocalizableHeaderItem
-import app.newproj.lbrytv.data.dto.PagingListRow
+import app.newproj.lbrytv.data.dto.BrowseCategoryUiState
+import app.newproj.lbrytv.data.dto.Channel
+import app.newproj.lbrytv.data.dto.ChannelUiState
+import app.newproj.lbrytv.data.dto.Setting
+import app.newproj.lbrytv.data.dto.Video
+import app.newproj.lbrytv.data.dto.VideoUiState
 import app.newproj.lbrytv.data.dto.Wallet
-import app.newproj.lbrytv.data.repo.BrowseCategoryRepository
+import app.newproj.lbrytv.data.repo.BrowseCategoriesRepository
 import app.newproj.lbrytv.data.repo.WalletRepository
-import app.newproj.lbrytv.ui.presenter.ItemPresenterSelector
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -55,7 +55,7 @@ import kotlin.time.Duration.Companion.seconds
 @HiltViewModel
 class BrowseCategoriesViewModel @Inject constructor(
     walletRepository: WalletRepository,
-    browseCategoryRepository: BrowseCategoryRepository,
+    browseCategoriesRepository: BrowseCategoriesRepository,
 ) : ViewModel() {
     data class UiState(
         val wallet: Wallet? = null,
@@ -65,10 +65,10 @@ class BrowseCategoriesViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    val browseCategories: Flow<PagingData<Row>> =
-        browseCategoryRepository
+    val browseCategories: Flow<PagingData<BrowseCategoryUiState>> =
+        browseCategoriesRepository
             .browseCategories()
-            .map { it.toRows() }
+            .map { it.mapToUiStates() }
             .cachedIn(viewModelScope)
 
     private val _headersWindowAlignOffsetTop = MutableStateFlow(0)
@@ -103,12 +103,39 @@ class BrowseCategoriesViewModel @Inject constructor(
         _selectedHeaderPosition.tryEmit(position)
     }
 
-    private fun PagingData<BrowseCategory>.toRows(): PagingData<Row> = map { category ->
-        PagingListRow(
-            category.id,
-            LocalizableHeaderItem(category.id, category.iconResId, category.nameResId),
-            PagingDataAdapter(ItemPresenterSelector, ItemComparator()),
-            category.items
-        )
+    private fun PagingData<BrowseCategory>.mapToUiStates(): PagingData<BrowseCategoryUiState> =
+        map { category ->
+            BrowseCategoryUiState(
+                id = category.id,
+                iconRes = category.iconResId,
+                nameRes = category.nameResId,
+                items = category.items.map { pagingData ->
+                    pagingData.map { browseItem ->
+                        when (browseItem) {
+                            is Video -> VideoUiState(
+                                browseItem.id,
+                                browseItem.claim.thumbnail,
+                                browseItem.claim.title,
+                                browseItem.claim.channelName,
+                                browseItem.claim.releaseTime
+                            )
+
+                            is Channel -> ChannelUiState(
+                                browseItem.id,
+                                browseItem.claim.thumbnail,
+                                browseItem.claim.title,
+                                browseItem.claim.name,
+                            )
+                            is Setting -> browseItem
+                        }
+                    }
+                }
+            )
+        }
+
+    fun errorMessageShown() {
+        _uiState.update {
+            it.copy(errorMessage = null)
+        }
     }
 }

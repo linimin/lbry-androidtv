@@ -96,7 +96,7 @@
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="@+id/wallet_address_text_view"
                     app:layout_constraintTop_toBottomOf="@+id/wallet_address_text_view"
-                    app:walletBalance="@{wallet.totalBalance}"
+                    app:lbc="@{wallet.totalBalance}"
                     tools:text="123,456,789.0" />
 
                 <ImageView

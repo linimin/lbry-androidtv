@@ -37,6 +37,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import java.lang.reflect.Type
+import java.time.Instant
 import javax.inject.Singleton
 
 @Module
@@ -48,6 +49,7 @@ object GsonModule {
         return Gson().newBuilder()
             .registerTypeAdapter(Uri::class.java, UriDeserializer)
             .registerTypeAdapter(Uri::class.java, UriSerializer)
+            .registerTypeAdapter(Instant::class.java, InstantDeserializer)
             .create()
     }
 }
@@ -69,5 +71,15 @@ object UriSerializer : JsonSerializer<Uri> {
         context: JsonSerializationContext?,
     ): JsonElement {
         return JsonPrimitive(src?.toString())
+    }
+}
+
+object InstantDeserializer : JsonDeserializer<Instant> {
+    override fun deserialize(
+        json: JsonElement?,
+        typeOfT: Type?,
+        context: JsonDeserializationContext?,
+    ): Instant {
+        return Instant.parse(json?.asString)
     }
 }

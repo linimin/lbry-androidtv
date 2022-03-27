@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.data.paging
+package app.newproj.lbrytv.data.remotemediator
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
@@ -30,43 +30,38 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import app.newproj.lbrytv.data.AppDatabase
-import app.newproj.lbrytv.data.entity.Claim
+import app.newproj.lbrytv.data.dto.ClaimSearchRequest
+import app.newproj.lbrytv.data.dto.RecommendedContent
+import app.newproj.lbrytv.data.dto.Video
 import app.newproj.lbrytv.data.entity.ClaimLookup
 import app.newproj.lbrytv.data.entity.RemoteKey
-import app.newproj.lbrytv.service.LighthouseService
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import app.newproj.lbrytv.service.LbrynetService
+import app.newproj.lbrytv.service.OdyseeService
 import retrofit2.HttpException
 import java.io.IOException
+import javax.inject.Inject
 
 private const val STARTING_PAGE_INDEX = 1
 private const val STARTING_SORTING_ORDER = 1
 
 @OptIn(ExperimentalPagingApi::class)
-class RelatedClaimsRemoteMediator @AssistedInject constructor(
-    @Assisted("label") private val label: String,
-    @Assisted("query") private val query: String?,
-    private val lighthouseService: LighthouseService,
+class FeaturedVideosRemoteMediator @Inject constructor(
+    private val lbrynetService: LbrynetService,
     private val db: AppDatabase,
-) : RemoteMediator<Int, Claim>() {
-    @AssistedFactory
-    interface Factory {
-        fun RelatedClaimsRemoteMediator(
-            @Assisted("label") label: String,
-            @Assisted("query") query: String?,
-        ): RelatedClaimsRemoteMediator
-    }
+    private val odyseeService: OdyseeService,
+) : RemoteMediator<Int, Video>() {
+    private var primaryContent: RecommendedContent? = null
 
-    override suspend fun load(loadType: LoadType, state: PagingState<Int, Claim>): MediatorResult {
+    override suspend fun load(loadType: LoadType, state: PagingState<Int, Video>): MediatorResult {
         try {
             val page: Int
             var nextSortingOrder: Int
-            val remoteKeyLabel = label
+            val remoteKeyLabel = "FEATURED_VIDEOS"
             when (loadType) {
                 LoadType.REFRESH -> {
                     page = STARTING_PAGE_INDEX
                     nextSortingOrder = STARTING_SORTING_ORDER
+                    primaryContent = odyseeService.content()["en"]?.get("PRIMARY_CONTENT")
                 }
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
                 LoadType.APPEND -> {
@@ -76,27 +71,31 @@ class RelatedClaimsRemoteMediator @AssistedInject constructor(
                     nextSortingOrder = remoteKey.nextSortingOrder
                 }
             }
-            val relatedClaims = lighthouseService.search(
-                query,
-                true,
-                state.config.pageSize,
-                page
+            val request = ClaimSearchRequest(
+                channelIds = primaryContent?.channelIds,
+                claimTypes = listOf("stream", "repost"),
+                streamTypes = listOf("video"),
+                orderBy = listOf("trending_group", "trending_mixed"),
+                hasSource = true,
+                page = page,
+                pageSize = state.config.pageSize,
             )
+            val claims = lbrynetService.searchClaims(request).items ?: emptyList()
             db.withTransaction {
                 if (loadType == LoadType.REFRESH) {
                     db.remoteKeyDao().delete(remoteKeyLabel)
                     db.claimLookupDao().deleteAll(remoteKeyLabel)
                 }
-                db.relatedClaimDao().upsert(relatedClaims)
-                val claimLookups = relatedClaims.map {
-                    ClaimLookup(remoteKeyLabel, it.id, nextSortingOrder++)
+                db.claimSearchResultDao().upsert(claims)
+                val claimLookups = claims.map {
+                    ClaimLookup(remoteKeyLabel, it.claimId, nextSortingOrder++)
                 }
                 db.claimLookupDao().upsert(claimLookups)
-                val nextKey = if (relatedClaims.isEmpty()) null else page.inc()
+                val nextKey = if (claims.isEmpty()) null else page.inc()
                 val remoteKey = RemoteKey(remoteKeyLabel, nextKey, nextSortingOrder)
                 db.remoteKeyDao().upsert(remoteKey)
             }
-            return MediatorResult.Success(endOfPaginationReached = relatedClaims.isEmpty())
+            return MediatorResult.Success(endOfPaginationReached = claims.isEmpty())
         } catch (e: HttpException) {
             return MediatorResult.Error(e)
         } catch (e: IOException) {

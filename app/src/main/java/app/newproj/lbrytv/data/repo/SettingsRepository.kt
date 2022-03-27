@@ -28,47 +28,20 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import app.newproj.lbrytv.data.datasource.ChannelLocalDataSource
-import app.newproj.lbrytv.data.datasource.ChannelRemoteDataSource
-import app.newproj.lbrytv.data.dto.Channel
-import app.newproj.lbrytv.data.paging.SubscriptionRemoteMediator
+import app.newproj.lbrytv.data.datasource.SettingPagingSource
+import app.newproj.lbrytv.data.dto.Setting
 import app.newproj.lbrytv.di.LargePageSize
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
+import javax.inject.Provider
 
 @OptIn(ExperimentalPagingApi::class)
-class ChannelRepository @Inject constructor(
-    private val channelLocalDataSource: ChannelLocalDataSource,
-    private val channelRemoteDataSource: ChannelRemoteDataSource,
-    private val subscriptionRemoteMediator: SubscriptionRemoteMediator,
+class SettingsRepository @Inject constructor(
+    private val settingPagingSourceProvider: Provider<SettingPagingSource>,
     @LargePageSize private val pagingConfig: PagingConfig,
 ) {
-    fun channel(id: String): Flow<Channel> = flow {
-        channelRemoteDataSource.channel(id)?.let {
-            channelLocalDataSource.upsert(it)
-        }
-        emitAll(channelLocalDataSource.channel(id))
-    }
-
-    fun followingChannels(): Flow<PagingData<Channel>> = Pager(
+    fun settings(): Flow<PagingData<Setting>> = Pager(
         config = pagingConfig,
-        remoteMediator = subscriptionRemoteMediator,
-        pagingSourceFactory = { channelLocalDataSource.followingChannelPagingSource() }
+        pagingSourceFactory = settingPagingSourceProvider::get
     ).flow
-
-    suspend fun follow(channel: Channel) {
-        channelLocalDataSource.follow(channel)
-        channel.claim.permanentUrl?.let {
-            channelRemoteDataSource.follow(it)
-        }
-    }
-
-    suspend fun unfollow(channel: Channel) {
-        channelLocalDataSource.unfollow(channel)
-        channel.claim.permanentUrl?.let {
-            channelRemoteDataSource.unfollow(it)
-        }
-    }
 }

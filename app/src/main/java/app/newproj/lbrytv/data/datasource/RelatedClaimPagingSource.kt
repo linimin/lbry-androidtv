@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.data.paging
+package app.newproj.lbrytv.data.datasource
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
@@ -31,6 +31,8 @@ import app.newproj.lbrytv.service.LighthouseService
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+
+private const val STARTING_PAGE_INDEX = 0
 
 class RelatedClaimPagingSource @AssistedInject constructor(
     @Assisted private val query: String,
@@ -42,17 +44,17 @@ class RelatedClaimPagingSource @AssistedInject constructor(
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, RelatedClaim> {
-        val page = params.key ?: 0
-        val claims = lighthouseService.search(
-            query = query,
-            resolve = true,
-            pageSize = params.loadSize,
-            page = page,
+        val page = params.key ?: STARTING_PAGE_INDEX
+        val relatedClaims = lighthouseService.search(
+            query,
+            true,
+            params.loadSize,
+            page
         )
         return LoadResult.Page(
-            data = claims,
-            prevKey = null,
-            nextKey = if (claims.isNotEmpty()) page.inc() else null
+            relatedClaims,
+            null,
+            if (relatedClaims.isEmpty()) null else page.inc()
         )
     }
 

@@ -29,7 +29,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.newproj.lbrytv.data.entity.streamingUrl
-import app.newproj.lbrytv.data.repo.VideoRepository
+import app.newproj.lbrytv.data.repo.VideosRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,7 +42,7 @@ import javax.inject.Inject
 @HiltViewModel
 class VideoPlayerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val videoRepo: VideoRepository,
+    private val videosRepo: VideosRepository,
 ) : ViewModel() {
     data class UiState(
         val title: String? = null,
@@ -60,7 +60,7 @@ class VideoPlayerViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             try {
-                val video = videoRepo.video(args.claimId).first()
+                val video = videosRepo.video(args.claimId).first()
                 _uiState.update {
                     it.copy(
                         title = video.claim.title,

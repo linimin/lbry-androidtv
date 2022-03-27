@@ -28,6 +28,7 @@ import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Ignore
 import com.google.gson.annotations.SerializedName
+import java.time.Instant
 
 data class RelatedClaim(
     @SerializedName("channel")
@@ -48,7 +49,7 @@ data class RelatedClaim(
 
     @SerializedName("fee")
     @Ignore
-    val fee: Int? = null,
+    val fee: Long? = null,
 
     @SerializedName("name")
     @ColumnInfo(name = "name")
@@ -56,7 +57,7 @@ data class RelatedClaim(
 
     @SerializedName("release_time")
     @ColumnInfo(name = "release_time")
-    val releaseTime: String? = null,
+    val releaseTime: Instant? = null,
 
     @SerializedName("thumbnail_url")
     @ColumnInfo(name = "thumbnail")

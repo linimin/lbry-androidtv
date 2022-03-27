@@ -22,16 +22,25 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.data.dto
+package app.newproj.lbrytv.data.repo
 
-import androidx.leanback.paging.PagingDataAdapter
-import androidx.leanback.widget.ListRow
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import app.newproj.lbrytv.data.datasource.RelatedClaimPagingSource
+import app.newproj.lbrytv.data.dto.RelatedClaim
+import app.newproj.lbrytv.di.LargePageSize
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class PagingListRow(
-    id: Long,
-    override val localizableHeader: LocalizableHeaderItem,
-    val pagingDataAdapter: PagingDataAdapter<BrowseItemUiState>,
-    val items: Flow<PagingData<out BrowseItemUiState>>,
-) : ListRow(id, null, pagingDataAdapter), HasLocalizableHeader
+class SearchRepository @Inject constructor(
+    private val relatedClaimPagingSourceFactory: RelatedClaimPagingSource.Factory,
+    @LargePageSize private val pagingConfig: PagingConfig,
+) {
+    fun query(query: String): Flow<PagingData<RelatedClaim>> = Pager(
+        config = pagingConfig,
+        pagingSourceFactory = {
+            relatedClaimPagingSourceFactory.RelatedClaimPagingSource(query)
+        }
+    ).flow
+}

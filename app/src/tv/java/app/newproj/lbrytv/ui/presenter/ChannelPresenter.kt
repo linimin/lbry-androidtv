@@ -22,16 +22,9 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.data.dto
+package app.newproj.lbrytv.ui.presenter
 
-import androidx.leanback.paging.PagingDataAdapter
-import androidx.leanback.widget.ListRow
-import androidx.paging.PagingData
-import kotlinx.coroutines.flow.Flow
+import app.newproj.lbrytv.BR
+import app.newproj.lbrytv.R
 
-class PagingListRow(
-    id: Long,
-    override val localizableHeader: LocalizableHeaderItem,
-    val pagingDataAdapter: PagingDataAdapter<BrowseItemUiState>,
-    val items: Flow<PagingData<out BrowseItemUiState>>,
-) : ListRow(id, null, pagingDataAdapter), HasLocalizableHeader
+class ChannelPresenter : DataBindingPresenter(R.layout.channel_card, BR.channel)

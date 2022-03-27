@@ -28,9 +28,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import app.newproj.lbrytv.data.dto.Channel
+import androidx.paging.map
+import app.newproj.lbrytv.data.dto.ChannelUiState
 import app.newproj.lbrytv.data.dto.ChannelWithVideos
-import app.newproj.lbrytv.data.dto.Video
+import app.newproj.lbrytv.data.dto.VideoUiState
 import app.newproj.lbrytv.usecase.FollowUnfollowChannelUseCase
 import app.newproj.lbrytv.usecase.GetChannelWithVideosUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,6 +43,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -56,11 +58,27 @@ class ChannelVideosViewModel @Inject constructor(
     private val args = ChannelVideosFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
     private val channelWithVideos = MutableSharedFlow<ChannelWithVideos>(replay = 1)
-    private val channel: Flow<Channel> = channelWithVideos.flatMapLatest { it.channel }
-    val videos: Flow<PagingData<Video>> = channelWithVideos.flatMapLatest { it.videos }
+    private val channel: Flow<ChannelUiState> = channelWithVideos
+        .flatMapLatest { it.channel }
+        .map {
+            ChannelUiState(it.id, it.claim.thumbnail, it.claim.title, it.claim.name, it.isFollowing)
+        }
+    val videos: Flow<PagingData<VideoUiState>> = channelWithVideos
+        .flatMapLatest { it.videos }
+        .map { pagingData ->
+            pagingData.map { video ->
+                VideoUiState(
+                    video.id,
+                    video.claim.thumbnail,
+                    video.claim.title,
+                    video.claim.channelName,
+                    video.claim.releaseTime
+                )
+            }
+        }
 
     data class UiState(
-        val channel: Channel? = null,
+        val channel: ChannelUiState? = null,
         val errorMessage: String? = null,
     )
 
@@ -84,7 +102,7 @@ class ChannelVideosViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.value.channel?.let {
-                    followUnfollowChannelUseCase(it)
+                    followUnfollowChannelUseCase(it.id)
                 }
             } catch (error: Throwable) {
                 _uiState.update { it.copy(errorMessage = error.localizedMessage) }
@@ -93,6 +111,8 @@ class ChannelVideosViewModel @Inject constructor(
     }
 
     fun errorMessageShown() {
-        _uiState.update { it.copy(errorMessage = null) }
+        _uiState.update {
+            it.copy(errorMessage = null)
+        }
     }
 }

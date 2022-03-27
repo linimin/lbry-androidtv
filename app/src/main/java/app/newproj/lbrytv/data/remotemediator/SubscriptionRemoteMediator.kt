@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.data.paging
+package app.newproj.lbrytv.data.remotemediator
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType

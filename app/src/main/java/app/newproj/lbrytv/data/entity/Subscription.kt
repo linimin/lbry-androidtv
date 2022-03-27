@@ -32,7 +32,9 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "subscription")
 data class Subscription(
     @PrimaryKey
-    @ColumnInfo("claim_id") val claimId: String,
+    @ColumnInfo("claim_id")
+    val claimId: String,
+
     @ColumnInfo("uri") val uri: Uri,
     @ColumnInfo("is_notification_disabled") val isNotificationDisabled: Boolean,
 )

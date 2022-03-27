@@ -62,7 +62,11 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
     <fragment
         android:id="@+id/searchFragment"
         android:name="app.newproj.lbrytv.ui.search.SearchFragment"
-        android:label="SearchFragment" />
+        android:label="SearchFragment" >
+        <action
+            android:id="@+id/action_searchFragment_to_channelVideosFragment"
+            app:destination="@id/channelVideosFragment" />
+    </fragment>
     <fragment
         android:id="@+id/errorFragment"
         android:name="app.newproj.lbrytv.ui.error.ErrorFragment"

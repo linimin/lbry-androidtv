@@ -24,14 +24,13 @@
 
 package app.newproj.lbrytv.data.dto
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
-import androidx.paging.PagingData
-import kotlinx.coroutines.flow.Flow
+import android.net.Uri
+import java.time.Instant
 
-data class PagingList(
-    val id: Long,
-    @StringRes val nameRes: Int,
-    @DrawableRes val iconRes: Int,
-    val items: Flow<PagingData<BrowseItem>>,
-)
+data class VideoUiState(
+    override val id: String,
+    val thumbnail: Uri?,
+    val title: String?,
+    val channel: String?,
+    val releaseTime: Instant?,
+) : BrowseItemUiState

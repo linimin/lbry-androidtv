@@ -24,21 +24,6 @@
 
 package app.newproj.lbrytv.data.dto
 
-import android.annotation.SuppressLint
-import androidx.recyclerview.widget.DiffUtil
-
 sealed interface BrowseItem {
     val id: String
-}
-
-class ItemComparator<T : BrowseItem> : DiffUtil.ItemCallback<T>() {
-    override fun areItemsTheSame(oldItem: T, newItem: T): Boolean {
-        return oldItem.id == newItem.id
-    }
-
-    // https://googlesamples.github.io/android-custom-lint-rules/checks/DiffUtilEquals.md.html
-    @SuppressLint("DiffUtilEquals")
-    override fun areContentsTheSame(oldItem: T, newItem: T): Boolean {
-        return oldItem == newItem
-    }
 }

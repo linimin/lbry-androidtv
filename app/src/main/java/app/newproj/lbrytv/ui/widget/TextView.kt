@@ -28,8 +28,10 @@ import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
+import com.perfomer.blitz.setTimeAgo
 import java.math.BigDecimal
 import java.text.DecimalFormat
+import java.time.Instant
 
 @BindingAdapter("drawableStartCompat")
 fun setDrawableStart(textView: TextView, @DrawableRes drawableRes: Int) {
@@ -41,7 +43,12 @@ fun setDrawableStart(textView: TextView, @DrawableRes drawableRes: Int) {
 
 private val currencyFormat = DecimalFormat("#,###.########")
 
-@BindingAdapter("walletBalance")
-fun setWalletBalance(textView: TextView, balance: BigDecimal?) {
+@BindingAdapter("lbc")
+fun setLbc(textView: TextView, balance: BigDecimal?) {
     textView.text = balance?.let { currencyFormat.format(it) }
+}
+
+@BindingAdapter("relativeTime")
+fun setRelativeTime(textView: TextView, time: Instant?) {
+    time?.let { textView.setTimeAgo(it.toEpochMilli()) }
 }

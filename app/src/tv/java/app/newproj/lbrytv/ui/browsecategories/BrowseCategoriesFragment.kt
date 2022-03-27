@@ -37,45 +37,52 @@ import androidx.leanback.widget.SinglePresenterSelector
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.map
 import app.newproj.lbrytv.NavGraphDirections
 import app.newproj.lbrytv.R
-import app.newproj.lbrytv.data.dto.BrowseItem
-import app.newproj.lbrytv.data.dto.Channel
+import app.newproj.lbrytv.data.dto.BrowseCategoryUiState
+import app.newproj.lbrytv.data.dto.BrowseItemUiState
+import app.newproj.lbrytv.data.dto.BrowseItemUiStateComparator
+import app.newproj.lbrytv.data.dto.ChannelUiState
+import app.newproj.lbrytv.data.dto.LocalizableHeaderItem
+import app.newproj.lbrytv.data.dto.PagingListRow
 import app.newproj.lbrytv.data.dto.RowComparator
 import app.newproj.lbrytv.data.dto.Setting
-import app.newproj.lbrytv.data.dto.Video
+import app.newproj.lbrytv.data.dto.VideoUiState
 import app.newproj.lbrytv.databinding.BrowseCategoryHeaderIconsDockBinding
+import app.newproj.lbrytv.ui.presenter.BrowseItemUiStatePresenterSelector
 import app.newproj.lbrytv.ui.presenter.IconRowPresenter
 import app.newproj.lbrytv.ui.presenter.LocalizableRowHeaderPresenter
 import app.newproj.lbrytv.ui.presenter.RowPresenterSelector
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class BrowseCategoriesFragment : BrowseSupportFragment() {
     private val viewModel: BrowseCategoriesViewModel by viewModels()
     private val navController by lazy { findNavController() }
-    private lateinit var rowsAdapter: PagingDataAdapter<Row>
+    private val rowsAdapter = PagingDataAdapter(RowPresenterSelector, RowComparator)
     private val walletTitleView get() = titleView as? WalletTitleView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adapter = PagingDataAdapter(RowPresenterSelector, RowComparator).also {
-            rowsAdapter = it
-        }
+        adapter = rowsAdapter
         // Disable the header here and re-enable it in the hidden state in onViewCreated() to
         // workaround this issue: https://issuetracker.google.com/issues/147614095.
         headersState = HEADERS_DISABLED
         isHeadersTransitionOnBackEnabled = false
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            handleBackPressed()
+            onBackPressed()
         }
         setHeaderPresenterSelector(SinglePresenterSelector(LocalizableRowHeaderPresenter()))
+        setOnSearchClickedListener { goToSearchScreen() }
         setOnItemViewClickedListener { _, item, _, _ ->
-            (item as? BrowseItem)?.let(::handleItemClicked)
+            require(item is BrowseItemUiState)
+            handleItemClicked(item)
         }
-
         if (savedInstanceState == null) {
             prepareEntranceTransition()
         }
@@ -93,37 +100,37 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
             presenterSelector = SinglePresenterSelector(IconRowPresenter())
             adapter = rowsAdapter
         }
-
         with(viewLifecycleOwner.lifecycleScope) {
             launch {
-                viewModel.uiState.collectLatest { uiState ->
+                viewModel.uiState.collect { uiState ->
                     walletTitleView?.setWallet(uiState.wallet)
-                    uiState.errorMessage?.let { showError(it) }
+                    uiState.errorMessage?.let(::showError)
                 }
             }
             launch {
-                rowsAdapter.loadStateFlow.collectLatest {
+                rowsAdapter.loadStateFlow.collect {
                     when (val refreshLoadState = it.refresh) {
-                        LoadState.Loading -> { /* no-op */
-                        }
+                        LoadState.Loading -> return@collect
                         is LoadState.NotLoading -> startEntranceTransition()
                         is LoadState.Error -> showError(refreshLoadState.error.localizedMessage)
                     }
                 }
             }
             launch {
-                viewModel.browseCategories.collectLatest(rowsAdapter::submitData)
+                viewModel.browseCategories
+                    .map { it.toRows() }
+                    .collectLatest(rowsAdapter::submitData)
             }
         }
     }
 
-    private fun handleItemClicked(item: BrowseItem) {
+    private fun handleItemClicked(item: BrowseItemUiState) {
         when (item) {
-            is Video -> navController.navigate(
+            is VideoUiState -> navController.navigate(
                 NavGraphDirections.actionGlobalVideoPlayerFragment(item.id)
             )
 
-            is Channel -> navController.navigate(
+            is ChannelUiState -> navController.navigate(
                 BrowseCategoriesFragmentDirections
                     .actionBrowseCategoriesFragmentToChannelFragment(item.id)
             )
@@ -137,7 +144,7 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
         }
     }
 
-    private fun handleBackPressed() {
+    private fun onBackPressed() {
         when {
             isShowingHeaders -> requireActivity().finish()
             (selectedRowViewHolder as ListRowPresenter.ViewHolder).selectedPosition == 0 ->
@@ -158,5 +165,15 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
 
     private fun showError(message: String?) {
         navController.navigate(NavGraphDirections.actionGlobalErrorFragment(message))
+        viewModel.errorMessageShown()
     }
+}
+
+private fun PagingData<BrowseCategoryUiState>.toRows(): PagingData<Row> = map {
+    PagingListRow(
+        it.id,
+        LocalizableHeaderItem(it.id, it.iconRes, it.nameRes),
+        PagingDataAdapter(BrowseItemUiStatePresenterSelector, BrowseItemUiStateComparator()),
+        it.items
+    )
 }

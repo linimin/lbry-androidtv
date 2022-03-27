@@ -22,21 +22,21 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.data.paging
+package app.newproj.lbrytv.data.datasource
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.data.dto.BrowseCategory
-import app.newproj.lbrytv.data.repo.ChannelRepository
-import app.newproj.lbrytv.data.repo.SettingRepository
-import app.newproj.lbrytv.data.repo.VideoRepository
+import app.newproj.lbrytv.data.repo.ChannelsRepository
+import app.newproj.lbrytv.data.repo.SettingsRepository
+import app.newproj.lbrytv.data.repo.VideosRepository
 import javax.inject.Inject
 
 class BrowseCategoryPagingSource @Inject constructor(
-    private val videoRepo: VideoRepository,
-    private val channelRepo: ChannelRepository,
-    private val settingRepo: SettingRepository,
+    private val videosRepo: VideosRepository,
+    private val channelsRepo: ChannelsRepository,
+    private val settingsRepo: SettingsRepository,
 ) : PagingSource<Int, BrowseCategory>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, BrowseCategory> {
         return LoadResult.Page(
@@ -44,22 +44,22 @@ class BrowseCategoryPagingSource @Inject constructor(
                 BrowseCategory(
                     id = R.string.featured.toLong(),
                     nameResId = R.string.featured, iconResId = R.drawable.whatshot,
-                    items = videoRepo.featuredVideos()
+                    items = videosRepo.featuredVideos()
                 ),
                 BrowseCategory(
                     id = R.string.subscriptions.toLong(),
                     nameResId = R.string.subscriptions, iconResId = R.drawable.star,
-                    items = videoRepo.subscriptionVideos()
+                    items = videosRepo.subscriptionVideos()
                 ),
                 BrowseCategory(
                     id = R.string.channels.toLong(),
                     nameResId = R.string.channels, iconResId = R.drawable.subscriptions,
-                    items = channelRepo.followingChannels()
+                    items = channelsRepo.followingChannels()
                 ),
                 BrowseCategory(
                     id = R.string.settings.toLong(),
                     nameResId = R.string.settings, iconResId = R.drawable.settings,
-                    items = settingRepo.settings()
+                    items = settingsRepo.settings()
                 )
             ),
             prevKey = null, nextKey = null

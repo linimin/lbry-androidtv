@@ -24,14 +24,12 @@
 
 package app.newproj.lbrytv.data.dto
 
-import androidx.leanback.paging.PagingDataAdapter
-import androidx.leanback.widget.ListRow
-import androidx.paging.PagingData
-import kotlinx.coroutines.flow.Flow
+import android.net.Uri
 
-class PagingListRow(
-    id: Long,
-    override val localizableHeader: LocalizableHeaderItem,
-    val pagingDataAdapter: PagingDataAdapter<BrowseItemUiState>,
-    val items: Flow<PagingData<out BrowseItemUiState>>,
-) : ListRow(id, null, pagingDataAdapter), HasLocalizableHeader
+data class ChannelUiState(
+    override val id: String,
+    val thumbnail: Uri?,
+    val title: String?,
+    val name: String?,
+    val isFollowing: Boolean = false,
+) : BrowseItemUiState

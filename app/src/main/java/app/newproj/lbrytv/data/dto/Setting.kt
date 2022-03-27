@@ -31,4 +31,4 @@ data class Setting(
     override val id: String,
     @StringRes val titleRes: Int,
     @DrawableRes val iconRes: Int,
-) : BrowseItem
+) : BrowseItem, BrowseItemUiState

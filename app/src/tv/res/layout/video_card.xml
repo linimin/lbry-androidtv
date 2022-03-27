@@ -31,7 +31,7 @@
 
         <variable
             name="video"
-            type="app.newproj.lbrytv.data.dto.Video" />
+            type="app.newproj.lbrytv.data.dto.VideoUiState" />
     </data>
 
     <androidx.leanback.widget.BaseCardView
@@ -50,7 +50,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                app:imageUri="@{video.claim.thumbnail}"
+                app:imageUri="@{video.thumbnail}"
                 tools:ignore="ContentDescription" />
         </com.google.android.material.card.MaterialCardView>
 
@@ -65,7 +65,7 @@
                 style="?attr/imageCardViewTitleStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{video.claim.title}"
+                android:text="@{video.title}"
                 tools:text="Bitcoin" />
 
             <TextView
@@ -73,7 +73,7 @@
                 style="?attr/imageCardViewContentStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{video.claim.channelName}"
+                android:text="@{video.channel}"
                 android:textAppearance="?attr/textAppearanceCaption"
                 tools:text="Bitcoin" />
 
@@ -82,9 +82,8 @@
                 style="?attr/imageCardViewContentStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{video.claim.name}"
+                app:relativeTime="@{video.releaseTime}"
                 tools:text="Bitcoin" />
-
         </LinearLayout>
     </androidx.leanback.widget.BaseCardView>
 </layout>

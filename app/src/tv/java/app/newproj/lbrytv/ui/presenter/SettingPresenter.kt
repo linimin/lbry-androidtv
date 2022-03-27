@@ -24,36 +24,7 @@
 
 package app.newproj.lbrytv.ui.presenter
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.annotation.IdRes
-import androidx.annotation.LayoutRes
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
-import androidx.leanback.widget.Presenter
+import app.newproj.lbrytv.BR
+import app.newproj.lbrytv.R
 
-open class ItemDataBindingPresenter(
-    @LayoutRes private val layoutId: Int,
-    @IdRes private val itemVariableId: Int
-) : Presenter() {
-    private inner class ViewHolder(
-        val binding: ViewDataBinding
-    ) : Presenter.ViewHolder(binding.root)
-
-    override fun onCreateViewHolder(parent: ViewGroup): Presenter.ViewHolder {
-        val layoutInflater = LayoutInflater.from(parent.context)
-        val binding = DataBindingUtil.inflate<ViewDataBinding>(
-            layoutInflater,
-            layoutId,
-            parent,
-            false
-        )
-        return ViewHolder(binding)
-    }
-
-    override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any) {
-        (viewHolder as ViewHolder).binding.setVariable(itemVariableId, item)
-    }
-
-    override fun onUnbindViewHolder(viewHolder: Presenter.ViewHolder) = Unit
-}
+class SettingPresenter : DataBindingPresenter(R.layout.setting_card, BR.setting)

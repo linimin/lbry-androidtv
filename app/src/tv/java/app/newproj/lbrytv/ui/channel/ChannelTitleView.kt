@@ -31,7 +31,7 @@ import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.leanback.widget.TitleViewAdapter
-import app.newproj.lbrytv.data.dto.Channel
+import app.newproj.lbrytv.data.dto.ChannelUiState
 import app.newproj.lbrytv.databinding.ChannelTitleViewBinding
 
 class ChannelTitleView(
@@ -80,7 +80,7 @@ class ChannelTitleView(
 
     private var onSearchClickedListener: OnClickListener? = null
 
-    fun setChannel(channel: Channel?) {
+    fun setChannel(channel: ChannelUiState?) {
         binding.channel = channel
     }
 

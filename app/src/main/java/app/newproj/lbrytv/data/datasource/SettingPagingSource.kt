@@ -22,9 +22,24 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.ui.presenter
+package app.newproj.lbrytv.data.datasource
 
-import app.newproj.lbrytv.BR
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import app.newproj.lbrytv.R
+import app.newproj.lbrytv.data.dto.Setting
+import javax.inject.Inject
 
-class SettingCardPresenter : ItemDataBindingPresenter(R.layout.setting_card, BR.setting)
+class SettingPagingSource @Inject constructor() : PagingSource<Int, Setting>() {
+    override fun getRefreshKey(state: PagingState<Int, Setting>): Int? = null
+
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Setting> {
+        return LoadResult.Page(listOf(
+            Setting(
+                id = R.string.switch_account.toString(),
+                titleRes = R.string.switch_account,
+                iconRes = R.drawable.person_add,
+            )
+        ), null, null)
+    }
+}

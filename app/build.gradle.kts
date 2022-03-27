@@ -54,7 +54,7 @@ android {
         minSdk = 26
         targetSdk = 31
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = "1.0.0-alpha.1"
         javaCompileOptions {
             annotationProcessorOptions {
                 /*
@@ -187,6 +187,7 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.zxing)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.blitz)
 
     kapt(libs.hilt.compiler)
     kapt(libs.room.compiler)

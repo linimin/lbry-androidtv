@@ -31,7 +31,7 @@
 
         <variable
             name="channel"
-            type="app.newproj.lbrytv.data.dto.Channel" />
+            type="app.newproj.lbrytv.data.dto.ChannelUiState" />
     </data>
 
     <androidx.leanback.widget.BaseCardView
@@ -48,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                app:imageUri="@{channel.claim.thumbnail}"
+                app:imageUri="@{channel.thumbnail}"
                 tools:ignore="ContentDescription" />
         </com.google.android.material.card.MaterialCardView>
 
@@ -63,7 +63,7 @@
                 style="?attr/imageCardViewTitleStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{channel.claim.title}"
+                android:text="@{channel.title}"
                 tools:text="Bitcoin" />
 
             <TextView
@@ -71,7 +71,7 @@
                 style="?attr/imageCardViewContentStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{channel.claim.name}"
+                android:text="@{channel.name}"
                 android:textAppearance="?attr/textAppearanceCaption"
                 tools:text="Bitcoin" />
         </LinearLayout>

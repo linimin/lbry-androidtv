@@ -24,32 +24,63 @@
 
 package app.newproj.lbrytv.ui.search
 
-import androidx.leanback.paging.PagingDataAdapter
-import androidx.leanback.widget.ObjectAdapter.NO_ID
 import androidx.lifecycle.ViewModel
-import app.newproj.lbrytv.R
-import app.newproj.lbrytv.data.dto.ItemComparator
-import app.newproj.lbrytv.data.dto.LocalizableHeaderItem
-import app.newproj.lbrytv.data.dto.PagingListRow
-import app.newproj.lbrytv.ui.presenter.ItemPresenterSelector
+import androidx.paging.PagingData
+import androidx.paging.map
+import app.newproj.lbrytv.data.dto.BrowseItemUiState
+import app.newproj.lbrytv.data.dto.ChannelUiState
+import app.newproj.lbrytv.data.dto.VideoUiState
+import app.newproj.lbrytv.data.repo.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchViewModel @Inject constructor(
+    private val searchRepository: SearchRepository,
 ) : ViewModel() {
+    data class UiState(val errorMessage: String? = null)
+
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
     private val query = MutableStateFlow<String?>(null)
 
-    val searchResultRow: PagingListRow = PagingListRow(
-        NO_ID.toLong(),
-        LocalizableHeaderItem(NO_ID.toLong(), null, R.string.search_result),
-        PagingDataAdapter(ItemPresenterSelector, ItemComparator()),
-        emptyFlow()
-    )
+    val searchResult: Flow<PagingData<BrowseItemUiState>> = query
+        .filterNotNull()
+        .distinctUntilChanged()
+        .flatMapLatest { query ->
+            searchRepository
+                .query(query)
+                .catch { error ->
+                    _uiState.update { it.copy(errorMessage = error.localizedMessage) }
+                }
+        }.map { pagingData ->
+            pagingData.map { claim ->
+                if (claim.channel != null) {
+                    VideoUiState(
+                        claim.id,
+                        claim.thumbnailUrl,
+                        claim.title,
+                        claim.name,
+                        claim.releaseTime
+                    )
+                } else {
+                    ChannelUiState(claim.id, claim.thumbnailUrl, claim.title, claim.name)
+                }
+            }
+        }
 
     fun search(query: String?) {
         this.query.value = query

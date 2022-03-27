@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.data.paging
+package app.newproj.lbrytv.data.remotemediator
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
@@ -31,12 +31,11 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import app.newproj.lbrytv.data.AppDatabase
 import app.newproj.lbrytv.data.dto.ClaimSearchRequest
-import app.newproj.lbrytv.data.dto.RecommendedContent
+import app.newproj.lbrytv.data.dto.LbryUri
 import app.newproj.lbrytv.data.dto.Video
 import app.newproj.lbrytv.data.entity.ClaimLookup
 import app.newproj.lbrytv.data.entity.RemoteKey
 import app.newproj.lbrytv.service.LbrynetService
-import app.newproj.lbrytv.service.OdyseeService
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -45,23 +44,32 @@ private const val STARTING_PAGE_INDEX = 1
 private const val STARTING_SORTING_ORDER = 1
 
 @OptIn(ExperimentalPagingApi::class)
-class FeaturedVideosRemoteMediator @Inject constructor(
+class SubscriptionVideosRemoteMediator @Inject constructor(
     private val lbrynetService: LbrynetService,
     private val db: AppDatabase,
-    private val odyseeService: OdyseeService,
 ) : RemoteMediator<Int, Video>() {
-    private var primaryContent: RecommendedContent? = null
+    private var subscriptionChannelIds: List<String>? = null
 
     override suspend fun load(loadType: LoadType, state: PagingState<Int, Video>): MediatorResult {
         try {
             val page: Int
             var nextSortingOrder: Int
-            val remoteKeyLabel = "FEATURED_VIDEOS"
+            val remoteKeyLabel = "SUBSCRIPTION_VIDEOS"
             when (loadType) {
                 LoadType.REFRESH -> {
                     page = STARTING_PAGE_INDEX
                     nextSortingOrder = STARTING_SORTING_ORDER
-                    primaryContent = odyseeService.content()["en"]?.get("PRIMARY_CONTENT")
+                    subscriptionChannelIds =
+                        lbrynetService.preference().shared?.value?.subscriptions?.mapNotNull {
+                            LbryUri.parse(LbryUri.normalize(it)).channelClaimId
+                        }?.takeIf { it.isNotEmpty() }
+                    if (subscriptionChannelIds == null) {
+                        db.withTransaction {
+                            db.remoteKeyDao().delete(remoteKeyLabel)
+                            db.claimLookupDao().deleteAll(remoteKeyLabel)
+                        }
+                        return MediatorResult.Success(endOfPaginationReached = true)
+                    }
                 }
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
                 LoadType.APPEND -> {
@@ -72,10 +80,10 @@ class FeaturedVideosRemoteMediator @Inject constructor(
                 }
             }
             val request = ClaimSearchRequest(
-                channelIds = primaryContent?.channelIds,
+                channelIds = subscriptionChannelIds,
                 claimTypes = listOf("stream", "repost"),
                 streamTypes = listOf("video"),
-                orderBy = listOf("trending_group", "trending_mixed"),
+                orderBy = listOf("release_time"),
                 hasSource = true,
                 page = page,
                 pageSize = state.config.pageSize,

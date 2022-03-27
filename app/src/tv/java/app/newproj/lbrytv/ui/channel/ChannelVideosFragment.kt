@@ -36,10 +36,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import app.newproj.lbrytv.NavGraphDirections
 import app.newproj.lbrytv.R
-import app.newproj.lbrytv.data.dto.ItemComparator
-import app.newproj.lbrytv.data.dto.Video
-import app.newproj.lbrytv.ui.presenter.VideoCardPresenter
+import app.newproj.lbrytv.data.dto.BrowseItemUiStateComparator
+import app.newproj.lbrytv.data.dto.VideoUiState
 import app.newproj.lbrytv.ui.presenter.VideoGridPresenter
+import app.newproj.lbrytv.ui.presenter.VideoPresenter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -49,9 +49,10 @@ private const val NUMBER_OF_COLUMNS = 4
 @AndroidEntryPoint
 class ChannelVideosFragment : VerticalGridSupportFragment() {
     private val viewModel: ChannelVideosViewModel by viewModels()
-    private val channelTitleView get() = titleView as ChannelTitleView?
-    private lateinit var videosAdapter: PagingDataAdapter<Video>
     private val navController by lazy { findNavController() }
+    private val videosAdapter =
+        PagingDataAdapter(VideoPresenter(), BrowseItemUiStateComparator<VideoUiState>())
+    private val channelTitleView get() = titleView as ChannelTitleView?
 
     override fun onInflateTitleView(
         inflater: LayoutInflater,
@@ -61,17 +62,14 @@ class ChannelVideosFragment : VerticalGridSupportFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adapter = PagingDataAdapter(VideoCardPresenter(), ItemComparator<Video>()).also {
-            videosAdapter = it
-        }
+        adapter = videosAdapter
         gridPresenter = VideoGridPresenter().apply {
             numberOfColumns = NUMBER_OF_COLUMNS
         }
         setOnItemViewClickedListener { _, item, _, _ ->
-            require(item is Video)
+            require(item is VideoUiState)
             goToPlayerScreen(item)
         }
-
         if (savedInstanceState == null) {
             prepareEntranceTransition()
         }
@@ -84,16 +82,15 @@ class ChannelVideosFragment : VerticalGridSupportFragment() {
         }
         with(viewLifecycleOwner.lifecycleScope) {
             launch {
-                viewModel.uiState.collectLatest { uiState ->
+                viewModel.uiState.collect { uiState ->
                     channelTitleView?.setChannel(uiState.channel)
                     uiState.errorMessage?.let(::showError)
                 }
             }
             launch {
-                videosAdapter.loadStateFlow.collectLatest {
+                videosAdapter.loadStateFlow.collect {
                     when (val refreshLoadState = it.refresh) {
-                        LoadState.Loading -> {/* no-op */
-                        }
+                        LoadState.Loading -> return@collect
                         is LoadState.NotLoading -> startEntranceTransition()
                         is LoadState.Error -> showError(refreshLoadState.error.localizedMessage)
                     }
@@ -105,7 +102,7 @@ class ChannelVideosFragment : VerticalGridSupportFragment() {
         }
     }
 
-    private fun goToPlayerScreen(video: Video) {
+    private fun goToPlayerScreen(video: VideoUiState) {
         navController.navigate(NavGraphDirections.actionGlobalVideoPlayerFragment(video.id))
     }
 

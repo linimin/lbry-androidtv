@@ -31,9 +31,9 @@ import androidx.paging.PagingData
 import app.newproj.lbrytv.data.datasource.VideoLocalDataSource
 import app.newproj.lbrytv.data.datasource.VideoRemoteDataSource
 import app.newproj.lbrytv.data.dto.Video
-import app.newproj.lbrytv.data.paging.ChannelVideosRemoteMediator
-import app.newproj.lbrytv.data.paging.FeaturedVideosRemoteMediator
-import app.newproj.lbrytv.data.paging.SubscriptionVideosRemoteMediator
+import app.newproj.lbrytv.data.remotemediator.ChannelVideosRemoteMediator
+import app.newproj.lbrytv.data.remotemediator.FeaturedVideosRemoteMediator
+import app.newproj.lbrytv.data.remotemediator.SubscriptionVideosRemoteMediator
 import app.newproj.lbrytv.di.LargePageSize
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
@@ -41,7 +41,7 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
-class VideoRepository @Inject constructor(
+class VideosRepository @Inject constructor(
     private val videoLocalDataSource: VideoLocalDataSource,
     private val videoRemoteDataSource: VideoRemoteDataSource,
     private val featuredVideosRemoteMediator: FeaturedVideosRemoteMediator,

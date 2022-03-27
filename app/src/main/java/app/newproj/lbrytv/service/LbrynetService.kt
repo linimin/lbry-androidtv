@@ -78,8 +78,6 @@ interface LbrynetService {
      * equality constraint such as '>', '>=', '<' and '<=' eg. height=">400000" would limit
      * results to only claims above 400k block height.
      *
-     * [Link to Postman](https://web.postman.co/workspace/LBRYtv~7307462d-f6f1-45d0-9455-7e36e7983a8c/request/19881064-13bf5d74-291b-4d60-8c69-cbfdca39cc49)
-     *
      * @param[request] A [ClaimSearchRequest] includes the request parameters.
      * @return a [ClaimSearchResult] contains the search result.
      */
@@ -89,8 +87,6 @@ interface LbrynetService {
 
     /**
      * Return the balance of a wallet.
-     *
-     * [Link to Postman](https://web.postman.co/workspace/LBRYtv~7307462d-f6f1-45d0-9455-7e36e7983a8c/request/19881064-ee295056-3aa4-4e1e-a6fd-a50efe491675)
      *
      * @return a [WalletBalance] includes amount of lbry credits in wallet.
      */
@@ -139,9 +135,6 @@ interface LbrynetService {
 
     /**
      * Get preference value for key or all values if not key is passed in.
-     *
-     * [Link to Postman](https://web.postman.co/workspace/LBRYtv~7307462d-f6f1-45d0-9455-7e36e7983a8c/request/19881064-fcfe7e6e-5d80-4743-99d6-a82c72d157e7)
-     *
      */
     @JsonRpc("preference_get")
     @POST("/")

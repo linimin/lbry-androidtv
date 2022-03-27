@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.data.paging
+package app.newproj.lbrytv.data.remotemediator
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
@@ -31,45 +31,39 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import app.newproj.lbrytv.data.AppDatabase
 import app.newproj.lbrytv.data.dto.ClaimSearchRequest
-import app.newproj.lbrytv.data.dto.LbryUri
 import app.newproj.lbrytv.data.dto.Video
 import app.newproj.lbrytv.data.entity.ClaimLookup
 import app.newproj.lbrytv.data.entity.RemoteKey
 import app.newproj.lbrytv.service.LbrynetService
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import retrofit2.HttpException
 import java.io.IOException
-import javax.inject.Inject
 
 private const val STARTING_PAGE_INDEX = 1
 private const val STARTING_SORTING_ORDER = 1
 
 @OptIn(ExperimentalPagingApi::class)
-class SubscriptionVideosRemoteMediator @Inject constructor(
-    private val lbrynetService: LbrynetService,
+class ChannelVideosRemoteMediator @AssistedInject constructor(
+    @Assisted private val channelId: String,
     private val db: AppDatabase,
+    private val lbrynetService: LbrynetService,
 ) : RemoteMediator<Int, Video>() {
-    private var subscriptionChannelIds: List<String>? = null
+    @AssistedFactory
+    interface Factory {
+        fun ChannelVideosRemoteMediator(channelId: String): ChannelVideosRemoteMediator
+    }
 
     override suspend fun load(loadType: LoadType, state: PagingState<Int, Video>): MediatorResult {
         try {
             val page: Int
             var nextSortingOrder: Int
-            val remoteKeyLabel = "SUBSCRIPTION_VIDEOS"
+            val remoteKeyLabel = channelId
             when (loadType) {
                 LoadType.REFRESH -> {
                     page = STARTING_PAGE_INDEX
                     nextSortingOrder = STARTING_SORTING_ORDER
-                    subscriptionChannelIds =
-                        lbrynetService.preference().shared?.value?.subscriptions?.mapNotNull {
-                            LbryUri.parse(LbryUri.normalize(it)).channelClaimId
-                        }?.takeIf { it.isNotEmpty() }
-                    if (subscriptionChannelIds == null) {
-                        db.withTransaction {
-                            db.remoteKeyDao().delete(remoteKeyLabel)
-                            db.claimLookupDao().deleteAll(remoteKeyLabel)
-                        }
-                        return MediatorResult.Success(endOfPaginationReached = true)
-                    }
                 }
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
                 LoadType.APPEND -> {
@@ -80,7 +74,7 @@ class SubscriptionVideosRemoteMediator @Inject constructor(
                 }
             }
             val request = ClaimSearchRequest(
-                channelIds = subscriptionChannelIds,
+                channelIds = listOf(channelId),
                 claimTypes = listOf("stream", "repost"),
                 streamTypes = listOf("video"),
                 orderBy = listOf("release_time"),
@@ -98,9 +92,8 @@ class SubscriptionVideosRemoteMediator @Inject constructor(
                 val claimLookups = claims.map {
                     ClaimLookup(remoteKeyLabel, it.claimId, nextSortingOrder++)
                 }
-                db.claimLookupDao().upsert(claimLookups)
-                val nextKey = if (claims.isEmpty()) null else page.inc()
-                val remoteKey = RemoteKey(remoteKeyLabel, nextKey, nextSortingOrder)
+                db.claimLookupDao().insert(claimLookups)
+                val remoteKey = RemoteKey(remoteKeyLabel, null, nextSortingOrder)
                 db.remoteKeyDao().upsert(remoteKey)
             }
             return MediatorResult.Success(endOfPaginationReached = claims.isEmpty())

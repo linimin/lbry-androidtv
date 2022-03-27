@@ -22,24 +22,22 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.data.paging
+package app.newproj.lbrytv.ui.presenter
 
-import androidx.paging.PagingSource
-import androidx.paging.PagingState
-import app.newproj.lbrytv.R
+import androidx.leanback.widget.Presenter
+import androidx.leanback.widget.PresenterSelector
+import app.newproj.lbrytv.data.dto.BrowseItemUiState
+import app.newproj.lbrytv.data.dto.ChannelUiState
 import app.newproj.lbrytv.data.dto.Setting
-import javax.inject.Inject
+import app.newproj.lbrytv.data.dto.VideoUiState
 
-class SettingPagingSource @Inject constructor() : PagingSource<Int, Setting>() {
-    override fun getRefreshKey(state: PagingState<Int, Setting>): Int? = null
-
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Setting> {
-        return LoadResult.Page(listOf(
-            Setting(
-                id = R.string.switch_account.toString(),
-                titleRes = R.string.switch_account,
-                iconRes = R.drawable.person_add,
-            )
-        ), null, null)
+object BrowseItemUiStatePresenterSelector : PresenterSelector() {
+    override fun getPresenter(item: Any): Presenter {
+        require(item is BrowseItemUiState)
+        return when (item) {
+            is VideoUiState -> VideoPresenter()
+            is ChannelUiState -> ChannelPresenter()
+            is Setting -> SettingPresenter()
+        }
     }
 }

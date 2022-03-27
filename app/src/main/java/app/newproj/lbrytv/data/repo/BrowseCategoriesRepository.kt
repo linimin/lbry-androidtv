@@ -22,9 +22,26 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.ui.presenter
+package app.newproj.lbrytv.data.repo
 
-import app.newproj.lbrytv.BR
-import app.newproj.lbrytv.R
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import app.newproj.lbrytv.data.datasource.BrowseCategoryPagingSource
+import app.newproj.lbrytv.data.dto.BrowseCategory
+import app.newproj.lbrytv.di.SmallPageSize
+import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+import javax.inject.Provider
 
-class ChannelCardPresenter : ItemDataBindingPresenter(R.layout.channel_card, BR.channel)
+@OptIn(ExperimentalPagingApi::class)
+class BrowseCategoriesRepository @Inject constructor(
+    private val categoryPagingSourceProvider: Provider<BrowseCategoryPagingSource>,
+    @SmallPageSize private val pagingConfig: PagingConfig,
+) {
+    fun browseCategories(): Flow<PagingData<BrowseCategory>> = Pager(
+        config = pagingConfig,
+        pagingSourceFactory = categoryPagingSourceProvider::get
+    ).flow
+}

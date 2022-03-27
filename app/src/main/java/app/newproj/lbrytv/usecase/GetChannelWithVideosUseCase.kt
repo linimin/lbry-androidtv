@@ -25,17 +25,17 @@
 package app.newproj.lbrytv.usecase
 
 import app.newproj.lbrytv.data.dto.ChannelWithVideos
-import app.newproj.lbrytv.data.repo.ChannelRepository
-import app.newproj.lbrytv.data.repo.VideoRepository
+import app.newproj.lbrytv.data.repo.ChannelsRepository
+import app.newproj.lbrytv.data.repo.VideosRepository
 import javax.inject.Inject
 
 class GetChannelWithVideosUseCase @Inject constructor(
-    private val channelRepository: ChannelRepository,
-    private val videoRepository: VideoRepository,
+    private val channelsRepository: ChannelsRepository,
+    private val videosRepository: VideosRepository,
 ) {
     operator fun invoke(channelId: String): ChannelWithVideos =
         ChannelWithVideos(
-            channelRepository.channel(channelId),
-            videoRepository.channelVideos(channelId)
+            channelsRepository.channel(channelId),
+            videosRepository.channelVideos(channelId)
         )
 }

@@ -22,26 +22,34 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.data.repo
+package app.newproj.lbrytv.data.dto
 
-import androidx.paging.ExperimentalPagingApi
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
+import android.annotation.SuppressLint
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.paging.PagingData
-import app.newproj.lbrytv.data.dto.BrowseCategory
-import app.newproj.lbrytv.data.paging.BrowseCategoryPagingSource
-import app.newproj.lbrytv.di.SmallPageSize
+import androidx.recyclerview.widget.DiffUtil
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
-import javax.inject.Provider
 
-@OptIn(ExperimentalPagingApi::class)
-class BrowseCategoryRepository @Inject constructor(
-    private val categoryPagingSourceProvider: Provider<BrowseCategoryPagingSource>,
-    @SmallPageSize private val pagingConfig: PagingConfig,
-) {
-    fun browseCategories(): Flow<PagingData<BrowseCategory>> = Pager(
-        config = pagingConfig,
-        pagingSourceFactory = categoryPagingSourceProvider::get
-    ).flow
+data class BrowseCategoryUiState(
+    val id: Long,
+    @StringRes val nameRes: Int,
+    @DrawableRes val iconRes: Int,
+    val items: Flow<PagingData<BrowseItemUiState>>,
+)
+
+sealed interface BrowseItemUiState {
+    val id: String
+}
+
+class BrowseItemUiStateComparator<T : BrowseItemUiState> : DiffUtil.ItemCallback<T>() {
+    override fun areItemsTheSame(oldItem: T, newItem: T): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    // https://googlesamples.github.io/android-custom-lint-rules/checks/DiffUtilEquals.md.html
+    @SuppressLint("DiffUtilEquals")
+    override fun areContentsTheSame(oldItem: T, newItem: T): Boolean {
+        return oldItem == newItem
+    }
 }
