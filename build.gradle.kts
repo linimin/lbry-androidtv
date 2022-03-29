@@ -28,6 +28,12 @@ plugins {
     alias(libs.plugins.versionCatalogUpdate)
 }
 
+versionCatalogUpdate {
+    pin {
+        libraries.add(libs.core)
+    }
+}
+
 tasks.register("clean", Delete::class) {
     delete(rootProject.buildDir)
 }

@@ -45,6 +45,8 @@
 
 # Prevent R8 from leaving Data object members always null
 -keepclassmembers,allowobfuscation class * {
+  # https://issuetracker.google.com/issues/150189783
+  <init>(...);
   @com.google.gson.annotations.SerializedName <fields>;
 }
 
@@ -53,3 +55,8 @@
 -keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
 
 ##---------------End: proguard configuration for Gson  ----------
+
+# https://issuetracker.google.com/issues/168580258
+-keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite* {
+   <fields>;
+}
