@@ -25,9 +25,11 @@
 package app.newproj.lbrytv.data.datasource
 
 import androidx.paging.PagingSource
+import androidx.room.withTransaction
 import app.newproj.lbrytv.data.AppDatabase
 import app.newproj.lbrytv.data.dto.ClaimSearchResult
 import app.newproj.lbrytv.data.dto.Video
+import app.newproj.lbrytv.data.entity.ClaimLookup
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -40,11 +42,24 @@ class VideoLocalDataSource @Inject constructor(
         db.claimSearchResultDao().upsert(claim)
     }
 
-    fun featuredVideoPagingSource(): PagingSource<Int, Video> = db.videoDao().featuredVideos()
+    fun featuredVideoPagingSource(): PagingSource<Int, Video> =
+        db.videoDao().featuredVideosPagingSource()
 
     fun subscriptionVideoPagingSource(): PagingSource<Int, Video> =
         db.videoDao().subscriptionVideos()
 
     fun channelVideoPagingSource(channelId: String): PagingSource<Int, Video> =
         db.videoDao().videos(channelId)
+
+    suspend fun replaceRecommendedVideos(claims: List<ClaimSearchResult.Item>): List<Video> {
+        return db.withTransaction {
+            db.claimSearchResultDao().upsert(claims)
+            db.claimLookupDao().deleteAll("RECOMMENDED_VIDEOS")
+            val claimLookups = claims.mapIndexed { index, claim ->
+                ClaimLookup("RECOMMENDED_VIDEOS", claim.claimId, index)
+            }
+            db.claimLookupDao().upsert(claimLookups)
+            db.videoDao().recommendedVideos()
+        }
+    }
 }

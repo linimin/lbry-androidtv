@@ -68,6 +68,10 @@ class VideosRepository @Inject constructor(
         pagingSourceFactory = { videoLocalDataSource.featuredVideoPagingSource() }
     ).flow
 
+    suspend fun recommendedVideos(): List<Video> {
+        return videoLocalDataSource.replaceRecommendedVideos(videoRemoteDataSource.featuredVideos())
+    }
+
     fun subscriptionVideos(): Flow<PagingData<Video>> = Pager(
         config = pagingConfig,
         remoteMediator = subscriptionVideosMediator,

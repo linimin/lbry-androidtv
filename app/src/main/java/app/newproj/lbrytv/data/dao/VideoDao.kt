@@ -44,7 +44,18 @@ interface VideoDao {
         ORDER BY claim_lookup.sorting_order ASC
         """
     )
-    fun featuredVideos(): PagingSource<Int, Video>
+    fun featuredVideosPagingSource(): PagingSource<Int, Video>
+
+    @Query(
+        """
+        SELECT * FROM claim
+        INNER JOIN claim_lookup 
+        ON claim_lookup.label = 'RECOMMENDED_VIDEOS' 
+        AND claim.id = claim_lookup.claim_id 
+        ORDER BY claim_lookup.sorting_order ASC
+        """
+    )
+    suspend fun recommendedVideos(): List<Video>
 
     @Query(
         """

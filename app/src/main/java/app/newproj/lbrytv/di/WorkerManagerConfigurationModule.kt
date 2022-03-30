@@ -24,22 +24,19 @@
 
 package app.newproj.lbrytv.di
 
+import androidx.work.Configuration
+import app.newproj.lbrytv.worker.HomeChannelsUpdateWorkerFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import javax.inject.Qualifier
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DispatcherModule {
+object WorkerManagerConfigurationModule {
     @Provides
-    @IODispatcher
-    fun ioDispatcher(): CoroutineDispatcher = Dispatchers.IO
+    fun workerManagerConfiguration(workerFactory: HomeChannelsUpdateWorkerFactory): Configuration =
+        Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
 }
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class IODispatcher

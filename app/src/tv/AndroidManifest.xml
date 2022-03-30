@@ -61,5 +61,26 @@
             </intent-filter>
             <nav-graph android:value="@navigation/nav_graph" />
         </activity>
+
+        <!-- Broadcast receiver used to receive communication from the TV Launcher -->
+        <receiver
+            android:name=".TvLauncherReceiver"
+            android:exported="true">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <!-- Our app has been installed and should create its channel in the launcher -->
+                <action
+                    android:name="android.media.tv.action.INITIALIZE_PROGRAMS" />
+                <!-- User has added a program to the system's watch next channel -->
+                <action
+                    android:name="android.media.tv.action.PREVIEW_PROGRAM_ADDED_TO_WATCH_NEXT" />
+                <!-- User has removed a program from one of our channels -->
+                <action
+                    android:name="android.media.tv.action.PREVIEW_PROGRAM_BROWSABLE_DISABLED" />
+                <!-- User has removed a program from the system's watch next channel -->
+                <action
+                    android:name="android.media.tv.action.WATCH_NEXT_PROGRAM_BROWSABLE_DISABLED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

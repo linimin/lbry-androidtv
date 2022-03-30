@@ -25,13 +25,19 @@
 package app.newproj.lbrytv
 
 import android.app.Application
+import androidx.work.Configuration
 import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 @HiltAndroidApp
-class MainApplication : Application() {
+class MainApplication : Application(), Configuration.Provider {
+    @Inject lateinit var workerManagerConfiguration: Configuration
+
     override fun onCreate() {
         super.onCreate()
         DynamicColors.applyToActivitiesIfAvailable(this)
     }
+
+    override fun getWorkManagerConfiguration() = workerManagerConfiguration
 }

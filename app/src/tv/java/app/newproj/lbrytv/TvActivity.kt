@@ -35,12 +35,18 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import app.newproj.lbrytv.databinding.TvActivityBinding
+import app.newproj.lbrytv.worker.HomeChannelsUpdateWorker
 import coil.imageLoader
 import coil.request.ImageRequest
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -76,6 +82,15 @@ class TvActivity : FragmentActivity() {
                 viewModel.wallpaperUrl.collectLatest(::loadWallpaper)
             }
         }
+        WorkManager.getInstance(baseContext).enqueue(
+            PeriodicWorkRequestBuilder<HomeChannelsUpdateWorker>(1, TimeUnit.HOURS)
+                .setConstraints(
+                    Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build()
+                )
+                .build()
+        )
     }
 
     private fun loadWallpaper(url: String) = imageLoader.enqueue(

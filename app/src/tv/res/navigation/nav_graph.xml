@@ -44,6 +44,9 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
         <action
             android:id="@+id/action_browseCategoriesFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
+        <deepLink
+            android:id="@+id/deepLink2"
+            app:uri="https://lbrytv.newproj.app/" />
     </fragment>
     <fragment
         android:id="@+id/videoPlayerFragment"

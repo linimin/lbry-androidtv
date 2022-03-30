@@ -441,7 +441,7 @@ data class ClaimSearchResult(
             val title: String? = null,
 
             @SerializedName("video")
-            @Ignore
+            @Embedded
             val video: Video? = null
         ) {
             data class Cover(
@@ -465,9 +465,17 @@ data class ClaimSearchResult(
             )
 
             data class Video(
-                @SerializedName("duration") val duration: Int? = null,
-                @SerializedName("height") val height: Int? = null,
-                @SerializedName("width") val width: Int? = null
+                @SerializedName("duration")
+                @ColumnInfo(name = "duration")
+                val duration: Long? = null,
+
+                @SerializedName("height")
+                @Ignore
+                val height: Int? = null,
+
+                @SerializedName("width")
+                @Ignore
+                val width: Int? = null
             )
         }
     }
