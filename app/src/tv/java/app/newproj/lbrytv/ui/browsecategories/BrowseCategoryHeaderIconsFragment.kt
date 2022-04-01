@@ -54,6 +54,7 @@ class BrowseCategoryHeaderIconsFragment : RowsSupportFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        verticalGridView.setBackgroundColor(requireContext().getColor(R.color.color_surface_80))
         with(viewLifecycleOwner.lifecycleScope) {
             launch {
                 viewModel.headersWindowAlignOffsetTop.collectLatest(::setAlignment)

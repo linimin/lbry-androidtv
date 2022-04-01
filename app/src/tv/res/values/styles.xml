@@ -31,7 +31,6 @@
     </style>
 
     <style name="Widget.HeaderIcons.VerticalGridView" parent="Widget.Leanback.Headers.VerticalGridView">
-        <item name="android:background">@color/color_surface_80</item>
         <item name="android:gravity">center_horizontal</item>
     </style>
 
