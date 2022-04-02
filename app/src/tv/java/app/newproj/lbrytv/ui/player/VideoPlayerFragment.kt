@@ -81,7 +81,7 @@ class VideoPlayerFragment : VideoSupportFragment() {
                     subtitle = uiState.subtitle
                 }
                 uiState.streamUrl?.let(::play)
-                uiState.errorMessage?.let(::showError)
+                uiState.errorMessage?.let(::goToErrorScreen)
             }
         }
     }
@@ -105,7 +105,7 @@ class VideoPlayerFragment : VideoSupportFragment() {
     }
 
     override fun onError(errorCode: Int, errorMessage: CharSequence?) {
-        showError(errorMessage?.toString())
+        goToErrorScreen(errorMessage?.toString())
     }
 
     private fun initializePlayer() {
@@ -163,7 +163,7 @@ class VideoPlayerFragment : VideoSupportFragment() {
         )
     }
 
-    private fun showError(message: String?) {
+    private fun goToErrorScreen(message: String?) {
         navController.navigate(NavGraphDirections.actionGlobalErrorFragment(message))
         viewModel.errorMessageShown()
     }

@@ -22,32 +22,28 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.ui.accounts
+package app.newproj.lbrytv.ui.browse
 
-import android.util.Patterns
-import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import javax.inject.Inject
+import androidx.fragment.app.viewModels
+import androidx.leanback.app.HeadersSupportFragment
 
-@HiltViewModel
-class SignInEmailInputViewModel @Inject constructor() : ViewModel() {
-    data class UiState(
-        val email: String? = null,
-        val isValidEmail: Boolean = false,
-    )
+class BrowseCategoryHeadersFragment : HeadersSupportFragment() {
+    private val viewModel: BrowseCategoriesViewModel by viewModels({ requireParentFragment() })
+    private var headerViewSelectedListener: OnHeaderViewSelectedListener? = null
 
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    init {
+        super.setOnHeaderViewSelectedListener { viewHolder, row ->
+            viewModel.setSelectedHeaderPosition(selectedPosition)
+            headerViewSelectedListener?.onHeaderSelected(viewHolder, row)
+        }
+    }
 
-    fun setEmail(email: String): Boolean =
-        Patterns.EMAIL_ADDRESS.matcher(email).matches()
-            .also { isValidEmail ->
-                _uiState.update {
-                    it.copy(email = email, isValidEmail = isValidEmail)
-                }
-            }
+    override fun setAlignment(windowAlignOffsetTop: Int) {
+        super.setAlignment(windowAlignOffsetTop)
+        viewModel.setHeadersAlignment(windowAlignOffsetTop)
+    }
+
+    override fun setOnHeaderViewSelectedListener(listener: OnHeaderViewSelectedListener?) {
+        headerViewSelectedListener = listener
+    }
 }

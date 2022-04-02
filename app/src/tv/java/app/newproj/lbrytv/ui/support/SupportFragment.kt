@@ -35,10 +35,10 @@ import androidx.navigation.fragment.findNavController
 import app.newproj.lbrytv.NavGraphDirections
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.data.dto.SupportAmountOption
-import app.newproj.lbrytv.ui.guidedstep.findActionById
-import app.newproj.lbrytv.ui.guidedstep.findSubActionById
-import app.newproj.lbrytv.ui.guidedstep.id
-import app.newproj.lbrytv.ui.guidedstep.updateAction
+import app.newproj.lbrytv.ui.guidance.findActionById
+import app.newproj.lbrytv.ui.guidance.findSubActionById
+import app.newproj.lbrytv.ui.guidance.id
+import app.newproj.lbrytv.ui.guidance.updateAction
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -77,7 +77,7 @@ class SupportFragment : GuidedStepSupportFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collectLatest { uiState ->
                 updateActions(uiState.amountOptions)
-                uiState.errorMessage?.let(::showError)
+                uiState.errorMessage?.let(::goToErrorScreen)
             }
         }
     }
@@ -162,7 +162,7 @@ class SupportFragment : GuidedStepSupportFragment() {
         )
     }
 
-    private fun showError(message: String?) {
+    private fun goToErrorScreen(message: String?) {
         navController.navigate(NavGraphDirections.actionGlobalErrorFragment(message))
         viewModel.errorMessageShown()
     }

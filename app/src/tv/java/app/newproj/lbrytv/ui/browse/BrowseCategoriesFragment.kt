@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.ui.browsecategories
+package app.newproj.lbrytv.ui.browse
 
 import android.os.Bundle
 import android.view.View
@@ -64,24 +64,26 @@ import kotlinx.coroutines.launch
 class BrowseCategoriesFragment : BrowseSupportFragment() {
     private val viewModel: BrowseCategoriesViewModel by viewModels()
     private val navController by lazy { findNavController() }
-    private val rowsAdapter = PagingDataAdapter(RowPresenterSelector, RowComparator)
     private val walletTitleView get() = titleView as? WalletTitleView
+    private val rowsAdapter = PagingDataAdapter(RowPresenterSelector, RowComparator)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adapter = rowsAdapter
         // Disable the header here and re-enable it in the hidden state in onViewCreated() to
         // workaround this issue: https://issuetracker.google.com/issues/147614095.
         headersState = HEADERS_DISABLED
-        isHeadersTransitionOnBackEnabled = false
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            onBackPressed()
-        }
         setHeaderPresenterSelector(SinglePresenterSelector(LocalizableRowHeaderPresenter()))
+        isHeadersTransitionOnBackEnabled = false
+        requireActivity()
+            .onBackPressedDispatcher
+            .addCallback(this) {
+                onBackPressed()
+            }
+        adapter = rowsAdapter
         setOnSearchClickedListener { goToSearchScreen() }
         setOnItemViewClickedListener { _, item, _, _ ->
             require(item is BrowseItemUiState)
-            handleItemClicked(item)
+            onBrowseItemClicked(item)
         }
         if (savedInstanceState == null) {
             prepareEntranceTransition()
@@ -94,17 +96,21 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
         super.onViewCreated(view, savedInstanceState)
         headersState = HEADERS_HIDDEN
         require(view is ViewGroup)
-        BrowseCategoryHeaderIconsDockBinding.inflate(layoutInflater, view, true)
-        childFragmentManager.findFragmentById(R.id.browse_header_icons_dock).apply {
-            require(this is BrowseCategoryHeaderIconsFragment)
-            presenterSelector = SinglePresenterSelector(IconRowPresenter())
-            adapter = rowsAdapter
-        }
+        BrowseCategoryHeaderIconsDockBinding
+            .inflate(layoutInflater, view, true)
+            .apply {
+                browseHeaderIconsDock
+                    .getFragment<BrowseCategoryHeaderIconsFragment>()
+                    .apply {
+                        presenterSelector = SinglePresenterSelector(IconRowPresenter())
+                        adapter = rowsAdapter
+                    }
+            }
         with(viewLifecycleOwner.lifecycleScope) {
             launch {
                 viewModel.uiState.collect { uiState ->
                     walletTitleView?.setWallet(uiState.wallet)
-                    uiState.errorMessage?.let(::showError)
+                    uiState.errorMessage?.let(::goToErrorScreen)
                 }
             }
             launch {
@@ -112,7 +118,7 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
                     when (val refreshLoadState = it.refresh) {
                         LoadState.Loading -> return@collect
                         is LoadState.NotLoading -> startEntranceTransition()
-                        is LoadState.Error -> showError(refreshLoadState.error.localizedMessage)
+                        is LoadState.Error -> goToErrorScreen(refreshLoadState.error.localizedMessage)
                     }
                 }
             }
@@ -124,36 +130,22 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
         }
     }
 
-    private fun handleItemClicked(item: BrowseItemUiState) {
-        when (item) {
-            is VideoUiState -> navController.navigate(
-                NavGraphDirections.actionGlobalVideoPlayerFragment(item.id)
-            )
-
-            is ChannelUiState -> navController.navigate(
-                BrowseCategoriesFragmentDirections
-                    .actionBrowseCategoriesFragmentToChannelFragment(item.id)
-            )
-
-            is Setting -> when (item.titleRes) {
-                R.string.switch_account -> navController.navigate(
-                    BrowseCategoriesFragmentDirections
-                        .actionBrowseCategoriesFragmentToAccountsFragment()
-                )
-            }
-        }
+    private fun PagingData<BrowseCategoryUiState>.toRows(): PagingData<Row> = map {
+        PagingListRow(
+            it.id,
+            LocalizableHeaderItem(it.id, it.iconRes, it.nameRes),
+            PagingDataAdapter(BrowseItemUiStatePresenterSelector, BrowseItemUiStateComparator()),
+            it.items
+        )
     }
 
-    private fun onBackPressed() {
-        when {
-            isShowingHeaders -> requireActivity().finish()
-            (selectedRowViewHolder as ListRowPresenter.ViewHolder).selectedPosition == 0 ->
-                startHeadersTransition(true)
-
-            else -> setSelectedPosition(
-                selectedPosition, true,
-                ListRowPresenter.SelectItemViewHolderTask(0)
-            )
+    private fun onBrowseItemClicked(item: BrowseItemUiState) {
+        when (item) {
+            is VideoUiState -> goToVideoPlayerScreen(item.id)
+            is ChannelUiState -> goToChannelVideosScreen(item.id)
+            is Setting -> when (item.id) {
+                "${R.id.switch_account}" -> goToAccountsScreen()
+            }
         }
     }
 
@@ -163,17 +155,39 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
         )
     }
 
-    private fun showError(message: String?) {
+    private fun goToVideoPlayerScreen(videoId: String) {
+        navController.navigate(NavGraphDirections.actionGlobalVideoPlayerFragment(videoId))
+    }
+
+    private fun goToChannelVideosScreen(channelId: String) {
+        navController.navigate(
+            BrowseCategoriesFragmentDirections
+                .actionBrowseCategoriesFragmentToChannelFragment(channelId)
+        )
+    }
+
+    private fun goToAccountsScreen() {
+        navController.navigate(
+            BrowseCategoriesFragmentDirections.actionBrowseCategoriesFragmentToAccountsFragment()
+        )
+    }
+
+    private fun goToErrorScreen(message: String?) {
         navController.navigate(NavGraphDirections.actionGlobalErrorFragment(message))
         viewModel.errorMessageShown()
     }
-}
 
-private fun PagingData<BrowseCategoryUiState>.toRows(): PagingData<Row> = map {
-    PagingListRow(
-        it.id,
-        LocalizableHeaderItem(it.id, it.iconRes, it.nameRes),
-        PagingDataAdapter(BrowseItemUiStatePresenterSelector, BrowseItemUiStateComparator()),
-        it.items
-    )
+    private fun onBackPressed() {
+        when {
+            isShowingHeaders -> requireActivity().finish()
+            (selectedRowViewHolder as ListRowPresenter.ViewHolder).selectedPosition == 0 ->
+                startHeadersTransition(true)
+
+            else -> setSelectedPosition(
+                selectedPosition,
+                true,
+                ListRowPresenter.SelectItemViewHolderTask(0)
+            )
+        }
+    }
 }

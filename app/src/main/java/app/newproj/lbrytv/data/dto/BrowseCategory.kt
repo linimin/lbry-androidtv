@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.Flow
 
 data class BrowseCategory(
     val id: Long,
-    @StringRes val nameResId: Int,
-    @DrawableRes val iconResId: Int,
+    @StringRes val name: Int,
+    @DrawableRes val icon: Int,
     val items: Flow<PagingData<out BrowseItem>>,
 )

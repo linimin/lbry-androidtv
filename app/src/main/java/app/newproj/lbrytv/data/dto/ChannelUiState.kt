@@ -32,4 +32,13 @@ data class ChannelUiState(
     val title: String?,
     val name: String?,
     val isFollowing: Boolean = false,
-) : BrowseItemUiState
+) : BrowseItemUiState {
+    companion object {
+        fun fromChannel(channel: Channel) = ChannelUiState(
+            channel.id,
+            channel.claim.thumbnail,
+            channel.claim.title,
+            channel.claim.name,
+        )
+    }
+}

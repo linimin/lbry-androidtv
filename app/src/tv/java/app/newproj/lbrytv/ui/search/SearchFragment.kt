@@ -93,7 +93,7 @@ class SearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchResu
                 when (val refreshLoadState = it.refresh) {
                     LoadState.Loading -> progressBarManager.show()
                     is LoadState.NotLoading -> progressBarManager.hide()
-                    is LoadState.Error -> showError(refreshLoadState.error.localizedMessage)
+                    is LoadState.Error -> goToErrorScreen(refreshLoadState.error.localizedMessage)
                 }
             }
         }
@@ -126,7 +126,7 @@ class SearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchResu
         }
     }
 
-    private fun showError(message: String?) {
+    private fun goToErrorScreen(message: String?) {
         navController.navigate(NavGraphDirections.actionGlobalErrorFragment(message))
     }
 

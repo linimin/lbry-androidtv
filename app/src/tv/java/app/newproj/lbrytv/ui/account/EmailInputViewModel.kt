@@ -22,30 +22,32 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.ui.guidedstep
+package app.newproj.lbrytv.ui.account
 
-import androidx.annotation.IdRes
-import androidx.leanback.app.GuidedStepSupportFragment
-import androidx.leanback.widget.GuidedAction
+import android.util.Patterns
+import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
-fun GuidedStepSupportFragment.updateAction(id: Long, update: (GuidedAction) -> Unit) {
-    findActionById(id)?.let {
-        update(it)
-        notifyActionChanged(findActionPositionById(id))
-    }
+@HiltViewModel
+class SignInEmailInputViewModel @Inject constructor() : ViewModel() {
+    data class UiState(
+        val email: String? = null,
+        val isValidEmail: Boolean = false,
+    )
+
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
+    fun setEmail(email: String): Boolean =
+        Patterns.EMAIL_ADDRESS.matcher(email).matches()
+            .also { isValidEmail ->
+                _uiState.update {
+                    it.copy(email = email, isValidEmail = isValidEmail)
+                }
+            }
 }
-
-fun GuidedStepSupportFragment.updateAction(@IdRes id: Int, update: (GuidedAction) -> Unit) {
-    updateAction(id.toLong(), update)
-}
-
-fun GuidedStepSupportFragment.findSubActionById(
-    parentActionId: Long,
-    subActionId: Long,
-): GuidedAction? =
-    findActionById(parentActionId)?.subActions?.find { it.id == subActionId }
-
-fun GuidedStepSupportFragment.findActionById(@IdRes id: Int): GuidedAction? =
-    findActionById(id.toLong())
-
-fun GuidedAction.Builder.id(@IdRes id: Int): GuidedAction.Builder = id(id.toLong())

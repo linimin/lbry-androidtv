@@ -43,24 +43,24 @@ class BrowseCategoryPagingSource @Inject constructor(
             data = listOf(
                 BrowseCategory(
                     id = R.string.featured.toLong(),
-                    nameResId = R.string.featured, iconResId = R.drawable.whatshot,
+                    name = R.string.featured, icon = R.drawable.whatshot,
                     items = videosRepo.featuredVideos()
                 ),
                 BrowseCategory(
                     id = R.string.subscriptions.toLong(),
-                    nameResId = R.string.subscriptions, iconResId = R.drawable.star,
+                    name = R.string.subscriptions, icon = R.drawable.star,
                     items = videosRepo.subscriptionVideos()
                 ),
                 BrowseCategory(
                     id = R.string.channels.toLong(),
-                    nameResId = R.string.channels, iconResId = R.drawable.subscriptions,
+                    name = R.string.channels, icon = R.drawable.subscriptions,
                     items = channelsRepo.followingChannels()
                 ),
                 BrowseCategory(
                     id = R.string.settings.toLong(),
-                    nameResId = R.string.settings, iconResId = R.drawable.settings,
+                    name = R.string.settings, icon = R.drawable.settings,
                     items = settingsRepo.settings()
-                )
+                ),
             ),
             prevKey = null, nextKey = null
         )

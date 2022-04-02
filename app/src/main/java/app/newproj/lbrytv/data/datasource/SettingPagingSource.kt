@@ -36,7 +36,7 @@ class SettingPagingSource @Inject constructor() : PagingSource<Int, Setting>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Setting> {
         return LoadResult.Page(listOf(
             Setting(
-                id = R.string.switch_account.toString(),
+                id = "${R.id.switch_account}",
                 titleRes = R.string.switch_account,
                 iconRes = R.drawable.person_add,
             )

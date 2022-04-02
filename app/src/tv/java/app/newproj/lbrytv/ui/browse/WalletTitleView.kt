@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.ui.browsecategories
+package app.newproj.lbrytv.ui.browse
 
 import android.content.Context
 import android.util.AttributeSet

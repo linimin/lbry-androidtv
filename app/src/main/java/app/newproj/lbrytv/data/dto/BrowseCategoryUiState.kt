@@ -28,15 +28,33 @@ import android.annotation.SuppressLint
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.paging.PagingData
+import androidx.paging.map
 import androidx.recyclerview.widget.DiffUtil
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 data class BrowseCategoryUiState(
     val id: Long,
     @StringRes val nameRes: Int,
     @DrawableRes val iconRes: Int,
     val items: Flow<PagingData<BrowseItemUiState>>,
-)
+) {
+    companion object {
+        fun fromBrowseCategory(browseCategory: BrowseCategory) = BrowseCategoryUiState(
+            browseCategory.id,
+            browseCategory.name, browseCategory.icon,
+            browseCategory.items.map { pagingData ->
+                pagingData.map { browseItem ->
+                    when (browseItem) {
+                        is Video -> VideoUiState.fromVideo(browseItem)
+                        is Channel -> ChannelUiState.fromChannel(browseItem)
+                        is Setting -> browseItem
+                    }
+                }
+            }
+        )
+    }
+}
 
 sealed interface BrowseItemUiState {
     val id: String

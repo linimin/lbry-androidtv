@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.ui.accounts
+package app.newproj.lbrytv.ui.account
 
 import android.os.Bundle
 import android.text.InputType
@@ -35,8 +35,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.newproj.lbrytv.R
-import app.newproj.lbrytv.ui.guidedstep.id
-import app.newproj.lbrytv.ui.guidedstep.updateAction
+import app.newproj.lbrytv.ui.guidance.id
+import app.newproj.lbrytv.ui.guidance.updateAction
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 

@@ -22,11 +22,8 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.ui.accounts
+package app.newproj.lbrytv.ui.account
 
-import android.accounts.AccountManager
-import androidx.core.os.bundleOf
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.newproj.lbrytv.data.repo.AccountRepository
@@ -39,46 +36,40 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class EmailVerifyViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+class AccountsViewModel @Inject constructor(
     private val accountRepo: AccountRepository,
 ) : ViewModel() {
-    private val args = EmailVerifyFragmentArgs.fromSavedStateHandle(savedStateHandle)
-
     data class UiState(
-        val isEmailVerified: Boolean = false,
+        val accounts: List<AccountUiState>? = null,
+        val isAccountSelected: Boolean = false,
         val errorMessage: String? = null,
+    )
+
+    data class AccountUiState(
+        val name: String,
+        val onSelected: () -> Unit,
     )
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            try {
-                val account = accountRepo.addAccount(args.email)
-                accountRepo.setCurrentAccount(account)
-                args.authResponse?.onResult(
-                    bundleOf(
-                        AccountManager.KEY_ACCOUNT_NAME to account.name,
-                        AccountManager.KEY_ACCOUNT_TYPE to account.type,
-                    )
-                )
-                _uiState.update {
-                    it.copy(isEmailVerified = true)
+        accountRepo.accounts().map { account ->
+            AccountUiState(
+                name = account.name,
+                onSelected = {
+                    viewModelScope.launch {
+                        try {
+                            accountRepo.setCurrentAccount(account)
+                            _uiState.update { it.copy(isAccountSelected = true) }
+                        } catch (error: Throwable) {
+                            _uiState.update { it.copy(errorMessage = error.localizedMessage) }
+                        }
+                    }
                 }
-            } catch (error: Throwable) {
-                _uiState.update {
-                    it.copy(errorMessage = error.localizedMessage)
-                }
-                args.authResponse?.onError(-1, error.localizedMessage)
-            }
-        }
-    }
-
-    fun errorMessageShown() {
-        _uiState.update {
-            it.copy(errorMessage = null)
+            )
+        }.let { accounts ->
+            _uiState.update { it.copy(accounts = accounts) }
         }
     }
 }

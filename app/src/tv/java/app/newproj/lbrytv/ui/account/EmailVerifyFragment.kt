@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.ui.accounts
+package app.newproj.lbrytv.ui.account
 
 import android.os.Bundle
 import android.view.View
@@ -35,7 +35,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import app.newproj.lbrytv.NavGraphDirections
 import app.newproj.lbrytv.R
-import app.newproj.lbrytv.ui.guidedstep.id
+import app.newproj.lbrytv.ui.guidance.id
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -73,7 +73,7 @@ class EmailVerifyFragment : GuidedStepSupportFragment() {
                 if (uiState.isEmailVerified) {
                     goToBrowseScreen()
                 } else if (uiState.errorMessage != null) {
-                    showError(uiState.errorMessage)
+                    goToErrorScreen(uiState.errorMessage)
                 }
             }
         }
@@ -85,7 +85,7 @@ class EmailVerifyFragment : GuidedStepSupportFragment() {
         )
     }
 
-    private fun showError(message: String?) {
+    private fun goToErrorScreen(message: String?) {
         navController.navigate(
             NavGraphDirections.actionGlobalErrorFragment(message = message)
         )

@@ -22,20 +22,14 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.ui.browsecategories
+package app.newproj.lbrytv.ui.browse
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import app.newproj.lbrytv.data.dto.BrowseCategory
 import app.newproj.lbrytv.data.dto.BrowseCategoryUiState
-import app.newproj.lbrytv.data.dto.Channel
-import app.newproj.lbrytv.data.dto.ChannelUiState
-import app.newproj.lbrytv.data.dto.Setting
-import app.newproj.lbrytv.data.dto.Video
-import app.newproj.lbrytv.data.dto.VideoUiState
 import app.newproj.lbrytv.data.dto.Wallet
 import app.newproj.lbrytv.data.repo.BrowseCategoriesRepository
 import app.newproj.lbrytv.data.repo.WalletRepository
@@ -68,7 +62,9 @@ class BrowseCategoriesViewModel @Inject constructor(
     val browseCategories: Flow<PagingData<BrowseCategoryUiState>> =
         browseCategoriesRepository
             .browseCategories()
-            .map { it.mapToUiStates() }
+            .map { pagingData ->
+                pagingData.map { BrowseCategoryUiState.fromBrowseCategory(it) }
+            }
             .cachedIn(viewModelScope)
 
     private val _headersWindowAlignOffsetTop = MutableStateFlow(0)
@@ -84,7 +80,7 @@ class BrowseCategoriesViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(wallet = walletRepository.wallet())
                     }
-                } catch (error: HttpException) { // pass
+                } catch (error: HttpException) {
                     _uiState.update {
                         it.copy(wallet = null)
                     }
@@ -102,36 +98,6 @@ class BrowseCategoriesViewModel @Inject constructor(
     fun setSelectedHeaderPosition(position: Int) {
         _selectedHeaderPosition.tryEmit(position)
     }
-
-    private fun PagingData<BrowseCategory>.mapToUiStates(): PagingData<BrowseCategoryUiState> =
-        map { category ->
-            BrowseCategoryUiState(
-                id = category.id,
-                iconRes = category.iconResId,
-                nameRes = category.nameResId,
-                items = category.items.map { pagingData ->
-                    pagingData.map { browseItem ->
-                        when (browseItem) {
-                            is Video -> VideoUiState(
-                                browseItem.id,
-                                browseItem.claim.thumbnail,
-                                browseItem.claim.title,
-                                browseItem.claim.channelName,
-                                browseItem.claim.releaseTime
-                            )
-
-                            is Channel -> ChannelUiState(
-                                browseItem.id,
-                                browseItem.claim.thumbnail,
-                                browseItem.claim.title,
-                                browseItem.claim.name,
-                            )
-                            is Setting -> browseItem
-                        }
-                    }
-                }
-            )
-        }
 
     fun errorMessageShown() {
         _uiState.update {

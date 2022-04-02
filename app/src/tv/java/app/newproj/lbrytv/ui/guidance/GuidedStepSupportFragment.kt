@@ -22,28 +22,30 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.ui.browsecategories
+package app.newproj.lbrytv.ui.guidance
 
-import androidx.fragment.app.viewModels
-import androidx.leanback.app.HeadersSupportFragment
+import androidx.annotation.IdRes
+import androidx.leanback.app.GuidedStepSupportFragment
+import androidx.leanback.widget.GuidedAction
 
-class BrowseCategoryHeadersFragment : HeadersSupportFragment() {
-    private val viewModel: BrowseCategoriesViewModel by viewModels({ requireParentFragment() })
-    private var headerViewSelectedListener: OnHeaderViewSelectedListener? = null
-
-    init {
-        super.setOnHeaderViewSelectedListener { viewHolder, row ->
-            viewModel.setSelectedHeaderPosition(selectedPosition)
-            headerViewSelectedListener?.onHeaderSelected(viewHolder, row)
-        }
-    }
-
-    override fun setAlignment(windowAlignOffsetTop: Int) {
-        super.setAlignment(windowAlignOffsetTop)
-        viewModel.setHeadersAlignment(windowAlignOffsetTop)
-    }
-
-    override fun setOnHeaderViewSelectedListener(listener: OnHeaderViewSelectedListener?) {
-        headerViewSelectedListener = listener
+fun GuidedStepSupportFragment.updateAction(id: Long, update: (GuidedAction) -> Unit) {
+    findActionById(id)?.let {
+        update(it)
+        notifyActionChanged(findActionPositionById(id))
     }
 }
+
+fun GuidedStepSupportFragment.updateAction(@IdRes id: Int, update: (GuidedAction) -> Unit) {
+    updateAction(id.toLong(), update)
+}
+
+fun GuidedStepSupportFragment.findSubActionById(
+    parentActionId: Long,
+    subActionId: Long,
+): GuidedAction? =
+    findActionById(parentActionId)?.subActions?.find { it.id == subActionId }
+
+fun GuidedStepSupportFragment.findActionById(@IdRes id: Int): GuidedAction? =
+    findActionById(id.toLong())
+
+fun GuidedAction.Builder.id(@IdRes id: Int): GuidedAction.Builder = id(id.toLong())

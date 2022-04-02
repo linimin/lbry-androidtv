@@ -33,4 +33,14 @@ data class VideoUiState(
     val title: String?,
     val channel: String?,
     val releaseTime: Instant?,
-) : BrowseItemUiState
+) : BrowseItemUiState {
+    companion object {
+        fun fromVideo(video: Video): VideoUiState = VideoUiState(
+            video.id,
+            video.claim.thumbnail,
+            video.claim.title,
+            video.claim.channelName,
+            video.claim.releaseTime
+        )
+    }
+}

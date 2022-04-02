@@ -33,7 +33,7 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
     app:startDestination="@id/browseCategoriesFragment">
     <fragment
         android:id="@+id/browseCategoriesFragment"
-        android:name="app.newproj.lbrytv.ui.browsecategories.BrowseCategoriesFragment"
+        android:name="app.newproj.lbrytv.ui.browse.BrowseCategoriesFragment"
         android:label="BrowseCategoriesFragment">
         <action
             android:id="@+id/action_browseCategoriesFragment_to_searchFragment"
@@ -113,7 +113,7 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
 
         <fragment
             android:id="@+id/emailInputFragment"
-            android:name="app.newproj.lbrytv.ui.accounts.EmailInputFragment"
+            android:name="app.newproj.lbrytv.ui.account.EmailInputFragment"
             android:label="EmailInputFragment">
             <action
                 android:id="@+id/action_emailInputFragment_to_emailVerifyFragment"
@@ -128,7 +128,7 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
         </fragment>
         <fragment
             android:id="@+id/emailVerifyFragment"
-            android:name="app.newproj.lbrytv.ui.accounts.EmailVerifyFragment"
+            android:name="app.newproj.lbrytv.ui.account.EmailVerifyFragment"
             android:label="EmailVerifyFragment">
             <argument
                 android:name="email"
@@ -146,7 +146,7 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
     </navigation>
     <fragment
         android:id="@+id/accountsFragment"
-        android:name="app.newproj.lbrytv.ui.accounts.AccountsFragment"
+        android:name="app.newproj.lbrytv.ui.account.AccountsFragment"
         android:label="AccountsFragment">
         <action
             android:id="@+id/action_accountsFragment_to_browseCategoriesFragment"

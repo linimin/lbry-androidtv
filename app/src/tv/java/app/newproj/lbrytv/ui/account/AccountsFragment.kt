@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.ui.accounts
+package app.newproj.lbrytv.ui.account
 
 import android.os.Bundle
 import android.view.View
@@ -35,7 +35,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import app.newproj.lbrytv.NavGraphDirections
 import app.newproj.lbrytv.R
-import app.newproj.lbrytv.ui.guidedstep.id
+import app.newproj.lbrytv.ui.guidance.id
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -73,7 +73,7 @@ class AccountsFragment : GuidedStepSupportFragment() {
                                 .title(R.string.add_another_account)
                                 .build()
                         }.let(this@AccountsFragment::setActions)
-                        uiState.errorMessage?.let(this@AccountsFragment::showError)
+                        uiState.errorMessage?.let(this@AccountsFragment::goToErrorScreen)
                     }
                 }
             }
@@ -107,7 +107,7 @@ class AccountsFragment : GuidedStepSupportFragment() {
         )
     }
 
-    private fun showError(message: String?) {
+    private fun goToErrorScreen(message: String?) {
         navController.navigate(NavGraphDirections.actionGlobalErrorFragment(message))
     }
 }

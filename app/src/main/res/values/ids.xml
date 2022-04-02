@@ -43,4 +43,5 @@
     <item name="support_option_revocable" type="id" />
     <item name="tip" type="id" />
     <item name="revocable_support" type="id" />
+    <item name="switch_account" type="id" />
 </resources>

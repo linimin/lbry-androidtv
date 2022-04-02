@@ -84,7 +84,7 @@ class ChannelVideosFragment : VerticalGridSupportFragment() {
             launch {
                 viewModel.uiState.collect { uiState ->
                     channelTitleView?.setChannel(uiState.channel)
-                    uiState.errorMessage?.let(::showError)
+                    uiState.errorMessage?.let(::goToErrorScreen)
                 }
             }
             launch {
@@ -92,7 +92,7 @@ class ChannelVideosFragment : VerticalGridSupportFragment() {
                     when (val refreshLoadState = it.refresh) {
                         LoadState.Loading -> return@collect
                         is LoadState.NotLoading -> startEntranceTransition()
-                        is LoadState.Error -> showError(refreshLoadState.error.localizedMessage)
+                        is LoadState.Error -> goToErrorScreen(refreshLoadState.error.localizedMessage)
                     }
                 }
             }
@@ -106,7 +106,7 @@ class ChannelVideosFragment : VerticalGridSupportFragment() {
         navController.navigate(NavGraphDirections.actionGlobalVideoPlayerFragment(video.id))
     }
 
-    private fun showError(message: String?) {
+    private fun goToErrorScreen(message: String?) {
         navController.navigate(NavGraphDirections.actionGlobalErrorFragment(message))
         viewModel.errorMessageShown()
     }
