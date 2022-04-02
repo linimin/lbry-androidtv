@@ -114,6 +114,7 @@
         <item name="headerIconImageViewStyle">@style/Widget.HeaderIcons.ImageView</item>
         <item name="headerIconDockStyle">@style/Widget.HeaderIcons.Dock</item>
         <item name="walletAddressQrCodeSize">@dimen/qrcode_size</item>
+        <item name="rowHeaderStyle">@style/Widget.Row.Header</item>
     </style>
 
     <style name="AppTheme.Overlay.HeaderIcons" parent="">

@@ -28,13 +28,16 @@
     <style name="Widget.Headers.VerticalGridView" parent="Widget.Leanback.Headers.VerticalGridView">
         <item name="android:background">?attr/colorPrimaryDark</item>
         <item name="android:paddingStart">@dimen/header_collapsed_width</item>
+        <item name="android:verticalSpacing">@dimen/header_vertical_spacing</item>
     </style>
 
     <style name="Widget.HeaderIcons.VerticalGridView" parent="Widget.Leanback.Headers.VerticalGridView">
         <item name="android:gravity">center_horizontal</item>
+        <item name="android:verticalSpacing">@dimen/header_vertical_spacing</item>
     </style>
 
     <style name="Widget.HeaderIcons.ImageView" parent="">
+        <item name="minHeight">24dp</item>
         <item name="android:layout_height">@dimen/header_icon_height</item>
         <item name="android:layout_width">@dimen/header_icon_width</item>
     </style>
@@ -75,5 +78,15 @@
     <style name="Widget.HeaderIcons.Dock" parent="">
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_width">@dimen/header_collapsed_width</item>
+    </style>
+
+    <style name="Widget.Row.Header" parent="Widget.Leanback.Row.Header">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:minHeight">@dimen/header_icon_height</item>
+        <item name="android:textAppearance">@style/TextAppearance.Header</item>
+    </style>
+
+    <style name="TextAppearance.Header" parent="TextAppearance.Leanback.Row.Header">
+        <item name="android:textSize">14sp</item>
     </style>
 </resources>

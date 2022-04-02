@@ -40,4 +40,5 @@
     <dimen name="video_card_height">110dp</dimen>
     <dimen name="video_card_width">196dp</dimen>
     <dimen name="qrcode_size">256dp</dimen>
+    <dimen name="header_vertical_spacing">10dp</dimen>
 </resources>
