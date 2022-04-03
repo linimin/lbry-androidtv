@@ -89,4 +89,6 @@
     <string name="email_is_sent_click_to_verify">An email has been sent to the address you provided. Please click the link in the message to complete signing in.</string>
     <string name="support_this_content">Support this content</string>
     <string name="tip_and_boost_your_favorite_creators_by_using_your_lbc">Tip and boost your favorite creators by using your LBC.</string>
+    <string name="would_you_like_to_sign_out">Would you like to sign out?</string>
+    <string name="using_account">Using account</string>
 </resources>

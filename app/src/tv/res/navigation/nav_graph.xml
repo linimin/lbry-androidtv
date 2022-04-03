@@ -156,6 +156,12 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
         <action
             android:id="@+id/action_accountsFragment_to_addAccount"
             app:destination="@id/addAccount" />
+        <action
+            android:id="@+id/action_accountsFragment_to_signOutFragment"
+            app:destination="@id/signOutFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_signOutFragment2"
+            app:destination="@id/signOutFragment" />
     </fragment>
     <fragment
         android:id="@+id/supportFragment"
@@ -164,5 +170,15 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
         <argument
             android:name="claimId"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/signOutFragment"
+        android:name="app.newproj.lbrytv.ui.account.SignOutFragment"
+        android:label="SignOutFragment" >
+        <action
+            android:id="@+id/action_signOutFragment_to_browseCategoriesFragment"
+            app:destination="@id/browseCategoriesFragment"
+            app:popUpTo="@id/browseCategoriesFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

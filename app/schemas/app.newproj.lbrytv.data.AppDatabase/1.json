@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "878e1013f66a086434626bee2d91ab6a",
+    "identityHash": "af7aa353c1a769bf177038d67594daec",
     "entities": [
       {
         "tableName": "claim",
@@ -175,7 +175,7 @@
       },
       {
         "tableName": "subscription",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`claim_id` TEXT NOT NULL, `uri` TEXT NOT NULL, `is_notification_disabled` INTEGER NOT NULL, PRIMARY KEY(`claim_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`claim_id` TEXT NOT NULL, `uri` TEXT NOT NULL, `is_notification_disabled` INTEGER NOT NULL, `account_name` TEXT NOT NULL, PRIMARY KEY(`claim_id`, `account_name`))",
         "fields": [
           {
             "fieldPath": "claimId",
@@ -194,12 +194,19 @@
             "columnName": "is_notification_disabled",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "accountName",
+            "columnName": "account_name",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "claim_id"
+            "claim_id",
+            "account_name"
           ]
         },
         "indices": [],
@@ -209,7 +216,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '878e1013f66a086434626bee2d91ab6a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'af7aa353c1a769bf177038d67594daec')"
     ]
   }
 }

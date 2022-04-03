@@ -22,21 +22,33 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.data.dao
+package app.newproj.lbrytv.ui.account
 
-import androidx.room.Dao
-import androidx.room.Query
-import app.newproj.lbrytv.data.entity.Subscription
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import app.newproj.lbrytv.data.repo.AccountRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-@Dao
-abstract class SubscriptionDao : BaseDao<Subscription>() {
-    @Query("""
-        DELETE FROM subscription
-        WHERE claim_id = :claimId
-        AND account_name = :accountName
-    """)
-    abstract suspend fun delete(claimId: String, accountName: String)
+@HiltViewModel
+class SignOutViewModel @Inject constructor(
+    private val accountsRepository: AccountRepository,
+) : ViewModel() {
+    data class UiState(
+        val isSignedOut: Boolean = false,
+    )
 
-    @Query("DELETE FROM subscription WHERE account_name = :accountName")
-    abstract suspend fun clearAll(accountName: String)
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
+    fun signOut() {
+        viewModelScope.launch {
+            accountsRepository.setCurrentAccount(null)
+            _uiState.value = UiState(true)
+        }
+    }
 }

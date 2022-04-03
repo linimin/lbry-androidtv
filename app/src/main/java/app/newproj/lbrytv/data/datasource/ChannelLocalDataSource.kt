@@ -37,22 +37,22 @@ class ChannelLocalDataSource @Inject constructor(
 ) {
     fun channel(id: String): Flow<Channel> = db.channelDao().channel(id)
 
-    fun followingChannelPagingSource(): PagingSource<Int, Channel> =
-        db.channelDao().subscriptions()
+    fun followingChannelPagingSource(accountName: String): PagingSource<Int, Channel> =
+        db.channelDao().subscriptions(accountName)
 
     suspend fun upsert(channel: ClaimSearchResult.Item) {
         db.claimSearchResultDao().upsert(channel)
     }
 
-    suspend fun follow(channel: Channel) {
+    suspend fun follow(accountName: String, channel: Channel) {
         channel.claim.permanentUrl?.let { permanentUrl ->
             db.subscriptionDao().upsert(
-                Subscription(channel.id, permanentUrl, false)
+                Subscription(channel.id, permanentUrl, false, accountName)
             )
         }
     }
 
-    suspend fun unfollow(channel: Channel) {
-        db.subscriptionDao().delete(channel.id)
+    suspend fun unfollow(accountName: String, channel: Channel) {
+        db.subscriptionDao().delete(channel.id, accountName)
     }
 }

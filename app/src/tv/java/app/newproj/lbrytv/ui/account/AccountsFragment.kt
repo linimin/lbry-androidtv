@@ -65,6 +65,13 @@ class AccountsFragment : GuidedStepSupportFragment() {
                                 .id(index)
                                 .icon(R.drawable.person)
                                 .title(account.name)
+                                .description(
+                                    if (account.isUsingAccount) {
+                                        getString(R.string.using_account)
+                                    } else {
+                                        null
+                                    }
+                                )
                                 .build()
                         }?.run {
                             this + GuidedAction.Builder(requireContext())
@@ -81,10 +88,13 @@ class AccountsFragment : GuidedStepSupportFragment() {
     }
 
     override fun onGuidedActionClicked(action: GuidedAction) {
-        viewModel.uiState.value.accounts
+        val account = viewModel.uiState.value.accounts
             ?.getOrNull(findActionPositionById(action.id))
-            ?.onSelected?.invoke()
-            ?: goToAccountAddScreen(false)
+        when {
+            account == null -> goToAccountAddScreen(false)
+            account.isUsingAccount -> goToSignOutScreen()
+            else -> account.onSelected()
+        }
     }
 
     private fun goToAccountAddScreen(popUpSelf: Boolean) {
@@ -99,6 +109,10 @@ class AccountsFragment : GuidedStepSupportFragment() {
                 null
             }
         )
+    }
+
+    private fun goToSignOutScreen() {
+        navController.navigate(AccountsFragmentDirections.actionAccountsFragmentToSignOutFragment())
     }
 
     private fun goToBrowseScreen() {

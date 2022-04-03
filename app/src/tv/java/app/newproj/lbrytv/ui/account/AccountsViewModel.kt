@@ -47,6 +47,7 @@ class AccountsViewModel @Inject constructor(
 
     data class AccountUiState(
         val name: String,
+        val isUsingAccount: Boolean,
         val onSelected: () -> Unit,
     )
 
@@ -54,22 +55,26 @@ class AccountsViewModel @Inject constructor(
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     init {
-        accountRepo.accounts().map { account ->
-            AccountUiState(
-                name = account.name,
-                onSelected = {
-                    viewModelScope.launch {
-                        try {
-                            accountRepo.setCurrentAccount(account)
-                            _uiState.update { it.copy(isAccountSelected = true) }
-                        } catch (error: Throwable) {
-                            _uiState.update { it.copy(errorMessage = error.localizedMessage) }
+        viewModelScope.launch {
+            val currentAccount = accountRepo.currentAccount()
+            accountRepo.accounts().map { account ->
+                AccountUiState(
+                    name = account.name,
+                    account.name == currentAccount?.name,
+                    onSelected = {
+                        viewModelScope.launch {
+                            try {
+                                accountRepo.setCurrentAccount(account)
+                                _uiState.update { it.copy(isAccountSelected = true) }
+                            } catch (error: Throwable) {
+                                _uiState.update { it.copy(errorMessage = error.localizedMessage) }
+                            }
                         }
                     }
-                }
-            )
-        }.let { accounts ->
-            _uiState.update { it.copy(accounts = accounts) }
+                )
+            }.let { accounts ->
+                _uiState.update { it.copy(accounts = accounts) }
+            }
         }
     }
 }

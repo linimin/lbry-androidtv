@@ -29,6 +29,7 @@ import android.accounts.AccountManager
 import androidx.datastore.core.DataStore
 import app.newproj.lbrytv.auth.LbryAccountAuthenticator
 import app.newproj.lbrytv.data.AppData
+import app.newproj.lbrytv.data.AppDatabase
 import app.newproj.lbrytv.data.dto.TokenUser
 import app.newproj.lbrytv.service.LbryIncService
 import kotlinx.coroutines.delay
@@ -47,6 +48,7 @@ class AccountRepository @Inject constructor(
     // Use [Provider] to break the dependency cycle.
     private val lbryIncServiceProvider: Provider<LbryIncService>,
     private val installationIdRepo: InstallationIdRepository,
+    private val db: AppDatabase,
 ) {
     fun accounts(): List<Account> {
         return accountManager.getAccountsByType(ACCOUNT_TYPE).asList()
@@ -80,28 +82,18 @@ class AccountRepository @Inject constructor(
         }
     }
 
-    suspend fun setCurrentAccount(name: String?) {
-        appDataStore.updateData {
-            it.toBuilder()
-                .apply {
-                    if (name != null) {
-                        accountName = name
-                    } else {
-                        clearAccountName()
-                    }
-                }
-                .build()
-        }
-    }
-
     suspend fun setCurrentAccount(account: Account?) {
-        appDataStore.updateData {
-            it.toBuilder()
+        appDataStore.updateData { appData ->
+            appData.toBuilder()
                 .apply {
                     if (account != null) {
                         accountName = account.name
                     } else {
                         clearAccountName()
+                        currentAccount()?.let { account ->
+                            accountManager.removeAccountExplicitly(account)
+                            db.subscriptionDao().clearAll(account.name)
+                        }
                     }
                 }
                 .build()
@@ -122,5 +114,11 @@ class AccountRepository @Inject constructor(
                 }
             }
         }
+    }
+
+    suspend fun requireAccount(): Account {
+        val account = currentAccount()
+        checkNotNull(account)
+        return account
     }
 }

@@ -42,7 +42,7 @@ import javax.inject.Inject
 class ChannelsRepository @Inject constructor(
     private val channelLocalDataSource: ChannelLocalDataSource,
     private val channelRemoteDataSource: ChannelRemoteDataSource,
-    private val subscriptionRemoteMediator: SubscriptionRemoteMediator,
+    private val subscriptionRemoteMediatorFactory: SubscriptionRemoteMediator.Factory,
     @LargePageSize private val pagingConfig: PagingConfig,
 ) {
     fun channel(id: String): Flow<Channel> = flow {
@@ -52,23 +52,23 @@ class ChannelsRepository @Inject constructor(
         emitAll(channelLocalDataSource.channel(id))
     }
 
-    fun followingChannels(): Flow<PagingData<Channel>> = Pager(
+    fun followingChannels(accountName: String): Flow<PagingData<Channel>> = Pager(
         config = pagingConfig,
-        remoteMediator = subscriptionRemoteMediator,
-        pagingSourceFactory = { channelLocalDataSource.followingChannelPagingSource() }
+        remoteMediator = subscriptionRemoteMediatorFactory.SubscriptionRemoteMediator(accountName),
+        pagingSourceFactory = { channelLocalDataSource.followingChannelPagingSource(accountName) }
     ).flow
 
-    suspend fun follow(channel: Channel) {
+    suspend fun follow(accountName: String, channel: Channel) {
+        channelLocalDataSource.follow(accountName, channel)
         channel.claim.permanentUrl?.let {
             channelRemoteDataSource.follow(it)
         }
-        channelLocalDataSource.follow(channel)
     }
 
-    suspend fun unfollow(channel: Channel) {
+    suspend fun unfollow(accountName: String, channel: Channel) {
+        channelLocalDataSource.unfollow(accountName, channel)
         channel.claim.permanentUrl?.let {
             channelRemoteDataSource.unfollow(it)
         }
-        channelLocalDataSource.unfollow(channel)
     }
 }

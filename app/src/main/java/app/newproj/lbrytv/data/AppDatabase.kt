@@ -68,11 +68,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun channelDao(): ChannelDao
     abstract fun claimLookupDao(): ClaimLookupDao
     abstract fun claimSearchResultDao(): ClaimSearchResultDao
-    abstract fun relatedClaimDao(): RelatedClaimDao
     abstract fun remoteKeyDao(): RemoteKeyDao
     abstract fun subscriptionDao(): SubscriptionDao
     abstract fun videoDao(): VideoDao
-    abstract fun claimDao(): ClaimDao
 }
 
 object StringListTypeConverter {

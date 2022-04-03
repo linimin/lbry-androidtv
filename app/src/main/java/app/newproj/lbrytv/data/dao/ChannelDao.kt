@@ -54,6 +54,7 @@ interface ChannelDao {
         FROM claim
         INNER JOIN subscription
         ON claim.id = subscription.claim_id
+        AND subscription.account_name = :accountName
     """)
-    fun subscriptions(): PagingSource<Int, Channel>
+    fun subscriptions(accountName: String): PagingSource<Int, Channel>
 }

@@ -28,42 +28,52 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.data.dto.BrowseCategory
+import app.newproj.lbrytv.data.repo.AccountRepository
 import app.newproj.lbrytv.data.repo.ChannelsRepository
 import app.newproj.lbrytv.data.repo.SettingsRepository
 import app.newproj.lbrytv.data.repo.VideosRepository
 import javax.inject.Inject
 
 class BrowseCategoryPagingSource @Inject constructor(
+    private val accountRepository: AccountRepository,
     private val videosRepo: VideosRepository,
     private val channelsRepo: ChannelsRepository,
     private val settingsRepo: SettingsRepository,
 ) : PagingSource<Int, BrowseCategory>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, BrowseCategory> {
-        return LoadResult.Page(
-            data = listOf(
-                BrowseCategory(
-                    id = R.string.featured.toLong(),
-                    name = R.string.featured, icon = R.drawable.whatshot,
-                    items = videosRepo.featuredVideos()
-                ),
+        val account = accountRepository.currentAccount()
+        val categories = mutableListOf<BrowseCategory>()
+        categories.add(
+            BrowseCategory(
+                id = R.string.featured.toLong(),
+                name = R.string.featured, icon = R.drawable.whatshot,
+                items = videosRepo.featuredVideos()
+            )
+        )
+        if (account != null) {
+            categories.add(
                 BrowseCategory(
                     id = R.string.subscriptions.toLong(),
                     name = R.string.subscriptions, icon = R.drawable.star,
                     items = videosRepo.subscriptionVideos()
-                ),
+                )
+            )
+            categories.add(
                 BrowseCategory(
                     id = R.string.channels.toLong(),
                     name = R.string.channels, icon = R.drawable.subscriptions,
-                    items = channelsRepo.followingChannels()
-                ),
-                BrowseCategory(
-                    id = R.string.settings.toLong(),
-                    name = R.string.settings, icon = R.drawable.settings,
-                    items = settingsRepo.settings()
-                ),
-            ),
-            prevKey = null, nextKey = null
+                    items = channelsRepo.followingChannels(account.name)
+                )
+            )
+        }
+        categories.add(
+            BrowseCategory(
+                id = R.string.settings.toLong(),
+                name = R.string.settings, icon = R.drawable.settings,
+                items = settingsRepo.settings()
+            )
         )
+        return LoadResult.Page(data = categories, prevKey = null, nextKey = null)
     }
 
     override fun getRefreshKey(state: PagingState<Int, BrowseCategory>): Int? = null

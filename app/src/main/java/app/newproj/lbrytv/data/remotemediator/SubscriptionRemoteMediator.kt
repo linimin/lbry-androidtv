@@ -35,15 +35,23 @@ import app.newproj.lbrytv.data.dto.ClaimSearchRequest
 import app.newproj.lbrytv.data.dto.LbryUri
 import app.newproj.lbrytv.data.entity.Subscription
 import app.newproj.lbrytv.service.LbrynetService
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import retrofit2.HttpException
 import java.io.IOException
-import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
-class SubscriptionRemoteMediator @Inject constructor(
+class SubscriptionRemoteMediator @AssistedInject constructor(
+    @Assisted private val accountName: String,
     private val lbrynetService: LbrynetService,
     private val db: AppDatabase,
 ) : RemoteMediator<Int, Channel>() {
+    @AssistedFactory
+    interface Factory {
+        fun SubscriptionRemoteMediator(accountName: String): SubscriptionRemoteMediator
+    }
+
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, Channel>,
@@ -57,16 +65,18 @@ class SubscriptionRemoteMediator @Inject constructor(
                             val lbryUri = LbryUri.parse(following.uri.toString())
                             val claimId = lbryUri.claimId ?: return@mapNotNull null
                             val uri = following.uri ?: return@mapNotNull null
-                            val notificationsDisabled =
-                                following.notificationsDisabled ?: return@mapNotNull null
-                            Subscription(claimId, uri, notificationsDisabled)
+                            val notificationsDisabled = following.notificationsDisabled ?: false
+                            Subscription(claimId, uri, notificationsDisabled, accountName)
                         } ?: emptyList()
-                val claims = lbrynetService.searchClaims(
-                    ClaimSearchRequest(claimIds = subscriptions.map { it.claimId })
-                ).items ?: emptyList()
+                val claims = if (subscriptions.isNotEmpty()) {
+                    lbrynetService.searchClaims(
+                        ClaimSearchRequest(claimIds = subscriptions.map { it.claimId })
+                    ).items ?: emptyList()
+                } else {
+                    emptyList()
+                }
                 db.withTransaction {
                     db.claimSearchResultDao().upsert(claims)
-                    db.subscriptionDao().clearAll()
                     db.subscriptionDao().upsert(subscriptions)
                 }
             }

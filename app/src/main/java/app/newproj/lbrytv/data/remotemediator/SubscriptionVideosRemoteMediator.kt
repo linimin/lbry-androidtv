@@ -59,9 +59,11 @@ class SubscriptionVideosRemoteMediator @Inject constructor(
                 LoadType.REFRESH -> {
                     page = STARTING_PAGE_INDEX
                     nextSortingOrder = STARTING_SORTING_ORDER
+
                     subscriptionChannelIds =
-                        lbrynetService.preference().shared?.value?.subscriptions?.mapNotNull {
-                            LbryUri.parse(LbryUri.normalize(it)).channelClaimId
+                        lbrynetService.preference().shared?.value?.following?.mapNotNull {
+                            val lbryUri = LbryUri.parse(it.uri.toString())
+                            lbryUri.channelClaimId
                         }?.takeIf { it.isNotEmpty() }
                     if (subscriptionChannelIds == null) {
                         db.withTransaction {
@@ -81,7 +83,7 @@ class SubscriptionVideosRemoteMediator @Inject constructor(
             }
             val request = ClaimSearchRequest(
                 channelIds = subscriptionChannelIds,
-                claimTypes = listOf("stream", "repost"),
+                claimTypes = listOf("stream"),
                 streamTypes = listOf("video"),
                 orderBy = listOf("release_time"),
                 hasSource = true,
