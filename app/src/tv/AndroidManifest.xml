@@ -42,6 +42,9 @@
         android:name="android.hardware.microphone"
         android:required="false" />
 
+    <!-- https://developer.android.com/reference/androidx/leanback/app/SearchSupportFragment -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <!-- [Provide a home screen banner](https://developer.android.com/training/tv/start/start#banner) -->
     <application>
 
