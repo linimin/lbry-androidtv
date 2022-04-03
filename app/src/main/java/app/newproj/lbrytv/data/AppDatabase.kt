@@ -26,6 +26,7 @@ package app.newproj.lbrytv.data
 
 import android.net.Uri
 import androidx.core.net.toUri
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.RoomDatabase
@@ -53,7 +54,7 @@ import java.time.Instant
         RemoteKey::class,
         Subscription::class,
     ],
-    version = 1
+    version = 2,
 )
 @TypeConverters(
     value = [

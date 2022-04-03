@@ -40,10 +40,13 @@ object AppDatabaseModule {
     @Provides
     @Singleton
     fun appDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            "lbrytv-database"
-        ).build()
+        return Room
+            .databaseBuilder(
+                context,
+                AppDatabase::class.java,
+                "lbrytv-database"
+            )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 }
