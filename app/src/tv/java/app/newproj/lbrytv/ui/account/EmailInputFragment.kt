@@ -58,7 +58,9 @@ class EmailInputFragment : GuidedStepSupportFragment() {
             .id(R.id.guided_action_email)
             .editTitle("")
             .editable(true)
-            .editInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
+            .editInputType(
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+            )
             .build()
         val continueAction = GuidedAction.Builder(context)
             .clickAction(GuidedAction.ACTION_ID_CONTINUE)
