@@ -32,32 +32,23 @@ import androidx.fragment.app.viewModels
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.paging.PagingDataAdapter
 import androidx.leanback.widget.ListRowPresenter
-import androidx.leanback.widget.Row
 import androidx.leanback.widget.SinglePresenterSelector
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
-import androidx.paging.PagingData
-import androidx.paging.map
 import app.newproj.lbrytv.NavGraphDirections
 import app.newproj.lbrytv.R
-import app.newproj.lbrytv.data.dto.BrowseCategoryUiState
 import app.newproj.lbrytv.data.dto.BrowseItemUiState
-import app.newproj.lbrytv.data.dto.BrowseItemUiStateComparator
 import app.newproj.lbrytv.data.dto.ChannelUiState
-import app.newproj.lbrytv.data.dto.LocalizableHeaderItem
-import app.newproj.lbrytv.data.dto.PagingListRow
 import app.newproj.lbrytv.data.dto.RowComparator
 import app.newproj.lbrytv.data.dto.Setting
 import app.newproj.lbrytv.data.dto.VideoUiState
 import app.newproj.lbrytv.databinding.BrowseCategoryHeaderIconsDockBinding
-import app.newproj.lbrytv.ui.presenter.BrowseItemUiStatePresenterSelector
 import app.newproj.lbrytv.ui.presenter.IconRowPresenter
 import app.newproj.lbrytv.ui.presenter.LocalizableRowHeaderPresenter
 import app.newproj.lbrytv.ui.presenter.RowPresenterSelector
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -124,19 +115,9 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
             }
             launch {
                 viewModel.browseCategories
-                    .map { it.toRows() }
                     .collectLatest(rowsAdapter::submitData)
             }
         }
-    }
-
-    private fun PagingData<BrowseCategoryUiState>.toRows(): PagingData<Row> = map {
-        PagingListRow(
-            it.id,
-            LocalizableHeaderItem(it.id, it.iconRes, it.nameRes),
-            PagingDataAdapter(BrowseItemUiStatePresenterSelector, BrowseItemUiStateComparator()),
-            it.items
-        )
     }
 
     private fun onBrowseItemClicked(item: BrowseItemUiState) {
