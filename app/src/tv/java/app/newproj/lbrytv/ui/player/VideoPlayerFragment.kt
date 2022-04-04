@@ -43,7 +43,6 @@ import androidx.media3.session.MediaSession
 import androidx.media3.ui.leanback.LeanbackPlayerAdapter
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import app.newproj.lbrytv.NavGraphDirections
 import app.newproj.lbrytv.R
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,7 +56,6 @@ private const val KEY_LAST_PLAYBACK_POSITION = "KEY_LAST_PLAYBACK_POSITION"
  */
 @AndroidEntryPoint
 class VideoPlayerFragment : VideoSupportFragment() {
-    private val navArgs: VideoPlayerFragmentArgs by navArgs()
     private val viewModel: VideoPlayerViewModel by viewModels()
     private lateinit var player: Player
     private lateinit var mediaSession: MediaSession
@@ -157,10 +155,12 @@ class VideoPlayerFragment : VideoSupportFragment() {
     }
 
     private fun goToSupportScreen() {
-        navController.navigate(
-            VideoPlayerFragmentDirections
-                .actionVideoPlayerFragmentToSupportFragment(navArgs.claimId)
-        )
+        viewModel.uiState.value.channelId?.let {
+            navController.navigate(
+                VideoPlayerFragmentDirections
+                    .actionVideoPlayerFragmentToSupportFragment(it)
+            )
+        }
     }
 
     private fun goToErrorScreen(message: String?) {

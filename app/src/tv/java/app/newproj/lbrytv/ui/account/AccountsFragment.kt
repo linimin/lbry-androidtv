@@ -37,7 +37,6 @@ import app.newproj.lbrytv.NavGraphDirections
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.ui.guidance.id
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -55,7 +54,7 @@ class AccountsFragment : GuidedStepSupportFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collectLatest { uiState ->
+            viewModel.uiState.collect { uiState ->
                 when {
                     uiState.isAccountSelected -> goToBrowseScreen()
                     uiState.accounts?.isEmpty() == true -> goToAccountAddScreen(true)
@@ -79,7 +78,7 @@ class AccountsFragment : GuidedStepSupportFragment() {
                                 .icon(R.drawable.person_add)
                                 .title(R.string.add_another_account)
                                 .build()
-                        }.let(this@AccountsFragment::setActions)
+                        }?.let(this@AccountsFragment::setActions)
                         uiState.errorMessage?.let(this@AccountsFragment::goToErrorScreen)
                     }
                 }

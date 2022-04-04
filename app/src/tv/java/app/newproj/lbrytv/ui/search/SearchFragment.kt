@@ -100,8 +100,8 @@ class SearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchResu
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         progressBarManager.setRootView(null)
+        super.onDestroyView()
     }
 
     override fun getResultsAdapter(): ObjectAdapter = resultRowsAdapter

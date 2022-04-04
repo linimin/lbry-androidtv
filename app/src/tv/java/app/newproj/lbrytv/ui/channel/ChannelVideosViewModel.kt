@@ -67,13 +67,7 @@ class ChannelVideosViewModel @Inject constructor(
         .flatMapLatest { it.videos }
         .map { pagingData ->
             pagingData.map { video ->
-                VideoUiState(
-                    video.id,
-                    video.claim.thumbnail,
-                    video.claim.title,
-                    video.claim.channelName,
-                    video.claim.releaseTime
-                )
+                VideoUiState.fromVideo(video)
             }
         }
 
@@ -90,10 +84,14 @@ class ChannelVideosViewModel @Inject constructor(
             try {
                 channelWithVideos.emit(getChannelWithVideosUseCase(args.channelId))
                 channel.collectLatest { channel ->
-                    _uiState.update { it.copy(channel = channel) }
+                    _uiState.update {
+                        it.copy(channel = channel)
+                    }
                 }
             } catch (error: Throwable) {
-                _uiState.update { it.copy(errorMessage = error.localizedMessage) }
+                _uiState.update {
+                    it.copy(errorMessage = error.localizedMessage)
+                }
             }
         }
     }
@@ -105,7 +103,9 @@ class ChannelVideosViewModel @Inject constructor(
                     followUnfollowChannelUseCase(it.id)
                 }
             } catch (error: Throwable) {
-                _uiState.update { it.copy(errorMessage = error.localizedMessage) }
+                _uiState.update {
+                    it.copy(errorMessage = error.localizedMessage)
+                }
             }
         }
     }
