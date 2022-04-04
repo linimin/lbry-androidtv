@@ -39,6 +39,7 @@ import app.newproj.lbrytv.service.LbrynetService
 import app.newproj.lbrytv.service.OdyseeService
 import retrofit2.HttpException
 import java.io.IOException
+import java.util.Locale
 import javax.inject.Inject
 
 private const val STARTING_PAGE_INDEX = 1
@@ -61,7 +62,15 @@ class FeaturedVideosRemoteMediator @Inject constructor(
                 LoadType.REFRESH -> {
                     page = STARTING_PAGE_INDEX
                     nextSortingOrder = STARTING_SORTING_ORDER
-                    primaryContent = odyseeService.content()["en"]?.get("PRIMARY_CONTENT")
+                    val locale = Locale.getDefault()
+                    val language = locale.language
+                    val country = locale.country
+                    val languageKey = if (language != "en" && country == "BR") {
+                        "$language-$country"
+                    } else {
+                        language
+                    }
+                    primaryContent = odyseeService.content()[languageKey]?.get("PRIMARY_CONTENT")
                 }
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
                 LoadType.APPEND -> {
