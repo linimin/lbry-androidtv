@@ -63,14 +63,17 @@ class FeaturedVideosRemoteMediator @Inject constructor(
                     page = STARTING_PAGE_INDEX
                     nextSortingOrder = STARTING_SORTING_ORDER
                     val locale = Locale.getDefault()
-                    val language = locale.language
-                    val country = locale.country
-                    val languageKey = if (language != "en" && country == "BR") {
-                        "$language-$country"
+                    val languageKey = if (locale.language != "en" && locale.country == "BR") {
+                        "${locale.language}-${locale.country}"
                     } else {
-                        language
+                        locale.language
                     }
-                    primaryContent = odyseeService.content()[languageKey]?.get("PRIMARY_CONTENT")
+                    primaryContent = odyseeService
+                        .content()
+                        .run {
+                            get(languageKey) ?: get("en")
+                        }
+                        ?.get("PRIMARY_CONTENT")
                 }
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
                 LoadType.APPEND -> {
@@ -82,7 +85,7 @@ class FeaturedVideosRemoteMediator @Inject constructor(
             }
             val request = ClaimSearchRequest(
                 channelIds = primaryContent?.channelIds,
-                claimTypes = listOf("stream", "repost"),
+                claimTypes = listOf("stream"),
                 streamTypes = listOf("video"),
                 orderBy = listOf("trending_group", "trending_mixed"),
                 hasSource = true,
