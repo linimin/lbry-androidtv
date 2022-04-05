@@ -8,6 +8,13 @@
         <td><img src="/screenshot/channel.jpg"></td>
         <td><img src="/screenshot/player.jpg"></td>
     </tr> 
+    <tr>
+        <td><img src="/screenshot/accounts.jpg"></td>
+        <td><img src="/screenshot/search.jpg"></td>
+    </tr> 
+    <tr>
+        <td><img src="/screenshot/support.jpg"></td>
+    </tr> 
 </table>
 
 I started this project to develop a LBRY video browser for Android TV, it is still in development
