@@ -36,41 +36,41 @@ import javax.inject.Inject
 
 class BrowseCategoryPagingSource @Inject constructor(
     private val accountRepository: AccountRepository,
-    private val videosRepo: VideosRepository,
-    private val channelsRepo: ChannelsRepository,
-    private val settingsRepo: SettingsRepository,
+    private val videosRepository: VideosRepository,
+    private val channelsRepository: ChannelsRepository,
+    private val settingsRepository: SettingsRepository,
 ) : PagingSource<Int, BrowseCategory>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, BrowseCategory> {
-        val account = accountRepository.currentAccount()
         val categories = mutableListOf<BrowseCategory>()
         categories.add(
             BrowseCategory(
-                id = R.string.featured.toLong(),
+                id = R.id.browse_category_featured.toLong(),
                 name = R.string.featured, icon = R.drawable.whatshot,
-                items = videosRepo.featuredVideos()
+                items = videosRepository.featuredVideos()
             )
         )
+        val account = accountRepository.currentAccount()
         if (account != null) {
             categories.add(
                 BrowseCategory(
-                    id = R.string.subscriptions.toLong(),
+                    id = R.id.browse_category_subscriptions.toLong(),
                     name = R.string.subscriptions, icon = R.drawable.star,
-                    items = videosRepo.subscriptionVideos()
+                    items = videosRepository.subscriptionVideos()
                 )
             )
             categories.add(
                 BrowseCategory(
-                    id = R.string.channels.toLong(),
+                    id = R.id.browse_category_channels.toLong(),
                     name = R.string.channels, icon = R.drawable.subscriptions,
-                    items = channelsRepo.followingChannels(account.name)
+                    items = channelsRepository.followingChannels(account.name)
                 )
             )
         }
         categories.add(
             BrowseCategory(
-                id = R.string.settings.toLong(),
+                id = R.id.browse_category_settings.toLong(),
                 name = R.string.settings, icon = R.drawable.settings,
-                items = settingsRepo.settings()
+                items = settingsRepository.settings()
             )
         )
         return LoadResult.Page(data = categories, prevKey = null, nextKey = null)

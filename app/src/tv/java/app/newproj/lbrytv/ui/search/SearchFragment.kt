@@ -49,16 +49,15 @@ import app.newproj.lbrytv.data.dto.VideoUiState
 import app.newproj.lbrytv.ui.presenter.BrowseItemUiStatePresenterSelector
 import app.newproj.lbrytv.ui.presenter.RowPresenterSelector
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchResultProvider {
     private val viewModel: SearchViewModel by viewModels()
+    private val navController by lazy { findNavController() }
     private val resultRowsAdapter = ArrayObjectAdapter(RowPresenterSelector)
     private lateinit var resultItemsAdapter: PagingDataAdapter<BrowseItemUiState>
     private val progressBarManager = ProgressBarManager()
-    private val navController by lazy { findNavController() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,7 +88,7 @@ class SearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchResu
         require(view is ViewGroup)
         progressBarManager.setRootView(view)
         viewLifecycleOwner.lifecycleScope.launch {
-            resultItemsAdapter.loadStateFlow.collectLatest {
+            resultItemsAdapter.loadStateFlow.collect {
                 when (val refreshLoadState = it.refresh) {
                     LoadState.Loading -> progressBarManager.show()
                     is LoadState.NotLoading -> progressBarManager.hide()
@@ -122,7 +121,8 @@ class SearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchResu
             is ChannelUiState -> navController.navigate(
                 SearchFragmentDirections.actionSearchFragmentToChannelVideosFragment(item.id)
             )
-            else -> throw Exception("Unexpected item: $item")
+
+            else -> return
         }
     }
 

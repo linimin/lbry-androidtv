@@ -42,8 +42,10 @@ import javax.inject.Inject
 @HiltViewModel
 class VideoPlayerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val videosRepo: VideosRepository,
+    private val videosRepository: VideosRepository,
 ) : ViewModel() {
+    private val args = VideoPlayerFragmentArgs.fromSavedStateHandle(savedStateHandle)
+
     data class UiState(
         val title: String? = null,
         val subtitle: String? = null,
@@ -55,12 +57,10 @@ class VideoPlayerViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    private val args = VideoPlayerFragmentArgs.fromSavedStateHandle(savedStateHandle)
-
     init {
         viewModelScope.launch {
             try {
-                val video = videosRepo.video(args.claimId).first()
+                val video = videosRepository.video(args.claimId).first()
                 _uiState.update {
                     it.copy(
                         title = video.claim.title,

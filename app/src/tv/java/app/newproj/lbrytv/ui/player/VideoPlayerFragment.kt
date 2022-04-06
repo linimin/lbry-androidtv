@@ -57,11 +57,11 @@ private const val KEY_LAST_PLAYBACK_POSITION = "KEY_LAST_PLAYBACK_POSITION"
 @AndroidEntryPoint
 class VideoPlayerFragment : VideoSupportFragment() {
     private val viewModel: VideoPlayerViewModel by viewModels()
+    private val navController by lazy { findNavController() }
     private lateinit var player: Player
     private lateinit var mediaSession: MediaSession
-    private var lastPlaybackPosition: Long? = null
-    private val navController by lazy { findNavController() }
     private lateinit var playbackGlue: PlaybackTransportControlGlue<LeanbackPlayerAdapter>
+    private var lastPlaybackPosition: Long? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,13 +73,13 @@ class VideoPlayerFragment : VideoSupportFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.uiState.collect { uiState ->
+            viewModel.uiState.collect {
                 playbackGlue.apply {
-                    title = uiState.title
-                    subtitle = uiState.subtitle
+                    title = it.title
+                    subtitle = it.subtitle
                 }
-                uiState.streamUrl?.let(::play)
-                uiState.errorMessage?.let(::goToErrorScreen)
+                it.streamUrl?.let(::play)
+                it.errorMessage?.let(::goToErrorScreen)
             }
         }
     }
@@ -157,8 +157,7 @@ class VideoPlayerFragment : VideoSupportFragment() {
     private fun goToSupportScreen() {
         viewModel.uiState.value.channelId?.let {
             navController.navigate(
-                VideoPlayerFragmentDirections
-                    .actionVideoPlayerFragmentToSupportFragment(it)
+                VideoPlayerFragmentDirections.actionVideoPlayerFragmentToSupportFragment(it)
             )
         }
     }

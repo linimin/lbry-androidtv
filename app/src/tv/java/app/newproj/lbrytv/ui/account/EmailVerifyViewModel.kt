@@ -41,7 +41,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EmailVerifyViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val accountRepo: AccountRepository,
+    private val accountRepository: AccountRepository,
 ) : ViewModel() {
     private val args = EmailVerifyFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
@@ -56,8 +56,8 @@ class EmailVerifyViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             try {
-                val account = accountRepo.addAccount(args.email)
-                accountRepo.setCurrentAccount(account)
+                val account = accountRepository.addAccount(args.email)
+                accountRepository.setCurrentAccount(account)
                 args.authResponse?.onResult(
                     bundleOf(
                         AccountManager.KEY_ACCOUNT_NAME to account.name,

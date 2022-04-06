@@ -33,12 +33,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class ErrorViewModel @Inject constructor(savedStateHandle: SavedStateHandle) : ViewModel() {
+class ErrorViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
+) : ViewModel() {
     private val args = ErrorFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
     data class UiState(
-        val message: String?,
-        val requestKey: String?,
+        val message: String? = null,
+        val requestKey: String? = null,
     )
 
     private val _uiState = MutableStateFlow(UiState(args.message, args.requestKey))

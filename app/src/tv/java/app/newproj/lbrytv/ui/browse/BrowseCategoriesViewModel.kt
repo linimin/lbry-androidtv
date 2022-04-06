@@ -57,6 +57,12 @@ class BrowseCategoriesViewModel @Inject constructor(
     walletRepository: WalletRepository,
     browseCategoriesRepository: BrowseCategoriesRepository,
 ) : ViewModel() {
+    private val _headersWindowAlignOffsetTop = MutableStateFlow(0)
+    val headersWindowAlignOffsetTop: StateFlow<Int> = _headersWindowAlignOffsetTop.asStateFlow()
+
+    private val _selectedHeaderPosition = MutableStateFlow(-1)
+    val selectedHeaderPosition: StateFlow<Int> = _selectedHeaderPosition.asStateFlow()
+
     data class UiState(
         val wallet: Wallet? = null,
         val errorMessage: String? = null,
@@ -83,12 +89,6 @@ class BrowseCategoriesViewModel @Inject constructor(
         )
     }
 
-    private val _headersWindowAlignOffsetTop = MutableStateFlow(0)
-    val headersWindowAlignOffsetTop: StateFlow<Int> = _headersWindowAlignOffsetTop.asStateFlow()
-
-    private val _selectedHeaderPosition = MutableStateFlow(-1)
-    val selectedHeaderPosition: StateFlow<Int> = _selectedHeaderPosition.asStateFlow()
-
     init {
         viewModelScope.launch {
             while (true) {
@@ -96,7 +96,7 @@ class BrowseCategoriesViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(wallet = walletRepository.wallet())
                     }
-                } catch (error: HttpException) {
+                } catch (error: Throwable) {
                     _uiState.update {
                         it.copy(wallet = null)
                     }

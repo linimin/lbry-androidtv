@@ -78,7 +78,7 @@
                 tools:text="Title" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/toggle_follow_button"
+                android:id="@+id/follow_unfollow_button"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

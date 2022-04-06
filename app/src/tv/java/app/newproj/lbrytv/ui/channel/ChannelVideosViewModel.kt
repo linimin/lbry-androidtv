@@ -57,6 +57,14 @@ class ChannelVideosViewModel @Inject constructor(
 ) : ViewModel() {
     private val args = ChannelVideosFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
+    data class UiState(
+        val channel: ChannelUiState? = null,
+        val errorMessage: String? = null,
+    )
+
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
     private val channelWithVideos = MutableSharedFlow<ChannelWithVideos>(replay = 1)
     private val channel: Flow<ChannelUiState> = channelWithVideos
         .flatMapLatest { it.channel }
@@ -71,19 +79,11 @@ class ChannelVideosViewModel @Inject constructor(
             }
         }
 
-    data class UiState(
-        val channel: ChannelUiState? = null,
-        val errorMessage: String? = null,
-    )
-
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
-
     init {
         viewModelScope.launch {
             try {
                 channelWithVideos.emit(getChannelWithVideosUseCase(args.channelId))
-                channel.collectLatest { channel ->
+                channel.collect { channel ->
                     _uiState.update {
                         it.copy(channel = channel)
                     }

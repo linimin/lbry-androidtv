@@ -25,6 +25,7 @@
 package app.newproj.lbrytv.data.dto
 
 import android.net.Uri
+import app.newproj.lbrytv.data.entity.Claim
 import java.time.Instant
 
 data class VideoUiState(
@@ -41,6 +42,14 @@ data class VideoUiState(
             video.claim.title,
             video.claim.channelName,
             video.claim.releaseTime
+        )
+
+        fun fromRelatedClaim(claim: RelatedClaim): VideoUiState = VideoUiState(
+            claim.id,
+            claim.thumbnailUrl,
+            claim.title,
+            claim.name,
+            claim.releaseTime
         )
     }
 }

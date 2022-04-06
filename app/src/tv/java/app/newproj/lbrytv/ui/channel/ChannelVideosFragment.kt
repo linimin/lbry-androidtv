@@ -62,10 +62,10 @@ class ChannelVideosFragment : VerticalGridSupportFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adapter = videosAdapter
         gridPresenter = VideoGridPresenter().apply {
             numberOfColumns = NUMBER_OF_COLUMNS
         }
+        adapter = videosAdapter
         setOnItemViewClickedListener { _, item, _, _ ->
             require(item is VideoUiState)
             goToPlayerScreen(item)
@@ -77,7 +77,7 @@ class ChannelVideosFragment : VerticalGridSupportFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        channelTitleView?.setToggleFollowingButtonClickListener {
+        channelTitleView?.setFollowUnfollowButtonClickListener {
             viewModel.followUnfollow()
         }
         with(viewLifecycleOwner.lifecycleScope) {

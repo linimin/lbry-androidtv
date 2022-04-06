@@ -40,5 +40,12 @@ data class ChannelUiState(
             channel.claim.title,
             channel.claim.name,
         )
+
+        fun fromRelatedClaim(claim: RelatedClaim) = ChannelUiState(
+            claim.id,
+            claim.thumbnailUrl,
+            claim.title,
+            claim.name
+        )
     }
 }

@@ -65,11 +65,9 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
         headersState = HEADERS_DISABLED
         setHeaderPresenterSelector(SinglePresenterSelector(LocalizableRowHeaderPresenter()))
         isHeadersTransitionOnBackEnabled = false
-        requireActivity()
-            .onBackPressedDispatcher
-            .addCallback(this) {
-                onBackPressed()
-            }
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            onBackPressed()
+        }
         adapter = rowsAdapter
         setOnSearchClickedListener { goToSearchScreen() }
         setOnItemViewClickedListener { _, item, _, _ ->

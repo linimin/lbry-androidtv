@@ -54,18 +54,22 @@ class EmailInputFragment : GuidedStepSupportFragment() {
     )
 
     override fun onCreateActions(actions: MutableList<GuidedAction>, savedInstanceState: Bundle?) {
-        val emailInputAction = GuidedAction.Builder(context)
-            .id(R.id.guided_action_email)
-            .editTitle("")
-            .editable(true)
-            .editInputType(
-                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        actions.addAll(
+            listOf(
+                GuidedAction.Builder(context)
+                    .id(R.id.guided_action_email)
+                    .editTitle("")
+                    .editable(true)
+                    .editInputType(
+                        InputType.TYPE_CLASS_TEXT
+                                or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+                    )
+                    .build(),
+                GuidedAction.Builder(context)
+                    .clickAction(GuidedAction.ACTION_ID_CONTINUE)
+                    .build(),
             )
-            .build()
-        val continueAction = GuidedAction.Builder(context)
-            .clickAction(GuidedAction.ACTION_ID_CONTINUE)
-            .build()
-        actions.addAll(listOf(emailInputAction, continueAction))
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

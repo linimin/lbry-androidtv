@@ -38,7 +38,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -50,7 +49,9 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository,
 ) : ViewModel() {
-    data class UiState(val errorMessage: String? = null)
+    data class UiState(
+        val errorMessage: String? = null,
+    )
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -59,7 +60,6 @@ class SearchViewModel @Inject constructor(
 
     val searchResult: Flow<PagingData<BrowseItemUiState>> = query
         .filterNotNull()
-        .distinctUntilChanged()
         .flatMapLatest { query ->
             searchRepository
                 .query(query)
@@ -67,17 +67,11 @@ class SearchViewModel @Inject constructor(
                     _uiState.update { it.copy(errorMessage = error.localizedMessage) }
                 }
         }.map { pagingData ->
-            pagingData.map { claim ->
-                if (claim.channel != null) {
-                    VideoUiState(
-                        claim.id,
-                        claim.thumbnailUrl,
-                        claim.title,
-                        claim.name,
-                        claim.releaseTime
-                    )
+            pagingData.map { relatedClaim ->
+                if (relatedClaim.channel != null) {
+                    VideoUiState.fromRelatedClaim(relatedClaim)
                 } else {
-                    ChannelUiState(claim.id, claim.thumbnailUrl, claim.title, claim.name)
+                    ChannelUiState.fromRelatedClaim(relatedClaim)
                 }
             }
         }

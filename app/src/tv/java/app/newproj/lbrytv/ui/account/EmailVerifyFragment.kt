@@ -69,11 +69,11 @@ class EmailVerifyFragment : GuidedStepSupportFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect { uiState ->
-                if (uiState.isEmailVerified) {
+            viewModel.uiState.collect {
+                if (it.isEmailVerified) {
                     goToBrowseScreen()
-                } else if (uiState.errorMessage != null) {
-                    goToErrorScreen(uiState.errorMessage)
+                } else if (it.errorMessage != null) {
+                    goToErrorScreen(it.errorMessage)
                 }
             }
         }
@@ -86,9 +86,7 @@ class EmailVerifyFragment : GuidedStepSupportFragment() {
     }
 
     private fun goToErrorScreen(message: String?) {
-        navController.navigate(
-            NavGraphDirections.actionGlobalErrorFragment(message = message)
-        )
+        navController.navigate(NavGraphDirections.actionGlobalErrorFragment(message = message))
         viewModel.errorMessageShown()
     }
 }

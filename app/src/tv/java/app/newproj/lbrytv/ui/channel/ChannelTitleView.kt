@@ -27,7 +27,6 @@ package app.newproj.lbrytv.ui.channel
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.leanback.widget.TitleViewAdapter
@@ -84,7 +83,7 @@ class ChannelTitleView(
         binding.channel = channel
     }
 
-    fun setToggleFollowingButtonClickListener(listener: View.OnClickListener) {
-        binding.toggleFollowButton.setOnClickListener(listener)
+    fun setFollowUnfollowButtonClickListener(listener: OnClickListener) {
+        binding.followUnfollowButton.setOnClickListener(listener)
     }
 }
