@@ -33,7 +33,6 @@
     <dimen name="header_icon_height">27dp</dimen>
     <dimen name="header_icon_width">27dp</dimen>
     <dimen name="horizontal_spacing">20dp</dimen>
-    <dimen name="lb_rounded_rect_corner_radius">8dp</dimen>
     <dimen name="setting_card_height">80dp</dimen>
     <dimen name="setting_card_width">196dp</dimen>
     <dimen name="vertical_spacing">20dp</dimen>
