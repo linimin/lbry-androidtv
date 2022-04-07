@@ -116,6 +116,7 @@
         <item name="walletAddressQrCodeSize">@dimen/qrcode_size</item>
         <item name="rowHeaderStyle">@style/Widget.Row.Header</item>
         <item name="imageCardViewTitleStyle">@style/Widget.ImageCardView.TitleStyle</item>
+        <item name="imageCardViewInfoAreaStyle">@style/Widget.ImageCardView.InfoAreaStyle</item>
     </style>
 
     <style name="AppTheme.Overlay.HeaderIcons" parent="">

@@ -93,4 +93,9 @@
     <style name="Widget.ImageCardView.TitleStyle" parent="Widget.Leanback.ImageCardView.TitleStyle">
         <item name="android:maxLines">2</item>
     </style>
+
+    <style name="Widget.ImageCardView.InfoAreaStyle" parent="Widget.Leanback.ImageCardView.InfoAreaStyle">
+        <item name="android:layout_height">100dp</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
 </resources>
