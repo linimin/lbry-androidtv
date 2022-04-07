@@ -125,6 +125,9 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
                 android:name="authResponse"
                 app:argType="android.accounts.AccountAuthenticatorResponse"
                 app:nullable="true" />
+            <action
+                android:id="@+id/action_emailInputFragment_to_signInFragment"
+                app:destination="@id/signInFragment" />
         </fragment>
         <fragment
             android:id="@+id/emailVerifyFragment"
@@ -142,6 +145,23 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
                 android:name="authResponse"
                 app:argType="android.accounts.AccountAuthenticatorResponse"
                 app:nullable="true" />
+        </fragment>
+        <fragment
+            android:id="@+id/signInFragment"
+            android:name="app.newproj.lbrytv.ui.account.SignInFragment"
+            android:label="SignInFragment">
+            <argument
+                android:name="email"
+                app:argType="string" />
+            <argument
+                android:name="authResponse"
+                app:argType="android.accounts.AccountAuthenticatorResponse"
+                app:nullable="true" />
+            <action
+                android:id="@+id/action_signInFragment_to_browseCategoriesFragment"
+                app:destination="@id/browseCategoriesFragment"
+                app:popUpTo="@id/browseCategoriesFragment"
+                app:popUpToInclusive="true" />
         </fragment>
     </navigation>
     <fragment

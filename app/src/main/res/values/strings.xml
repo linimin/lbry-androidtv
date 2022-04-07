@@ -37,6 +37,7 @@
     <string name="email_address_example">name@example.com</string>
     <string name="enter_email_address">Enter email address</string>
     <string name="enter_the_email_address_associated_with_your_existing_lbry_account">Enter the email address associated with your existing LBRY account.</string>
+    <string name="signing_in_as">Signing in as %s</string>
     <string name="following">Following</string>
     <string name="invalid_email_address">Invalid email address</string>
     <string name="not_following">Not following</string>
@@ -58,4 +59,11 @@
     <string name="tip_and_boost_your_favorite_creators_by_using_your_lbc">Tip and boost your favorite creators by using your LBC.</string>
     <string name="would_you_like_to_sign_out">Would you like to sign out?</string>
     <string name="using_account">Using account</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="sign_in_with_password">Sign-in with password</string>
+    <string name="use_password">Use password</string>
+    <string name="user_magic_link">Use magic link</string>
+    <string name="sign_in_method">Sign-in method</string>
+    <string name="enter_password">Enter password</string>
 </resources>

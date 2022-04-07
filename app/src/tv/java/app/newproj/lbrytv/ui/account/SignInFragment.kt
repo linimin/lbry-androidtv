@@ -33,9 +33,8 @@ import androidx.leanback.widget.GuidanceStylist
 import androidx.leanback.widget.GuidedAction
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
+import app.newproj.lbrytv.NavGraphDirections
 import app.newproj.lbrytv.R
-import app.newproj.lbrytv.ui.guidance.findSubActionById
 import app.newproj.lbrytv.ui.guidance.id
 import app.newproj.lbrytv.ui.guidance.updateAction
 import app.newproj.lbrytv.ui.guidance.updateButtonAction
@@ -43,49 +42,36 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class EmailInputFragment : GuidedStepSupportFragment() {
-    private val args by navArgs<EmailInputFragmentArgs>()
-    private val viewModel: SignInEmailInputViewModel by viewModels()
+class SignInFragment : GuidedStepSupportFragment() {
+    private val viewModel: SignInViewModel by viewModels()
     private val navController by lazy { findNavController() }
 
     override fun onCreateGuidance(savedInstanceState: Bundle?) = GuidanceStylist.Guidance(
-        getString(R.string.welcome_to_lbry),
-        getString(R.string.enter_the_email_address_associated_with_your_existing_lbry_account),
+        getString(R.string.enter_password),
+        getString(R.string.signing_in_as, viewModel.uiState.value.email),
         getString(R.string.sign_in),
         null
     )
 
     override fun onCreateActions(actions: MutableList<GuidedAction>, savedInstanceState: Bundle?) {
-        val signInMethodActions = listOf(
-            GuidedAction.Builder(requireContext())
-                .id(R.id.guided_action_use_magic_link)
-                .title(R.string.user_magic_link)
-                .checkSetId(R.id.check_set_sign_in_method)
-                .checked(true)
-                .build(),
-            GuidedAction.Builder(requireContext())
-                .id(R.id.guided_action_use_password)
-                .title(R.string.use_password)
-                .checkSetId(R.id.check_set_sign_in_method)
-                .build(),
-        )
         actions.addAll(
             listOf(
                 GuidedAction.Builder(context)
                     .id(R.id.guided_action_email)
+                    .description(R.string.email)
+                    .infoOnly(true)
+                    .focusable(false)
+                    .build(),
+                GuidedAction.Builder(context)
+                    .id(R.id.guided_action_password)
+                    .title(R.string.enter_password)
                     .editTitle("")
                     .editable(true)
                     .editInputType(
                         InputType.TYPE_CLASS_TEXT
-                                or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+                                or InputType.TYPE_TEXT_VARIATION_PASSWORD
                     )
-                    .build(),
-                GuidedAction.Builder(context)
-                    .id(R.id.guided_action_sign_in_method)
-                    .title(R.string.sign_in_method)
-                    .title(signInMethodActions.find { it.isChecked }?.title)
-                    .description(R.string.sign_in_method)
-                    .subActions(signInMethodActions)
+                    .description(R.string.password)
                     .build(),
             )
         )
@@ -98,6 +84,7 @@ class EmailInputFragment : GuidedStepSupportFragment() {
         actions.add(
             GuidedAction.Builder(context)
                 .clickAction(GuidedAction.ACTION_ID_CONTINUE)
+                .enabled(false)
                 .build(),
         )
     }
@@ -107,23 +94,24 @@ class EmailInputFragment : GuidedStepSupportFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { uiState ->
                 updateAction(R.id.guided_action_email) {
-                    it.title = it.editTitle.ifEmpty { getString(R.string.email_address_example) }
-                    it.description = if (uiState.isValidEmail) {
-                        getString(R.string.enter_email_address)
-                    } else {
-                        getString(R.string.invalid_email_address)
-                    }
+                    it.title = uiState.email
                 }
                 updateButtonAction(GuidedAction.ACTION_ID_CONTINUE) {
-                    it.isEnabled = uiState.isValidEmail
+                    it.isEnabled = uiState.canContinue
+                }
+                if (uiState.isSignedIn) {
+                    goToBrowseCategoriesScreen()
+                } else if (uiState.errorMessage != null) {
+                    goToErrorScreen(uiState.errorMessage)
                 }
             }
         }
     }
 
     override fun onGuidedActionEditedAndProceed(action: GuidedAction): Long {
-        return if (action.id == R.id.guided_action_email.toLong()) {
-            if (viewModel.setEmail(action.editTitle.toString())) {
+        return if (action.id == R.id.guided_action_password.toLong()) {
+            val password = action.editTitle.toString()
+            if (viewModel.setPassword(password)) {
                 GuidedAction.ACTION_ID_CONTINUE
             } else {
                 GuidedAction.ACTION_ID_CURRENT
@@ -135,40 +123,18 @@ class EmailInputFragment : GuidedStepSupportFragment() {
 
     override fun onGuidedActionClicked(action: GuidedAction) {
         if (action.id == GuidedAction.ACTION_ID_CONTINUE) {
-            check(viewModel.uiState.value.isValidEmail)
-            val email = viewModel.uiState.value.email
-            if (findSubActionById(R.id.guided_action_use_magic_link)!!.isChecked) {
-                goToVerifyScreen(email)
-            } else if (findSubActionById(R.id.guided_action_use_password)!!.isChecked) {
-                goToSignInScreen(email)
-            }
+            viewModel.signIn()
         }
     }
 
-    override fun onSubGuidedActionClicked(action: GuidedAction): Boolean {
-        if (action.checkSetId == R.id.check_set_sign_in_method) {
-            updateAction(R.id.guided_action_sign_in_method) {
-                it.title = action.title
-            }
-        }
-        return true
-    }
-
-    private fun goToSignInScreen(email: String) {
+    private fun goToBrowseCategoriesScreen() {
         navController.navigate(
-            EmailInputFragmentDirections.actionEmailInputFragmentToSignInFragment(
-                email,
-                args.authResponse
-            )
+            SignInFragmentDirections.actionSignInFragmentToBrowseCategoriesFragment()
         )
     }
 
-    private fun goToVerifyScreen(email: String) {
-        navController.navigate(
-            EmailInputFragmentDirections.actionEmailInputFragmentToEmailVerifyFragment(
-                email,
-                args.authResponse
-            )
-        )
+    private fun goToErrorScreen(message: String) {
+        navController.navigate(NavGraphDirections.actionGlobalErrorFragment(message = message))
+        viewModel.errorMessageShown()
     }
 }

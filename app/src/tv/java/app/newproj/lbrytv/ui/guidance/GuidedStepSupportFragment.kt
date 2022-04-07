@@ -39,11 +39,33 @@ fun GuidedStepSupportFragment.updateAction(@IdRes id: Int, update: (GuidedAction
     updateAction(id.toLong(), update)
 }
 
+fun GuidedStepSupportFragment.updateButtonAction(id: Long, update: (GuidedAction) -> Unit) {
+    findButtonActionById(id)?.let {
+        update(it)
+        notifyButtonActionChanged(findButtonActionPositionById(id))
+    }
+}
+
+fun GuidedStepSupportFragment.updateButtonAction(@IdRes id: Int, update: (GuidedAction) -> Unit) {
+    updateButtonAction(id.toLong(), update)
+}
+
+fun GuidedStepSupportFragment.findSubActionById(subActionId: Long): GuidedAction? =
+    actions.flatMap { it.subActions ?: emptyList() }.find { it.id == subActionId }
+
+fun GuidedStepSupportFragment.findSubActionById(@IdRes subActionId: Int): GuidedAction? =
+    findSubActionById(subActionId.toLong())
+
 fun GuidedStepSupportFragment.findSubActionById(
     parentActionId: Long,
     subActionId: Long,
 ): GuidedAction? =
     findActionById(parentActionId)?.subActions?.find { it.id == subActionId }
+
+fun GuidedStepSupportFragment.findSubActionById(
+    @IdRes parentActionId: Int,
+    @IdRes subActionId: Int,
+): GuidedAction? = findSubActionById(parentActionId.toLong(), subActionId.toLong())
 
 fun GuidedStepSupportFragment.findActionById(@IdRes id: Int): GuidedAction? =
     findActionById(id.toLong())

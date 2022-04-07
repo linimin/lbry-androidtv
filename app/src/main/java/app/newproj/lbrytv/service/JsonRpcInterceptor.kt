@@ -50,6 +50,7 @@ class JsonRpcInterceptor @Inject constructor(private val gson: Gson) : Intercept
         }
         return response.newBuilder()
             .code(httpErrorCode)
+            .message(jsonRpcResponse.error?.message ?: response.message)
             .build()
     }
 }

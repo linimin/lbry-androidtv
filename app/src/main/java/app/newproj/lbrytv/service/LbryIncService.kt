@@ -24,41 +24,47 @@
 
 package app.newproj.lbrytv.service
 
+import app.newproj.lbrytv.data.dto.LbryIncServiceResponse
 import app.newproj.lbrytv.data.dto.NewUser
+import app.newproj.lbrytv.data.dto.SignInResponse
 import app.newproj.lbrytv.data.dto.Subscription
 import app.newproj.lbrytv.data.dto.SyncSetResult
 import app.newproj.lbrytv.data.dto.TokenUser
 import app.newproj.lbrytv.data.dto.WalletSyncData
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import okhttp3.Interceptor
+import okhttp3.Response
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
+import java.nio.charset.StandardCharsets
+import javax.inject.Inject
 
 interface LbryIncService {
-    /**
-     * [Link to Postman](https://web.postman.co/workspace/LBRYtv~7307462d-f6f1-45d0-9455-7e36e7983a8c/request/19881064-a701b4f4-ef42-47c5-885f-994879a61921)
-     */
+    @POST("/user/signin")
+    suspend fun signIn(
+        @Query("email") email: String,
+        @Query("password") password: String,
+        @Query("auth_token") authToken: String? = null,
+    ): SignInResponse
+
+    @POST("/user/signout")
+    suspend fun signOut()
+
     @POST("/user/new")
     suspend fun newUser(
         @Query("language") language: String,
         @Query("app_id") appId: String,
     ): NewUser
 
-    /**
-     * [Link to Postman](https://web.postman.co/workspace/LBRYtv~7307462d-f6f1-45d0-9455-7e36e7983a8c/request/19881064-e89a1d93-391d-4eea-9ca8-de74e0bb9abe)
-     */
     @GET("/user/me")
     suspend fun tokenUser(@Query("auth_token") authToken: String? = null): TokenUser
 
-    /**
-     * [Link to Postman](https://web.postman.co/workspace/LBRYtv~7307462d-f6f1-45d0-9455-7e36e7983a8c/request/19881064-15cf9728-99d8-4ade-9f7f-86979b60ebd3)
-     */
     @DELETE("/user/signout")
     suspend fun revokeToken()
 
-    /**
-     * [Link to Postman](https://web.postman.co/workspace/LBRYtv~7307462d-f6f1-45d0-9455-7e36e7983a8c/request/19881064-1bc66e24-b654-4e9b-bcb6-a410b1c79810)
-     */
     @POST("/user_email/new")
     suspend fun registerEmail(
         @Query("email") email: String,
@@ -66,9 +72,6 @@ interface LbryIncService {
         @Query("auth_token") authToken: String? = null,
     ): String
 
-    /**
-     * [Link to Postman](https://web.postman.co/workspace/LBRYtv~7307462d-f6f1-45d0-9455-7e36e7983a8c/request/19881064-56b022f7-fa70-43c6-903d-9b13d53ca81e)
-     */
     @POST("/user_email/resend_token")
     suspend fun verifyEmail(
         @Query("email") email: String,
@@ -76,9 +79,6 @@ interface LbryIncService {
         @Query("auth_token") authToken: String? = null,
     ): String
 
-    /**
-     * [Link to Postman](https://web.postman.co/workspace/LBRYtv~7307462d-f6f1-45d0-9455-7e36e7983a8c/request/19881064-6e8450f0-7dd2-49fd-a41a-510579232386)
-     */
     @GET("/subscription/list")
     suspend fun subscriptions(): List<Subscription>
 
@@ -94,15 +94,9 @@ interface LbryIncService {
         @Query("claim_id") claimId: String,
     )
 
-    /**
-     * [Link to Postman](https://web.postman.co/workspace/LBRYtv~7307462d-f6f1-45d0-9455-7e36e7983a8c/request/19881064-94b52458-8c13-4dce-a010-ef3b9c909ba4)
-     */
     @GET("/subscription/sub_count")
     suspend fun subscriptionCount(@Query("claim_id") claimId: String): List<Int>
 
-    /**
-     * [Link to Postman](https://web.postman.co/workspace/LBRYtv~7307462d-f6f1-45d0-9455-7e36e7983a8c/request/19881064-6233f190-1035-4612-b3fa-82382e62d4f9)
-     */
     @GET("/file/view_count")
     suspend fun fileViewCount(@Query("claim_id") claimId: String): List<Int>
 
@@ -115,4 +109,24 @@ interface LbryIncService {
         @Query("new_hash") newHash: String?,
         @Query("data") data: String?,
     ): SyncSetResult
+}
+
+class LbryIncServiceErrorInterceptor @Inject constructor(private val gson: Gson) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val response = chain.proceed(chain.request())
+        return if (response.isSuccessful) {
+            response
+        } else {
+            val errorMessage = gson.fromJson<LbryIncServiceResponse<Any>>(
+                response.body?.source()
+                    ?.apply { request(Long.MAX_VALUE) }
+                    ?.buffer?.clone()
+                    ?.readString(StandardCharsets.UTF_8),
+                TypeToken.getParameterized(LbryIncServiceResponse::class.java, Any::class.java).type
+            ).error ?: response.message
+            response.newBuilder()
+                .message(errorMessage)
+                .build()
+        }
+    }
 }

@@ -26,6 +26,8 @@
 <resources>
     <item name="guided_action_processing" type="id" />
     <item name="guided_action_email" type="id" />
+    <item name="guided_action_sign_in_with_password" type="id" />
+    <item name="guided_action_password" type="id" />
     <item name="guided_action_support" type="id" />
     <item name="guided_action_channel" type="id" />
     <item name="guided_action_support_type" type="id" />
@@ -48,4 +50,8 @@
     <item name="browse_category_subscriptions" type="id" />
     <item name="browse_category_channels" type="id" />
     <item name="browse_category_settings" type="id" />
+    <item name="guided_action_sign_in_method" type="id" />
+    <item name="check_set_sign_in_method" type="id" />
+    <item name="guided_action_use_magic_link" type="id" />
+    <item name="guided_action_use_password" type="id" />
 </resources>

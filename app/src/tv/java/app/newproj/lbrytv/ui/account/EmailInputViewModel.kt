@@ -36,7 +36,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SignInEmailInputViewModel @Inject constructor() : ViewModel() {
     data class UiState(
-        val email: String? = null,
+        val email: String = "",
         val isValidEmail: Boolean = false,
     )
 

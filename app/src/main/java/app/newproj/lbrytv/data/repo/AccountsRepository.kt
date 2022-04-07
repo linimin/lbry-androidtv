@@ -54,6 +54,20 @@ class AccountRepository @Inject constructor(
         return accountManager.getAccountsByType(ACCOUNT_TYPE).asList()
     }
 
+    suspend fun addAccount(email: String, password: String): Account {
+        val installationId = installationIdRepo.installationId()
+        val lbryIncService = lbryIncServiceProvider.get()
+        val newUser = lbryIncService.newUser("en", installationId)
+        val authToken = newUser.plainTextAuthToken
+        lbryIncService.signIn(email, password, authToken)
+        return Account(email, ACCOUNT_TYPE).also {
+            with(accountManager) {
+                addAccountExplicitly(it, null, null)
+                setAuthToken(it, AUTH_TOKEN_TYPE, authToken)
+            }
+        }
+    }
+
     suspend fun addAccount(email: String): Account {
         val installationId = installationIdRepo.installationId()
         val lbryIncService = lbryIncServiceProvider.get()
@@ -89,6 +103,7 @@ class AccountRepository @Inject constructor(
                     if (account != null) {
                         accountName = account.name
                     } else {
+                        lbryIncServiceProvider.get().signOut()
                         clearAccountName()
                         currentAccount()?.let { account ->
                             accountManager.removeAccountExplicitly(account)

@@ -25,7 +25,6 @@
 package app.newproj.lbrytv.data.dto
 
 import android.net.Uri
-import app.newproj.lbrytv.data.entity.Claim
 import java.time.Instant
 
 data class VideoUiState(

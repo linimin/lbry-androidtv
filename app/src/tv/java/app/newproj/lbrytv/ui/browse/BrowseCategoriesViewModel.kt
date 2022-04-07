@@ -48,7 +48,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 

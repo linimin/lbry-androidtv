@@ -27,6 +27,7 @@ package app.newproj.lbrytv.di
 import app.newproj.lbrytv.auth.LbryIncServiceAuthInterceptor
 import app.newproj.lbrytv.service.LbryIncService
 import app.newproj.lbrytv.service.LbryIncServiceBodyConverterFactory
+import app.newproj.lbrytv.service.LbryIncServiceErrorInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,10 +46,12 @@ object LbryIncServiceModule {
     fun lbryIncService(
         authInterceptor: LbryIncServiceAuthInterceptor,
         gsonConverterFactory: GsonConverterFactory,
+        errorInterceptor: LbryIncServiceErrorInterceptor,
     ): LbryIncService {
         val client = OkHttpClient.Builder()
             .protocols(listOf(Protocol.HTTP_1_1))
             .addInterceptor(authInterceptor)
+            .addInterceptor(errorInterceptor)
             .build()
         return Retrofit.Builder()
             .baseUrl("https://api.lbry.com/")
