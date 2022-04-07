@@ -30,6 +30,8 @@ import app.newproj.lbrytv.data.dto.ApplyWalletSyncResult
 import app.newproj.lbrytv.data.dto.ClaimResolveRequest
 import app.newproj.lbrytv.data.dto.ClaimSearchRequest
 import app.newproj.lbrytv.data.dto.ClaimSearchResult
+import app.newproj.lbrytv.data.dto.DownloadRequest
+import app.newproj.lbrytv.data.dto.DownloadResponse
 import app.newproj.lbrytv.data.dto.JsonRpc
 import app.newproj.lbrytv.data.dto.LbrynetDaemonStatus
 import app.newproj.lbrytv.data.dto.LbrynetVersion
@@ -187,4 +189,11 @@ interface LbrynetService {
     @JsonRpc("support_create")
     @POST("/")
     suspend fun supportCreate(@Body request: SupportCreateRequest): SupportCreateResponse
+
+    /**
+     * Download stream from a LBRY name.
+     */
+    @JsonRpc("get")
+    @POST("/")
+    suspend fun get(@Body request: DownloadRequest): DownloadResponse
 }

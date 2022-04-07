@@ -37,6 +37,7 @@ import androidx.leanback.widget.Action
 import androidx.leanback.widget.ArrayObjectAdapter
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
@@ -137,7 +138,10 @@ class VideoPlayerFragment : VideoSupportFragment() {
     }
 
     private fun play(streamUrl: Uri) {
-        val mediaItem = MediaItem.fromUri(streamUrl)
+        val mediaItem = MediaItem.Builder()
+            .setUri(streamUrl)
+            .setMimeType(MimeTypes.APPLICATION_M3U8)
+            .build()
         player.setMediaItem(mediaItem)
         player.prepare()
         player.play()
@@ -163,7 +167,12 @@ class VideoPlayerFragment : VideoSupportFragment() {
     }
 
     private fun goToErrorScreen(message: String?) {
-        navController.navigate(NavGraphDirections.actionGlobalErrorFragment(message))
+        navController.navigate(
+            NavGraphDirections.actionGlobalErrorFragment(message),
+            NavOptions.Builder()
+                .setPopUpTo(R.id.videoPlayerFragment, true)
+                .build()
+        )
         viewModel.errorMessageShown()
     }
 }

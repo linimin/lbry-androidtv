@@ -71,7 +71,7 @@ data class Claim(
     val permanentUrl: Uri? = null,
 
     @ColumnInfo(name = "short_url")
-    val shortUrl: String? = null,
+    val shortUrl: Uri? = null,
 
     /**
      * A UTF-8 string of up to 255 bytes used to address the claim.
