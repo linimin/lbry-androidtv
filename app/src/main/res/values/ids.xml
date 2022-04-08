@@ -24,34 +24,8 @@
   -->
 
 <resources>
-    <item name="guided_action_processing" type="id" />
-    <item name="guided_action_email" type="id" />
-    <item name="guided_action_sign_in_with_password" type="id" />
-    <item name="guided_action_password" type="id" />
-    <item name="guided_action_support" type="id" />
-    <item name="guided_action_channel" type="id" />
-    <item name="guided_action_support_type" type="id" />
-    <item name="guided_action_amount" type="id" />
-    <item name="guided_action_send" type="id" />
-    <item name="guided_action_check_set_support_type" type="id" />
-    <item name="guided_action_check_set_amount" type="id" />
-    <item name="amount_option_1_credit" type="id" />
-    <item name="amount_option_5_credits" type="id" />
-    <item name="amount_option_25_credits" type="id" />
-    <item name="amount_option_100_credits" type="id" />
-    <item name="amount_option_500_credits" type="id" />
-    <item name="amount_option_1000_credits" type="id" />
-    <item name="support_option_tip" type="id" />
-    <item name="support_option_revocable" type="id" />
-    <item name="tip" type="id" />
-    <item name="revocable_support" type="id" />
-    <item name="switch_account" type="id" />
-    <item name="browse_category_featured" type="id" />
-    <item name="browse_category_subscriptions" type="id" />
     <item name="browse_category_channels" type="id" />
+    <item name="browse_category_featured" type="id" />
     <item name="browse_category_settings" type="id" />
-    <item name="guided_action_sign_in_method" type="id" />
-    <item name="check_set_sign_in_method" type="id" />
-    <item name="guided_action_use_magic_link" type="id" />
-    <item name="guided_action_use_password" type="id" />
+    <item name="browse_category_subscriptions" type="id" />
 </resources>

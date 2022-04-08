@@ -28,7 +28,6 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.newproj.lbrytv.data.entity.streamingUrl
 import app.newproj.lbrytv.data.repo.StreamingUrlRepository
 import app.newproj.lbrytv.data.repo.VideosRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
