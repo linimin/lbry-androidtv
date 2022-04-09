@@ -60,7 +60,7 @@ object LbrynetServiceModule {
             .addInterceptor(jsonRpcBodyFiller)
             .build()
         return Retrofit.Builder()
-            .baseUrl("https://api.na-backend.odysee.com/")
+            .baseUrl("https://api.lbry.tv/")
             .client(client)
             .addConverterFactory(JsonRpcBodyConverterFactory)
             .addConverterFactory(gsonConverterFactory)
