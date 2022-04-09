@@ -74,6 +74,7 @@ class VideoPlayerFragment : VideoSupportFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundColor(Color.BLACK)
+        surfaceView.keepScreenOn = true
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.uiState.collect {
                 playbackGlue.apply {
@@ -117,7 +118,6 @@ class VideoPlayerFragment : VideoSupportFragment() {
             player,
             PLAYER_CONTROL_UPDATE_PERIOD_MILLIS
         )
-
         playbackGlue = CustomPlaybackTransportControlGlue(context, playerAdapter) {
             when (it.id) {
                 R.id.guided_action_support.toLong() -> goToSupportScreen()
