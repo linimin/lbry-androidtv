@@ -1,5 +1,5 @@
 [versions]
-android-plugin = "7.3.0-alpha07"
+android-plugin = "7.2.0-beta04"
 bitcoinj = "0.16.1"
 blitz = "1.0.9"
 coil = "2.0.0-rc02"
@@ -72,12 +72,12 @@ leanback-preference = { module = "androidx.leanback:leanback-preference", versio
 leanback-tab = { module = "androidx.leanback:leanback-tab", version.ref = "leanback-tab" }
 lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
+media3-dash = { module = "androidx.media3:media3-exoplayer-dash", version.ref = "media3" }
 media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
-media3-hls = { module = "androidx.media3:media3-exoplayer-hls", version.ref = "media3"}
-media3-dash = { module = "androidx.media3:media3-exoplayer-dash", version.ref = "media3"}
-media3-smoothstreaming = { module = "androidx.media3:media3-exoplayer-smoothstreaming", version.ref = "media3"}
+media3-hls = { module = "androidx.media3:media3-exoplayer-hls", version.ref = "media3" }
 media3-leanback = { module = "androidx.media3:media3-ui-leanback", version.ref = "media3" }
 media3-session = { module = "androidx.media3:media3-ui", version.ref = "media3" }
+media3-smoothstreaming = { module = "androidx.media3:media3-exoplayer-smoothstreaming", version.ref = "media3" }
 media3-ui = { module = "androidx.media3:media3-session", version.ref = "media3" }
 mockK = { module = "io.mockk:mockk", version.ref = "mockK" }
 navigation-fragment = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }
@@ -110,7 +110,7 @@ zxing = { module = "com.google.zxing:core", version.ref = "zxing" }
 [bundles]
 leanback = ["leanback", "leanback-grid", "leanback-paging", "leanback-preference", "leanback-tab"]
 lifecycle = ["lifecycle-viewModel"]
-media3 = ["media3-exoplayer", "media3-leanback", "media3-session", "media3-ui", "media3-hls", "media3-dash", "media3-smoothstreaming"]
+media3 = ["media3-dash", "media3-exoplayer", "media3-hls", "media3-leanback", "media3-session", "media3-smoothstreaming", "media3-ui"]
 room = ["room", "room-ktx", "room-paging", "room-testing"]
 test-instrumented = ["espresso-core", "fragment-testing", "hilt-android-testing", "jUnit4", "jUnit5-jupiter", "kotlinx-coroutines-test", "mockK", "navigation-testing", "test-core", "test-ext-truth", "test-rules", "test-runner", "truth"]
 test-local = ["hilt-android-testing", "jUnit4", "jUnit5-jupiter", "kotlinx-coroutines-test", "mockK", "robolectric", "test-core", "test-ext-junit", "test-rules", "truth"]
