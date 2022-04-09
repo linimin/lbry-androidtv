@@ -26,7 +26,6 @@ package app.newproj.lbrytv.ui.player
 
 import android.content.Context
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -39,7 +38,6 @@ import androidx.leanback.widget.ArrayObjectAdapter
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
-import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.leanback.LeanbackPlayerAdapter
@@ -47,6 +45,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import app.newproj.lbrytv.NavGraphDirections
 import app.newproj.lbrytv.R
+import app.newproj.lbrytv.data.dto.StreamingUrl
 import dagger.hilt.android.AndroidEntryPoint
 
 private const val PLAYER_CONTROL_UPDATE_PERIOD_MILLIS = 100
@@ -60,7 +59,7 @@ private const val KEY_LAST_PLAYBACK_POSITION = "KEY_LAST_PLAYBACK_POSITION"
 class VideoPlayerFragment : VideoSupportFragment() {
     private val viewModel: VideoPlayerViewModel by viewModels()
     private val navController by lazy { findNavController() }
-    private lateinit var player: Player
+    private lateinit var player: ExoPlayer
     private lateinit var mediaSession: MediaSession
     private lateinit var playbackGlue: PlaybackTransportControlGlue<LeanbackPlayerAdapter>
     private var lastPlaybackPosition: Long? = null
@@ -118,6 +117,7 @@ class VideoPlayerFragment : VideoSupportFragment() {
             player,
             PLAYER_CONTROL_UPDATE_PERIOD_MILLIS
         )
+
         playbackGlue = CustomPlaybackTransportControlGlue(context, playerAdapter) {
             when (it.id) {
                 R.id.guided_action_support.toLong() -> goToSupportScreen()
@@ -139,10 +139,14 @@ class VideoPlayerFragment : VideoSupportFragment() {
         player.release()
     }
 
-    private fun play(streamUrl: Uri) {
+    private fun play(streamUrl: StreamingUrl) {
         val mediaItem = MediaItem.Builder()
-            .setUri(streamUrl)
-            .setMimeType(MimeTypes.APPLICATION_M3U8)
+            .setUri(streamUrl.url)
+            .apply {
+                if (streamUrl.videoIsTranscoded) {
+                    setMimeType(MimeTypes.APPLICATION_M3U8)
+                }
+            }
             .build()
         player.setMediaItem(mediaItem)
         player.prepare()

@@ -24,10 +24,10 @@
 
 package app.newproj.lbrytv.ui.player
 
-import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.newproj.lbrytv.data.dto.StreamingUrl
 import app.newproj.lbrytv.data.repo.StreamingUrlRepository
 import app.newproj.lbrytv.data.repo.VideosRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -50,7 +50,7 @@ class VideoPlayerViewModel @Inject constructor(
     data class UiState(
         val title: String? = null,
         val subtitle: String? = null,
-        val streamUrl: Uri? = null,
+        val streamUrl: StreamingUrl? = null,
         val channelId: String? = null,
         val errorMessage: String? = null,
     )

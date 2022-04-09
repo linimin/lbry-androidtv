@@ -27,15 +27,41 @@ package app.newproj.lbrytv.data.repo
 import android.net.Uri
 import androidx.core.net.toUri
 import app.newproj.lbrytv.data.dto.DownloadRequest
+import app.newproj.lbrytv.data.dto.StreamingUrl
 import app.newproj.lbrytv.service.LbrynetService
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okio.IOException
 import javax.inject.Inject
+import kotlin.coroutines.suspendCoroutine
 
 class StreamingUrlRepository @Inject constructor(
     private val lbrynetService: LbrynetService,
 ) {
-    suspend fun streamingUrl(claimUri: Uri): Uri {
-        return lbrynetService.get(DownloadRequest(claimUri))
-            .streamingUrl
-            .toUri()
+    suspend fun streamingUrl(claimUri: Uri): StreamingUrl {
+        val streamingUrl = lbrynetService.get(DownloadRequest(claimUri)).streamingUrl
+        val contentType = suspendCoroutine<String?> {
+            val client = OkHttpClient()
+            val request = Request.Builder()
+                .url(streamingUrl)
+                .head()
+                .build()
+            client.newCall(request).enqueue(object : Callback {
+                override fun onResponse(call: Call, response: Response) {
+                    it.resumeWith(Result.success(response.header("Content-Type")))
+                }
+
+                override fun onFailure(call: Call, e: IOException) {
+                    it.resumeWith(Result.failure(e))
+                }
+            })
+        }
+        return StreamingUrl(
+            streamingUrl.toUri(),
+            contentType == "application/x-mpegurl"
+        )
     }
 }
