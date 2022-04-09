@@ -17,4 +17,5 @@
 local.properties
 *.jks
 keystore.properties
+app/src/release/google-services.json
 play-store-credentials.json

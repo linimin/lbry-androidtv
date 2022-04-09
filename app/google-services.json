@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "69494178793",
+    "project_id": "lbrytv-testsite",
+    "storage_bucket": "lbrytv-testsite.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:69494178793:android:c6e542549e9ec626abc178",
+        "android_client_info": {
+          "package_name": "app.newproj.lbrytv"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "69494178793-itfr8sj84j7omcd35m61oo5agmdnpefl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEkjSM89KbXkuUI-xEmPSWoubQWRMLQPk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "69494178793-itfr8sj84j7omcd35m61oo5agmdnpefl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

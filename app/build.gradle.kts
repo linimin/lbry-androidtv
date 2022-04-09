@@ -41,6 +41,8 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.navigation.safeArgs)
     alias(libs.plugins.protobuf)
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.firebaseCrashlytics)
 }
 
 // https://developer.android.com/studio/build/configure-app-module
@@ -190,6 +192,8 @@ dependencies {
     implementation(libs.zxing)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.blitz)
+    implementation(platform(libs.firebaseBom))
+    implementation(libs.bundles.firebase)
 
     kapt(libs.hilt.compiler)
     kapt(libs.room.compiler)
