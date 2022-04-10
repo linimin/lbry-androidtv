@@ -47,6 +47,9 @@ import app.newproj.lbrytv.NavGraphDirections
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.data.dto.StreamingUrl
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 private const val PLAYER_CONTROL_UPDATE_PERIOD_MILLIS = 100
 private const val KEY_LAST_PLAYBACK_POSITION = "KEY_LAST_PLAYBACK_POSITION"
@@ -106,7 +109,13 @@ class VideoPlayerFragment : VideoSupportFragment() {
     }
 
     override fun onError(errorCode: Int, errorMessage: CharSequence?) {
-        goToErrorScreen(errorMessage?.toString())
+        // FIXME: This is a quick fix to give the user an opportunity to close the player screen.
+        viewLifecycleOwner.lifecycleScope.launch {
+            delay(3.seconds)
+            if (navController.currentDestination?.id != R.id.errorFragment) {
+                goToErrorScreen(errorMessage?.toString())
+            }
+        }
     }
 
     private fun initializePlayer() {
@@ -173,12 +182,7 @@ class VideoPlayerFragment : VideoSupportFragment() {
     }
 
     private fun goToErrorScreen(message: String?) {
-        navController.navigate(
-            NavGraphDirections.actionGlobalErrorFragment(message),
-            NavOptions.Builder()
-                .setPopUpTo(R.id.videoPlayerFragment, true)
-                .build()
-        )
+        navController.navigate(NavGraphDirections.actionGlobalErrorFragment(message))
         viewModel.errorMessageShown()
     }
 }
