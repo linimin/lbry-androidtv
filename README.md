@@ -1,7 +1,7 @@
 ![Banner](/fastlane/metadata/android/en-US/images/tvBanner.png)
-![Release](https://img.shields.io/github/v/release/linimin/lbry-androidtv?include_prereleases)
-![License](https://img.shields.io/github/license/linimin/lbry-androidtv)
-![Twitter](https://img.shields.io/twitter/follow/liniminil?style=social)
+[![Release](https://img.shields.io/github/v/release/linimin/lbry-androidtv?include_prereleases)](https://github.com/linimin/lbry-androidtv/releases/tag/v1.0.0-alpha.6)
+[![License](https://img.shields.io/github/license/linimin/lbry-androidtv)](https://github.com/linimin/lbry-androidtv/blob/master/LICENSE)
+[![Twitter](https://img.shields.io/twitter/follow/liniminil?style=social)](https://twitter.com/liniminil)
 
 ## Description
 
