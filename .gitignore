@@ -17,3 +17,4 @@
 local.properties
 *.jks
 keystore.properties
+play-store-credentials.json
