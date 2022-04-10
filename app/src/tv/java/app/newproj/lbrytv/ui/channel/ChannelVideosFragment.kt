@@ -28,6 +28,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.leanback.app.VerticalGridSupportFragment
 import androidx.leanback.paging.PagingDataAdapter
@@ -83,6 +84,7 @@ class ChannelVideosFragment : VerticalGridSupportFragment() {
         with(viewLifecycleOwner.lifecycleScope) {
             launch {
                 viewModel.uiState.collect { uiState ->
+                    channelTitleView?.followUnfollowButton?.isEnabled = uiState.isSignedIn
                     channelTitleView?.setChannel(uiState.channel)
                     uiState.errorMessage?.let(::goToErrorScreen)
                 }

@@ -32,6 +32,7 @@ import androidx.paging.map
 import app.newproj.lbrytv.data.dto.ChannelUiState
 import app.newproj.lbrytv.data.dto.ChannelWithVideos
 import app.newproj.lbrytv.data.dto.VideoUiState
+import app.newproj.lbrytv.data.repo.AccountRepository
 import app.newproj.lbrytv.usecase.FollowUnfollowChannelUseCase
 import app.newproj.lbrytv.usecase.GetChannelWithVideosUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -53,12 +54,14 @@ class ChannelVideosViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getChannelWithVideosUseCase: GetChannelWithVideosUseCase,
     private val followUnfollowChannelUseCase: FollowUnfollowChannelUseCase,
+    private val accountRepository: AccountRepository,
 ) : ViewModel() {
     private val args = ChannelVideosFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
     data class UiState(
         val channel: ChannelUiState? = null,
         val errorMessage: String? = null,
+        val isSignedIn: Boolean = false,
     )
 
     private val _uiState = MutableStateFlow(UiState())
@@ -81,6 +84,9 @@ class ChannelVideosViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             try {
+                _uiState.update {
+                    it.copy(isSignedIn = accountRepository.currentAccount() != null)
+                }
                 channelWithVideos.emit(getChannelWithVideosUseCase(args.channelId))
                 channel.collect { channel ->
                     _uiState.update {

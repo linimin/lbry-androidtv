@@ -79,6 +79,8 @@ class ChannelTitleView(
 
     private var onSearchClickedListener: OnClickListener? = null
 
+    val followUnfollowButton = binding.followUnfollowButton
+
     fun setChannel(channel: ChannelUiState?) {
         binding.channel = channel
     }
