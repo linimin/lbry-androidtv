@@ -196,16 +196,16 @@ private class CustomPlaybackTransportControlGlue(
         super.onCreatePrimaryActions(primaryActionsAdapter)
         primaryActionsAdapter.add(
             Action(
-                R.id.guided_action_support.toLong(),
+                R.id.guided_action_channel.toLong(),
                 null, null,
-                ContextCompat.getDrawable(context, R.drawable.lbc)
+                ContextCompat.getDrawable(context, R.drawable.subscriptions)
             )
         )
         primaryActionsAdapter.add(
             Action(
-                R.id.guided_action_channel.toLong(),
+                R.id.guided_action_support.toLong(),
                 null, null,
-                ContextCompat.getDrawable(context, R.drawable.subscriptions)
+                ContextCompat.getDrawable(context, R.drawable.lbc)
             )
         )
     }
