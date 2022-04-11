@@ -55,7 +55,7 @@ android {
         minSdk = 26
         targetSdk = 31
         versionCode = 3
-        versionName = "1.0.0-alpha.6"
+        versionName = "1.0.0-beta.1"
         javaCompileOptions {
             annotationProcessorOptions {
                 /*
