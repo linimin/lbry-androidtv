@@ -98,4 +98,12 @@
         <item name="android:layout_height">100dp</item>
         <item name="android:background">@android:color/transparent</item>
     </style>
+
+    <style name="Widget.DetailsDescriptionTitleStyle" parent="Widget.Leanback.DetailsDescriptionTitleStyle">
+        <item name="android:textAppearance">@style/TextAppearance.DetailsDescriptionTitle</item>
+    </style>
+
+    <style name="TextAppearance.DetailsDescriptionTitle" parent="TextAppearance.Leanback.DetailsDescriptionTitle">
+        <item name="android:textSize">@dimen/details_description_title_text_size</item>
+    </style>
 </resources>

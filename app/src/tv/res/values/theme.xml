@@ -117,6 +117,7 @@
         <item name="rowHeaderStyle">@style/Widget.Row.Header</item>
         <item name="imageCardViewTitleStyle">@style/Widget.ImageCardView.TitleStyle</item>
         <item name="imageCardViewInfoAreaStyle">@style/Widget.ImageCardView.InfoAreaStyle</item>
+        <item name="detailsDescriptionTitleStyle">@style/Widget.DetailsDescriptionTitleStyle</item>
     </style>
 
     <style name="AppTheme.Overlay.HeaderIcons" parent="">
