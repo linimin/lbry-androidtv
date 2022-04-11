@@ -35,6 +35,9 @@ If you like this project and are willing to provide support for its development,
 donating LBC to the following address:
 [bFSpMqdSKmLie8tV2LGPEz5sGfLTzrwqq4](https://explorer.lbry.com/address/bFSpMqdSKmLie8tV2LGPEz5sGfLTzrwqq4)
 
+You can also show your support on this [post](https://odysee.com/@linimin:5/lbrytv:f0) on
+Odysee.
+
 ## License
 
 LBRYtv is released under the MIT license.
