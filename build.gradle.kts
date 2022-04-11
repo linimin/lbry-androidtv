@@ -30,8 +30,6 @@ plugins {
 
 versionCatalogUpdate {
     pin {
-        libraries.add(libs.core)
-
         // https://stackoverflow.com/questions/71799448/the-app-cannot-declare-different-versions-of-google-play-services-depending-on-t
         plugins.add(libs.plugins.android.application)
     }
