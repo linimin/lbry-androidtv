@@ -93,7 +93,8 @@ class ChannelVideosRemoteMediator @AssistedInject constructor(
                     ClaimLookup(remoteKeyLabel, it.claimId, nextSortingOrder++)
                 }
                 db.claimLookupDao().insert(claimLookups)
-                val remoteKey = RemoteKey(remoteKeyLabel, null, nextSortingOrder)
+                val nextKey = if (claims.isEmpty()) null else page.inc()
+                val remoteKey = RemoteKey(remoteKeyLabel, nextKey, nextSortingOrder)
                 db.remoteKeyDao().upsert(remoteKey)
             }
             return MediatorResult.Success(endOfPaginationReached = claims.isEmpty())
