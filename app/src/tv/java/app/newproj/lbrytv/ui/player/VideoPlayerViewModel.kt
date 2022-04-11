@@ -50,7 +50,9 @@ class VideoPlayerViewModel @Inject constructor(
     data class UiState(
         val title: String? = null,
         val subtitle: String? = null,
-        val streamUrl: StreamingUrl? = null,
+        val streamingUrl: StreamingUrl? = null,
+        val claimName: String? = null,
+        val claimId: String? = null,
         val channelId: String? = null,
         val errorMessage: String? = null,
     )
@@ -68,8 +70,10 @@ class VideoPlayerViewModel @Inject constructor(
                     it.copy(
                         title = video.claim.title,
                         subtitle = video.claim.channelName,
-                        streamUrl = streamingUrl,
-                        channelId = video.claim.channelId
+                        streamingUrl = streamingUrl,
+                        claimName = video.claim.name,
+                        claimId = video.claim.id,
+                        channelId = video.claim.channelId,
                     )
                 }
             } catch (error: Throwable) {

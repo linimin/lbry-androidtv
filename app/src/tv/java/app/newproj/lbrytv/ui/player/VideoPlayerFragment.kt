@@ -29,6 +29,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.leanback.app.VideoSupportFragment
 import androidx.leanback.app.VideoSupportFragmentGlueHost
@@ -46,9 +47,11 @@ import androidx.navigation.fragment.findNavController
 import app.newproj.lbrytv.NavGraphDirections
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.data.dto.StreamingUrl
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 private const val PLAYER_CONTROL_UPDATE_PERIOD_MILLIS = 100
@@ -66,6 +69,7 @@ class VideoPlayerFragment : VideoSupportFragment() {
     private lateinit var mediaSession: MediaSession
     private lateinit var playbackGlue: PlaybackTransportControlGlue<LeanbackPlayerAdapter>
     private var lastPlaybackPosition: Long? = null
+    @Inject lateinit var firebaseAnalytics: FirebaseAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,7 +88,7 @@ class VideoPlayerFragment : VideoSupportFragment() {
                     title = it.title
                     subtitle = it.subtitle
                 }
-                it.streamUrl?.let(::play)
+                it.streamingUrl?.let(::play)
                 it.errorMessage?.let(::goToErrorScreen)
             }
         }
@@ -116,6 +120,15 @@ class VideoPlayerFragment : VideoSupportFragment() {
                 goToErrorScreen(errorMessage?.toString())
             }
         }
+        firebaseAnalytics.logEvent(
+            "video_play_error",
+            bundleOf(
+                "claim_name" to viewModel.uiState.value.claimName,
+                "claim_id" to viewModel.uiState.value.claimId,
+                "error_code" to errorCode,
+                "error_message" to errorMessage,
+            )
+        )
     }
 
     private fun initializePlayer() {
