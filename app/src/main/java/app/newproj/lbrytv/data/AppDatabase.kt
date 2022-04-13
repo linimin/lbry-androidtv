@@ -26,6 +26,7 @@ package app.newproj.lbrytv.data
 
 import android.net.Uri
 import androidx.core.net.toUri
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.RoomDatabase
@@ -34,6 +35,7 @@ import androidx.room.TypeConverters
 import app.newproj.lbrytv.data.dao.ChannelDao
 import app.newproj.lbrytv.data.dao.ClaimLookupDao
 import app.newproj.lbrytv.data.dao.ClaimSearchResultDao
+import app.newproj.lbrytv.data.dao.RelatedClaimDao
 import app.newproj.lbrytv.data.dao.RemoteKeyDao
 import app.newproj.lbrytv.data.dao.SubscriptionDao
 import app.newproj.lbrytv.data.dao.VideoDao
@@ -51,7 +53,10 @@ import java.time.Instant
         RemoteKey::class,
         Subscription::class,
     ],
-    version = 2,
+    version = 3,
+    autoMigrations = [
+        AutoMigration(from = 2, to = 3)
+    ]
 )
 @TypeConverters(
     value = [
@@ -69,6 +74,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun remoteKeyDao(): RemoteKeyDao
     abstract fun subscriptionDao(): SubscriptionDao
     abstract fun videoDao(): VideoDao
+    abstract fun relatedClaimDao(): RelatedClaimDao
 }
 
 object StringListTypeConverter {

@@ -25,6 +25,7 @@
 
 <!-- [App Manifest Overview](https://developer.android.com/guide/topics/manifest/manifest-intro) -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="app.newproj.lbrytv">
 
     <!-- [Declare Leanback support](https://developer.android.com/training/tv/start/start#leanback-req) -->
@@ -55,10 +56,21 @@
             android:banner="@drawable/banner"
             android:exported="true"
             android:theme="@style/SplashScreenTheme">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
+
+            <!-- https://developer.android.com/guide/topics/search/search-dialog#DeclaringSearchableActivity -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+                <!-- No category needed, because the Intent will specify this class component -->
+            </intent-filter>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+
             <nav-graph android:value="@navigation/nav_graph" />
         </activity>
 
@@ -82,5 +94,11 @@
                     android:name="android.media.tv.action.WATCH_NEXT_PROGRAM_BROWSABLE_DISABLED" />
             </intent-filter>
         </receiver>
+
+        <provider
+            android:name=".search.SearchSuggestionProvider"
+            android:authorities="app.newproj.lbrytv.search.SearchSuggestionProvider"
+            android:exported="true"
+            tools:ignore="ExportedContentProvider" />
     </application>
 </manifest>

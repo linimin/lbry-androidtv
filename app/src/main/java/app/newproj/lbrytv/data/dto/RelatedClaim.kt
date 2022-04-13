@@ -32,7 +32,7 @@ import java.time.Instant
 
 data class RelatedClaim(
     @SerializedName("channel")
-    @Ignore
+    @ColumnInfo(name = "channel_name")
     val channel: String? = null,
 
     @SerializedName("channel_claim_id")
@@ -44,8 +44,8 @@ data class RelatedClaim(
     val id: String,
 
     @SerializedName("duration")
-    @Ignore
-    val duration: Int? = null,
+    @ColumnInfo(name = "duration")
+    val duration: Long? = null,
 
     @SerializedName("fee")
     @Ignore

@@ -24,6 +24,9 @@
 
 package app.newproj.lbrytv.data.dao
 
+import android.app.SearchManager
+import android.database.Cursor
+import android.provider.BaseColumns
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
@@ -37,7 +40,7 @@ interface VideoDao {
 
     @Query(
         """
-        SELECT * FROM claim 
+        SELECT * FROM claim
         INNER JOIN claim_lookup 
         ON claim_lookup.label = 'FEATURED_VIDEOS' 
         AND claim.id = claim_lookup.claim_id 

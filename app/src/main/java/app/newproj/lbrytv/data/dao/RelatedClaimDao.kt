@@ -24,9 +24,13 @@
 
 package app.newproj.lbrytv.data.dao
 
+import android.app.SearchManager
+import android.database.Cursor
+import android.provider.BaseColumns
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import app.newproj.lbrytv.data.dto.RelatedClaim
@@ -63,4 +67,27 @@ abstract class RelatedClaimDao {
             update(it)
         }
     }
+
+    @Query("""
+        SELECT 
+          id AS ${BaseColumns._ID},
+          title AS ${SearchManager.SUGGEST_COLUMN_TEXT_1},
+          channel_name AS ${SearchManager.SUGGEST_COLUMN_TEXT_2},
+          strftime('%Y', release_time) AS ${SearchManager.SUGGEST_COLUMN_PRODUCTION_YEAR},
+          (duration * 1000) AS ${SearchManager.SUGGEST_COLUMN_DURATION},
+          thumbnail AS ${SearchManager.SUGGEST_COLUMN_RESULT_CARD_IMAGE},
+          
+          CASE WHEN channel_name IS NOT NUll THEN
+            'https://lbrytv.newproj.app/video'
+          ELSE
+            'https://lbrytv.newproj.app/CHANNEL'
+          END AS ${SearchManager.SUGGEST_COLUMN_INTENT_DATA},
+          
+          id AS ${SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID}
+        FROM claim
+        INNER JOIN claim_lookup 
+        ON claim_lookup.label = 'SEARCH_SUGGESTIONS' AND claim.id = claim_lookup.claim_id 
+        ORDER BY claim_lookup.sorting_order ASC
+    """)
+    abstract fun searchSuggestionsCursor(): Cursor
 }

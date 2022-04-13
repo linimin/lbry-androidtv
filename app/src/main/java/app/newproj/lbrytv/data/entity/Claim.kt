@@ -84,6 +84,9 @@ data class Claim(
 
     @ColumnInfo(name = "channel_id")
     val channelId: String? = null,
+
+    @ColumnInfo(name = "duration")
+    val duration: Long? = null,
 )
 
 fun Claim.streamingUrl(): Uri =

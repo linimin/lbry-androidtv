@@ -22,48 +22,41 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.data.datasource
+package app.newproj.lbrytv.data.repo
 
-import androidx.paging.PagingSource
-import androidx.paging.PagingState
-import app.newproj.lbrytv.data.dto.RelatedClaim
+import android.database.Cursor
+import androidx.room.withTransaction
+import app.newproj.lbrytv.data.AppDatabase
+import app.newproj.lbrytv.data.entity.ClaimLookup
 import app.newproj.lbrytv.service.LighthouseService
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import javax.inject.Inject
 
-private const val STARTING_PAGE_INDEX = 0
+private const val LABEL_SEARCH_SUGGESTIONS = "SEARCH_SUGGESTIONS"
 
-class RelatedClaimPagingSource @AssistedInject constructor(
-    @Assisted private val query: String,
+class SearchSuggestionsRepository @Inject constructor(
+    private val appDatabase: AppDatabase,
     private val lighthouseService: LighthouseService,
-) : PagingSource<Int, RelatedClaim>() {
-    @AssistedFactory
-    interface Factory {
-        fun RelatedClaimPagingSource(query: String): RelatedClaimPagingSource
-    }
-
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, RelatedClaim> {
-        val page = params.key ?: STARTING_PAGE_INDEX
+) {
+    suspend fun searchSuggestions(query: String): Cursor {
         val relatedClaims = lighthouseService.search(
             query,
             true,
-            params.loadSize,
-            page
-        ).filter {
-            !(it.channel != null && it.duration == null)
-        }
-        return LoadResult.Page(
-            relatedClaims,
-            null,
-            if (relatedClaims.isEmpty()) null else page.inc()
+            20,
+            0
         )
-    }
-
-    override fun getRefreshKey(state: PagingState<Int, RelatedClaim>): Int? {
-        return state.anchorPosition?.let { anchorPosition ->
-            val anchorPage = state.closestPageToPosition(anchorPosition)
-            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
+        return appDatabase.withTransaction {
+            appDatabase.relatedClaimDao().upsert(relatedClaims)
+            appDatabase.claimLookupDao().deleteAll(LABEL_SEARCH_SUGGESTIONS)
+            appDatabase.claimLookupDao().upsert(
+                relatedClaims
+                    .filter {
+                        !(it.channel != null && it.duration == null)
+                    }
+                    .mapIndexed { index, relatedClaim ->
+                        ClaimLookup(LABEL_SEARCH_SUGGESTIONS, relatedClaim.id, index)
+                    }
+            )
+            appDatabase.relatedClaimDao().searchSuggestionsCursor()
         }
     }
 }
