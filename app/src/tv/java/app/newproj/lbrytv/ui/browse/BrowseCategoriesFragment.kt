@@ -165,7 +165,9 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
             else -> setSelectedPosition(
                 selectedPosition,
                 true,
-                ListRowPresenter.SelectItemViewHolderTask(0)
+                ListRowPresenter.SelectItemViewHolderTask(0).apply {
+                    isSmoothScroll = false
+                }
             )
         }
     }
