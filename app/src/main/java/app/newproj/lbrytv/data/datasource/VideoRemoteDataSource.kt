@@ -26,6 +26,7 @@ package app.newproj.lbrytv.data.datasource
 
 import app.newproj.lbrytv.data.dto.ClaimSearchRequest
 import app.newproj.lbrytv.data.dto.ClaimSearchResult
+import app.newproj.lbrytv.data.dto.LbryUri
 import app.newproj.lbrytv.service.LbrynetService
 import app.newproj.lbrytv.service.OdyseeService
 import java.util.Locale
@@ -58,6 +59,26 @@ class VideoRemoteDataSource @Inject constructor(
             claimTypes = listOf("stream"),
             streamTypes = listOf("video"),
             orderBy = listOf("trending_group", "trending_mixed"),
+            hasSource = true,
+            page = 1,
+            pageSize = 20,
+        )
+        return lbrynetService.searchClaims(request).items ?: emptyList()
+    }
+
+    suspend fun subscriptionVideos(): List<ClaimSearchResult.Item> {
+        val subscriptionChannelIds =
+            lbrynetService.preference().shared?.value?.following
+                ?.mapNotNull {
+                    val lbryUri = LbryUri.parse(it.uri.toString())
+                    lbryUri.channelClaimId
+                }?.takeIf { it.isNotEmpty() }
+                ?: return emptyList()
+        val request = ClaimSearchRequest(
+            channelIds = subscriptionChannelIds,
+            claimTypes = listOf("stream"),
+            streamTypes = listOf("video"),
+            orderBy = listOf("release_time"),
             hasSource = true,
             page = 1,
             pageSize = 20,

@@ -68,9 +68,12 @@ class VideosRepository @Inject constructor(
         pagingSourceFactory = { videoLocalDataSource.featuredVideoPagingSource() }
     ).flow
 
-    suspend fun recommendedVideos(): List<Video> {
-        return videoLocalDataSource.replaceRecommendedVideos(videoRemoteDataSource.featuredVideos())
-    }
+    suspend fun recommendedVideos(): List<Video> =
+        videoLocalDataSource.replaceRecommendedVideos(
+            kotlin.runCatching {
+                videoRemoteDataSource.subscriptionVideos()
+            }.getOrDefault(videoRemoteDataSource.featuredVideos())
+        )
 
     fun subscriptionVideos(): Flow<PagingData<Video>> = Pager(
         config = pagingConfig,

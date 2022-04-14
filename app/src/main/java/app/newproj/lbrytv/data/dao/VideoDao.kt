@@ -24,9 +24,6 @@
 
 package app.newproj.lbrytv.data.dao
 
-import android.app.SearchManager
-import android.database.Cursor
-import android.provider.BaseColumns
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query

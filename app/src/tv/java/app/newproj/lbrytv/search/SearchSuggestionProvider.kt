@@ -27,9 +27,7 @@ package app.newproj.lbrytv.search
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.database.Cursor
-import android.database.MatrixCursor
 import android.net.Uri
-import app.newproj.lbrytv.data.AppDatabase
 import app.newproj.lbrytv.data.repo.SearchSuggestionsRepository
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
