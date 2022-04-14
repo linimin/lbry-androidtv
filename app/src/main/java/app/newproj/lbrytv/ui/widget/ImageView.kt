@@ -30,6 +30,7 @@ import android.net.Uri
 import android.util.TypedValue
 import android.widget.ImageView
 import androidx.annotation.AttrRes
+import androidx.core.view.doOnLayout
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -43,7 +44,11 @@ import kotlinx.coroutines.withContext
 
 @BindingAdapter("imageUri")
 fun setImageUri(imageView: ImageView, uri: Uri?) {
-    imageView.load(uri)
+    imageView.doOnLayout {
+        imageView.load("https://thumbnails.odysee.com/optimize/s:${it.width}:${it.height}/quality:85/plain/$uri") {
+            listener(onError = { _, _ -> imageView.load(uri) })
+        }
+    }
 }
 
 @BindingAdapter("qrCodeText", "qrCodeSize")
