@@ -29,16 +29,16 @@ import androidx.paging.PagingState
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.data.dto.BrowseCategory
 import app.newproj.lbrytv.data.repo.AccountRepository
-import app.newproj.lbrytv.data.repo.ChannelsRepository
 import app.newproj.lbrytv.data.repo.SettingsRepository
+import app.newproj.lbrytv.data.repo.SubscriptionRepository
 import app.newproj.lbrytv.data.repo.VideosRepository
 import javax.inject.Inject
 
 class BrowseCategoryPagingSource @Inject constructor(
     private val accountRepository: AccountRepository,
     private val videosRepository: VideosRepository,
-    private val channelsRepository: ChannelsRepository,
     private val settingsRepository: SettingsRepository,
+    private val subscriptionRepository: SubscriptionRepository,
 ) : PagingSource<Int, BrowseCategory>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, BrowseCategory> {
         val categories = mutableListOf<BrowseCategory>()
@@ -62,7 +62,7 @@ class BrowseCategoryPagingSource @Inject constructor(
                 BrowseCategory(
                     id = R.id.browse_category_channels.toLong(),
                     name = R.string.channels, icon = R.drawable.subscriptions,
-                    items = channelsRepository.followingChannels(account.name)
+                    items = subscriptionRepository.subscriptions(account.name)
                 )
             )
         }

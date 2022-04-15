@@ -28,6 +28,6 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 
 data class ChannelWithVideos(
-    val channel: Flow<Channel>,
+    val channel: Flow<Channel?>,
     val videos: Flow<PagingData<Video>>,
 )

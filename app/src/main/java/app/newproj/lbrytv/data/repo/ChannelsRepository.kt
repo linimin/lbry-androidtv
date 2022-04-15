@@ -24,51 +24,28 @@
 
 package app.newproj.lbrytv.data.repo
 
-import androidx.paging.ExperimentalPagingApi
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import app.newproj.lbrytv.data.datasource.ChannelLocalDataSource
 import app.newproj.lbrytv.data.datasource.ChannelRemoteDataSource
 import app.newproj.lbrytv.data.dto.Channel
-import app.newproj.lbrytv.data.remotemediator.SubscriptionRemoteMediator
-import app.newproj.lbrytv.di.LargePageSize
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@OptIn(ExperimentalPagingApi::class)
 class ChannelsRepository @Inject constructor(
     private val channelLocalDataSource: ChannelLocalDataSource,
     private val channelRemoteDataSource: ChannelRemoteDataSource,
-    private val subscriptionRemoteMediatorFactory: SubscriptionRemoteMediator.Factory,
-    @LargePageSize private val pagingConfig: PagingConfig,
 ) {
-    fun channel(id: String): Flow<Channel> = flow {
-        channelRemoteDataSource.channel(id)?.let {
-            channelLocalDataSource.upsert(it)
-        }
-        emitAll(channelLocalDataSource.channel(id))
-    }
-
-    fun followingChannels(accountName: String): Flow<PagingData<Channel>> = Pager(
-        config = pagingConfig,
-        remoteMediator = subscriptionRemoteMediatorFactory.SubscriptionRemoteMediator(accountName),
-        pagingSourceFactory = { channelLocalDataSource.followingChannelPagingSource(accountName) }
-    ).flow
-
-    suspend fun follow(accountName: String, channel: Channel) {
-        channelLocalDataSource.follow(accountName, channel)
-        channel.claim.permanentUrl?.let {
-            channelRemoteDataSource.follow(it)
-        }
-    }
-
-    suspend fun unfollow(accountName: String, channel: Channel) {
-        channelLocalDataSource.unfollow(accountName, channel)
-        channel.claim.permanentUrl?.let {
-            channelRemoteDataSource.unfollow(it)
+    fun channel(id: String): Flow<Channel?> = flow {
+        coroutineScope {
+            launch {
+                channelRemoteDataSource.channel(id)?.let {
+                    channelLocalDataSource.upsert(it)
+                }
+            }
+            emitAll(channelLocalDataSource.channel(id))
         }
     }
 }

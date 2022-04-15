@@ -24,6 +24,7 @@
 
 package app.newproj.lbrytv.data.remotemediator
 
+import android.net.Uri
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -34,6 +35,7 @@ import app.newproj.lbrytv.data.dto.Channel
 import app.newproj.lbrytv.data.dto.ClaimSearchRequest
 import app.newproj.lbrytv.data.dto.LbryUri
 import app.newproj.lbrytv.data.entity.Subscription
+import app.newproj.lbrytv.service.LbryIncService
 import app.newproj.lbrytv.service.LbrynetService
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -45,6 +47,7 @@ import java.io.IOException
 class SubscriptionRemoteMediator @AssistedInject constructor(
     @Assisted private val accountName: String,
     private val lbrynetService: LbrynetService,
+    private val lbryIncService: LbryIncService,
     private val db: AppDatabase,
 ) : RemoteMediator<Int, Channel>() {
     @AssistedFactory
@@ -58,7 +61,23 @@ class SubscriptionRemoteMediator @AssistedInject constructor(
     ): MediatorResult {
         try {
             if (loadType == LoadType.REFRESH) {
-                val subscriptions =
+                val lbrySubscriptions = lbryIncService.subscriptions().mapNotNull {
+                    val channelName = it.channelName ?: return@mapNotNull null
+                    val claimId = it.claimId ?: return@mapNotNull null
+                    val isNotificationsDisabled =
+                        it.isNotificationsDisabled ?: return@mapNotNull null
+                    val lbryUri = LbryUri.Builder()
+                        .setChannelName(channelName)
+                        .setClaimId(claimId)
+                        .build()
+                    Subscription(
+                        claimId = it.claimId,
+                        uri = Uri.parse(lbryUri.toString()),
+                        isNotificationDisabled = isNotificationsDisabled,
+                        accountName = accountName
+                    )
+                }
+                val odyseeSubscriptions =
                     lbrynetService.preference().shared?.value
                         ?.following
                         ?.mapNotNull { following ->
@@ -68,16 +87,23 @@ class SubscriptionRemoteMediator @AssistedInject constructor(
                             val notificationsDisabled = following.notificationsDisabled ?: false
                             Subscription(claimId, uri, notificationsDisabled, accountName)
                         } ?: emptyList()
-                val claims = if (subscriptions.isNotEmpty()) {
+                val claimIds = mutableSetOf<String>()
+                lbrySubscriptions.forEach {
+                    claimIds.add(it.claimId)
+                }
+                odyseeSubscriptions.forEach {
+                    claimIds.add(it.claimId)
+                }
+                val claims = if (odyseeSubscriptions.isNotEmpty()) {
                     lbrynetService.searchClaims(
-                        ClaimSearchRequest(claimIds = subscriptions.map { it.claimId })
+                        ClaimSearchRequest(claimIds = claimIds.toList())
                     ).items ?: emptyList()
                 } else {
                     emptyList()
                 }
                 db.withTransaction {
                     db.claimSearchResultDao().upsert(claims)
-                    db.subscriptionDao().upsert(subscriptions)
+                    db.subscriptionDao().upsert(lbrySubscriptions + odyseeSubscriptions)
                 }
             }
             return MediatorResult.Success(endOfPaginationReached = true)

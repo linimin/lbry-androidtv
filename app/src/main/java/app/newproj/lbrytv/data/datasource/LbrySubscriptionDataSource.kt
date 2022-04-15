@@ -22,21 +22,26 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.usecase
+package app.newproj.lbrytv.data.datasource
 
-import app.newproj.lbrytv.data.dto.ChannelWithVideos
-import app.newproj.lbrytv.data.repo.ChannelsRepository
-import app.newproj.lbrytv.data.repo.VideosRepository
-import kotlinx.coroutines.flow.filterNotNull
+import app.newproj.lbrytv.data.dto.Subscription
+import app.newproj.lbrytv.service.LbryIncService
 import javax.inject.Inject
 
-class GetChannelWithVideosUseCase @Inject constructor(
-    private val channelsRepository: ChannelsRepository,
-    private val videosRepository: VideosRepository,
+class LbrySubscriptionDataSource @Inject constructor(
+    private val lbryIncService: LbryIncService,
 ) {
-    operator fun invoke(channelId: String): ChannelWithVideos =
-        ChannelWithVideos(
-            channelsRepository.channel(channelId),
-            videosRepository.channelVideos(channelId)
+    suspend fun subscriptions(): List<Subscription> = lbryIncService.subscriptions()
+
+    suspend fun follow(channelId: String, channelName: String) {
+        lbryIncService.subscribeChannel(
+            claimId = channelId,
+            channelName = channelName,
+            notificationsDisabled = false
         )
+    }
+
+    suspend fun unfollow(channelId: String) {
+        lbryIncService.unsubscribeChannel(channelId)
+    }
 }

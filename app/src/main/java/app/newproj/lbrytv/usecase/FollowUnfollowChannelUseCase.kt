@@ -26,20 +26,22 @@ package app.newproj.lbrytv.usecase
 
 import app.newproj.lbrytv.data.repo.AccountRepository
 import app.newproj.lbrytv.data.repo.ChannelsRepository
+import app.newproj.lbrytv.data.repo.SubscriptionRepository
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class FollowUnfollowChannelUseCase @Inject constructor(
     private val accountRepository: AccountRepository,
     private val channelsRepository: ChannelsRepository,
+    private val subscriptionRepository: SubscriptionRepository,
 ) {
     suspend operator fun invoke(channelId: String) {
         val account = accountRepository.requireAccount()
-        val channel = channelsRepository.channel(channelId).first()
+        val channel = channelsRepository.channel(channelId).first() ?: return
         if (channel.isFollowing) {
-            channelsRepository.unfollow(account.name, channel)
+            subscriptionRepository.unfollow(channel, account.name)
         } else {
-            channelsRepository.follow(account.name, channel)
+            subscriptionRepository.follow(channel, account.name)
         }
     }
 }

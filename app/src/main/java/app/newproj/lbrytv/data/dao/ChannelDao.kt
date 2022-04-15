@@ -43,7 +43,7 @@ interface ChannelDao {
         ON claim.id = subscription.claim_id
         WHERE claim.id = :id
     """)
-    fun channel(id: String): Flow<Channel>
+    fun channel(id: String): Flow<Channel?>
 
     @Query("""
         SELECT claim.*,

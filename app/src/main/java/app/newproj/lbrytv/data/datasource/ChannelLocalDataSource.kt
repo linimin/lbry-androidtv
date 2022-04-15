@@ -35,7 +35,7 @@ import javax.inject.Inject
 class ChannelLocalDataSource @Inject constructor(
     private val db: AppDatabase,
 ) {
-    fun channel(id: String): Flow<Channel> = db.channelDao().channel(id)
+    fun channel(id: String): Flow<Channel?> = db.channelDao().channel(id)
 
     fun followingChannelPagingSource(accountName: String): PagingSource<Int, Channel> =
         db.channelDao().subscriptions(accountName)

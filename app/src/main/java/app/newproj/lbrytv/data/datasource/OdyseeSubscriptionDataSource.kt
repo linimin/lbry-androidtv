@@ -22,21 +22,20 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.usecase
+package app.newproj.lbrytv.data.datasource
 
-import app.newproj.lbrytv.data.dto.ChannelWithVideos
-import app.newproj.lbrytv.data.repo.ChannelsRepository
-import app.newproj.lbrytv.data.repo.VideosRepository
-import kotlinx.coroutines.flow.filterNotNull
+import android.net.Uri
+import app.newproj.lbrytv.data.repo.UserPreferenceRepository
 import javax.inject.Inject
 
-class GetChannelWithVideosUseCase @Inject constructor(
-    private val channelsRepository: ChannelsRepository,
-    private val videosRepository: VideosRepository,
+class OdyseeSubscriptionDataSource @Inject constructor(
+    private val userPreferenceRepo: UserPreferenceRepository,
 ) {
-    operator fun invoke(channelId: String): ChannelWithVideos =
-        ChannelWithVideos(
-            channelsRepository.channel(channelId),
-            videosRepository.channelVideos(channelId)
-        )
+    suspend fun follow(permanentUrl: Uri) {
+        userPreferenceRepo.addSubscription(permanentUrl)
+    }
+
+    suspend fun unfollow(permanentUrl: Uri) {
+        userPreferenceRepo.removeSubscription(permanentUrl)
+    }
 }

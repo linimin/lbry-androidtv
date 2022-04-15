@@ -42,6 +42,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -70,6 +71,7 @@ class ChannelVideosViewModel @Inject constructor(
     private val channelWithVideos = MutableSharedFlow<ChannelWithVideos>(replay = 1)
     private val channel: Flow<ChannelUiState> = channelWithVideos
         .flatMapLatest { it.channel }
+        .filterNotNull()
         .map {
             ChannelUiState(it.id, it.claim.thumbnail, it.claim.title, it.claim.name, it.isFollowing)
         }
