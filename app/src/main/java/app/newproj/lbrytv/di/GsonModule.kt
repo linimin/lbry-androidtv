@@ -45,13 +45,11 @@ import javax.inject.Singleton
 object GsonModule {
     @Provides
     @Singleton
-    fun gson(): Gson {
-        return Gson().newBuilder()
-            .registerTypeAdapter(Uri::class.java, UriDeserializer)
-            .registerTypeAdapter(Uri::class.java, UriSerializer)
-            .registerTypeAdapter(Instant::class.java, InstantDeserializer)
-            .create()
-    }
+    fun gson(): Gson = Gson().newBuilder()
+        .registerTypeAdapter(Uri::class.java, UriDeserializer)
+        .registerTypeAdapter(Uri::class.java, UriSerializer)
+        .registerTypeAdapter(Instant::class.java, InstantDeserializer)
+        .create()
 }
 
 object UriDeserializer : JsonDeserializer<Uri> {
@@ -59,9 +57,7 @@ object UriDeserializer : JsonDeserializer<Uri> {
         json: JsonElement,
         typeOfT: Type,
         context: JsonDeserializationContext,
-    ): Uri {
-        return Uri.parse(json.asString)
-    }
+    ): Uri = Uri.parse(json.asString)
 }
 
 object UriSerializer : JsonSerializer<Uri> {
@@ -69,9 +65,7 @@ object UriSerializer : JsonSerializer<Uri> {
         src: Uri?,
         typeOfSrc: Type?,
         context: JsonSerializationContext?,
-    ): JsonElement {
-        return JsonPrimitive(src?.toString())
-    }
+    ): JsonElement = JsonPrimitive(src?.toString())
 }
 
 object InstantDeserializer : JsonDeserializer<Instant> {
@@ -79,7 +73,11 @@ object InstantDeserializer : JsonDeserializer<Instant> {
         json: JsonElement?,
         typeOfT: Type?,
         context: JsonDeserializationContext?,
-    ): Instant {
-        return Instant.parse(json?.asString)
+    ): Instant? = json?.asString?.run {
+        toLongOrNull()
+            ?.let {
+                Instant.ofEpochSecond(it)
+            }
+            ?: Instant.parse(this)
     }
 }

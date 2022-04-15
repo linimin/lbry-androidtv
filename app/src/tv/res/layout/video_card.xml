@@ -45,19 +45,40 @@
             style="?attr/videoCardViewStyle"
             app:layout_viewType="main">
 
-            <ImageView
-                android:id="@+id/main_image"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                app:imageUri="@{video.thumbnail}"
-                tools:ignore="ContentDescription" />
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/main_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    app:imageUri="@{video.thumbnail}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/duration_text_view"
+                    style="@style/Widget.TextView.Duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginBottom="5dp"
+                    app:duration="@{video.duration}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
         </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
+            style="?attr/imageCardViewInfoAreaStyle"
             android:layout_width="match_parent"
             android:orientation="vertical"
-            style="?attr/imageCardViewInfoAreaStyle"
             app:layout_viewType="info">
 
             <TextView

@@ -33,6 +33,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import app.newproj.lbrytv.data.dao.ChannelDao
+import app.newproj.lbrytv.data.dao.ClaimDao
 import app.newproj.lbrytv.data.dao.ClaimLookupDao
 import app.newproj.lbrytv.data.dao.ClaimSearchResultDao
 import app.newproj.lbrytv.data.dao.RelatedClaimDao
@@ -69,6 +70,7 @@ import java.time.Instant
 @RewriteQueriesToDropUnusedColumns
 abstract class AppDatabase : RoomDatabase() {
     abstract fun channelDao(): ChannelDao
+    abstract fun claimDao(): ClaimDao
     abstract fun claimLookupDao(): ClaimLookupDao
     abstract fun claimSearchResultDao(): ClaimSearchResultDao
     abstract fun remoteKeyDao(): RemoteKeyDao
@@ -104,7 +106,7 @@ object BigDecimalTypeConverter {
 object InstantTypeConverter {
     @TypeConverter
     fun fromTimestamp(value: Long?): Instant? {
-        return value?.let { Instant.ofEpochMilli(it * 1000) }
+        return value?.let { Instant.ofEpochMilli(it) }
     }
 
     @TypeConverter

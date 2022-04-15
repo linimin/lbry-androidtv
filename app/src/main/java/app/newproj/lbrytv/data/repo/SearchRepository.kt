@@ -24,23 +24,32 @@
 
 package app.newproj.lbrytv.data.repo
 
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import app.newproj.lbrytv.data.datasource.RelatedClaimPagingSource
-import app.newproj.lbrytv.data.dto.RelatedClaim
+import app.newproj.lbrytv.data.AppDatabase
+import app.newproj.lbrytv.data.entity.Claim
+import app.newproj.lbrytv.data.remotemediator.SearchRemoteMediator
 import app.newproj.lbrytv.di.LargePageSize
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+@OptIn(ExperimentalPagingApi::class)
 class SearchRepository @Inject constructor(
-    private val relatedClaimPagingSourceFactory: RelatedClaimPagingSource.Factory,
+    private val appDatabase: AppDatabase,
+    private val searchRemoteMediatorFactory: SearchRemoteMediator.Factory,
     @LargePageSize private val pagingConfig: PagingConfig,
 ) {
-    fun query(query: String): Flow<PagingData<RelatedClaim>> = Pager(
+    fun query(query: String): Flow<PagingData<Claim>> = Pager(
         config = pagingConfig,
+        remoteMediator = searchRemoteMediatorFactory.SearchRemoteMediator(query),
         pagingSourceFactory = {
-            relatedClaimPagingSourceFactory.RelatedClaimPagingSource(query)
+            appDatabase.claimDao().searchResult()
         }
     ).flow
+
+    suspend fun reset() {
+        appDatabase.claimLookupDao().deleteAll("SEARCH_RESULT")
+    }
 }

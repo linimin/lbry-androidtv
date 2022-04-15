@@ -25,6 +25,7 @@
 package app.newproj.lbrytv.data.dto
 
 import android.net.Uri
+import app.newproj.lbrytv.data.entity.Claim
 import java.time.Instant
 
 data class VideoUiState(
@@ -33,6 +34,7 @@ data class VideoUiState(
     val title: String?,
     val channel: String?,
     val releaseTime: Instant?,
+    val duration: Long? = null,
 ) : BrowseItemUiState {
     companion object {
         fun fromVideo(video: Video): VideoUiState = VideoUiState(
@@ -40,7 +42,8 @@ data class VideoUiState(
             video.claim.thumbnail,
             video.claim.title,
             video.claim.channelName,
-            video.claim.releaseTime
+            video.claim.releaseTime,
+            video.claim.duration
         )
 
         fun fromRelatedClaim(claim: RelatedClaim): VideoUiState = VideoUiState(
@@ -48,7 +51,17 @@ data class VideoUiState(
             claim.thumbnailUrl,
             claim.title,
             claim.name,
-            claim.releaseTime
+            claim.releaseTime,
+            claim.duration
+        )
+
+        fun fromClaim(claim: Claim): VideoUiState = VideoUiState(
+            claim.id,
+            claim.thumbnail,
+            claim.title,
+            claim.name,
+            claim.releaseTime,
+            claim.duration
         )
     }
 }

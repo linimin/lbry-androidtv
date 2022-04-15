@@ -106,4 +106,10 @@
     <style name="TextAppearance.DetailsDescriptionTitle" parent="TextAppearance.Leanback.DetailsDescriptionTitle">
         <item name="android:textSize">@dimen/details_description_title_text_size</item>
     </style>
+
+    <style name="Widget.TextView.Duration" parent="Widget.AppCompat.TextView">
+        <item name="android:textAppearance">@style/TextAppearance.Material3.LabelSmall</item>
+        <item name="android:background">@color/md_theme_dark_surface</item>
+        <item name="android:paddingHorizontal">2dp</item>
+    </style>
 </resources>

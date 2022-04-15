@@ -24,6 +24,7 @@
 
 package app.newproj.lbrytv.ui.widget
 
+import android.text.format.DateUtils
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
@@ -51,4 +52,9 @@ fun setLbc(textView: TextView, balance: BigDecimal?) {
 @BindingAdapter("relativeTime")
 fun setRelativeTime(textView: TextView, time: Instant?) {
     time?.let { textView.setTimeAgo(it.toEpochMilli()) }
+}
+
+@BindingAdapter("duration")
+fun setDuration(textView: TextView, duration: Long?) {
+    textView.text = duration?.let { DateUtils.formatElapsedTime(it) }
 }

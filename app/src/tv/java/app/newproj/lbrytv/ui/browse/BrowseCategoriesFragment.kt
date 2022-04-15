@@ -40,12 +40,14 @@ import app.newproj.lbrytv.NavGraphDirections
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.data.dto.BrowseItemUiState
 import app.newproj.lbrytv.data.dto.ChannelUiState
+import app.newproj.lbrytv.data.dto.PagingListRow
 import app.newproj.lbrytv.data.dto.RowComparator
 import app.newproj.lbrytv.data.dto.Setting
 import app.newproj.lbrytv.data.dto.VideoUiState
 import app.newproj.lbrytv.databinding.BrowseCategoryHeaderIconsDockBinding
 import app.newproj.lbrytv.ui.presenter.IconRowPresenter
 import app.newproj.lbrytv.ui.presenter.LocalizableRowHeaderPresenter
+import app.newproj.lbrytv.ui.presenter.PagingListRowPresenter
 import app.newproj.lbrytv.ui.presenter.RowPresenterSelector
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -159,16 +161,21 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
     private fun onBackPressed() {
         when {
             isShowingHeaders -> requireActivity().finish()
-            (selectedRowViewHolder as ListRowPresenter.ViewHolder).selectedPosition == 0 ->
+            (selectedRowViewHolder as ListRowPresenter.ViewHolder).selectedPosition == 0 -> {
                 startHeadersTransition(true)
+                (selectedRowViewHolder.row as PagingListRow).pagingDataAdapter.refresh()
+            }
 
-            else -> setSelectedPosition(
-                selectedPosition,
-                true,
-                ListRowPresenter.SelectItemViewHolderTask(0).apply {
-                    isSmoothScroll = false
-                }
-            )
+            else -> {
+                setSelectedPosition(
+                    selectedPosition,
+                    true,
+                    ListRowPresenter.SelectItemViewHolderTask(0).apply {
+                        isSmoothScroll = false
+                    }
+                )
+                (selectedRowViewHolder.row as PagingListRow).pagingDataAdapter.refresh()
+            }
         }
     }
 }

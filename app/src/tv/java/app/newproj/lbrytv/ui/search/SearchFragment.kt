@@ -49,6 +49,7 @@ import app.newproj.lbrytv.data.dto.VideoUiState
 import app.newproj.lbrytv.ui.presenter.BrowseItemUiStatePresenterSelector
 import app.newproj.lbrytv.ui.presenter.RowPresenterSelector
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -88,7 +89,7 @@ class SearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchResu
         require(view is ViewGroup)
         progressBarManager.setRootView(view)
         viewLifecycleOwner.lifecycleScope.launch {
-            resultItemsAdapter.loadStateFlow.collect {
+            resultItemsAdapter.loadStateFlow.collectLatest {
                 when (val refreshLoadState = it.refresh) {
                     LoadState.Loading -> progressBarManager.show()
                     is LoadState.NotLoading -> progressBarManager.hide()
@@ -105,7 +106,10 @@ class SearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchResu
 
     override fun getResultsAdapter(): ObjectAdapter = resultRowsAdapter
 
-    override fun onQueryTextChange(newQuery: String?): Boolean = true
+    override fun onQueryTextChange(newQuery: String?): Boolean {
+        viewModel.search(newQuery)
+        return true
+    }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         viewModel.search(query)
@@ -138,7 +142,9 @@ class SearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchResu
             rowsSupportFragment.setSelectedPosition(
                 0,
                 true,
-                ListRowPresenter.SelectItemViewHolderTask(0)
+                ListRowPresenter.SelectItemViewHolderTask(0).apply {
+                    isSmoothScroll = false
+                }
             )
         } else {
             navController.popBackStack()

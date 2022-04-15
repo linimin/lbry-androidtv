@@ -28,6 +28,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Ignore
 import com.google.gson.annotations.SerializedName
+import java.time.Instant
 
 data class ClaimSearchResult(
     @SerializedName("blocked")
@@ -418,7 +419,7 @@ data class ClaimSearchResult(
 
             @SerializedName("release_time")
             @ColumnInfo(name = "release_time")
-            val releaseTime: String? = null,
+            val releaseTime: Instant? = null,
 
             @SerializedName("source")
             @Ignore

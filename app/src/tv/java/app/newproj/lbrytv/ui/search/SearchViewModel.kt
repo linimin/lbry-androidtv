@@ -25,29 +25,38 @@
 package app.newproj.lbrytv.ui.search
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.paging.map
 import app.newproj.lbrytv.data.dto.BrowseItemUiState
 import app.newproj.lbrytv.data.dto.ChannelUiState
 import app.newproj.lbrytv.data.dto.VideoUiState
 import app.newproj.lbrytv.data.repo.SearchRepository
+import app.newproj.lbrytv.di.ApplicationCoroutineScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository,
+    @ApplicationCoroutineScope private val externalScope: CoroutineScope,
 ) : ViewModel() {
     data class UiState(
         val errorMessage: String? = null,
@@ -58,8 +67,10 @@ class SearchViewModel @Inject constructor(
 
     private val query = MutableStateFlow<String?>(null)
 
+    @OptIn(FlowPreview::class)
     val searchResult: Flow<PagingData<BrowseItemUiState>> = query
         .filterNotNull()
+        .debounce(1.seconds)
         .flatMapLatest { query ->
             searchRepository
                 .query(query)
@@ -67,16 +78,22 @@ class SearchViewModel @Inject constructor(
                     _uiState.update { it.copy(errorMessage = error.localizedMessage) }
                 }
         }.map { pagingData ->
-            pagingData.map { relatedClaim ->
-                if (relatedClaim.channel != null) {
-                    VideoUiState.fromRelatedClaim(relatedClaim)
+            pagingData.map { claim ->
+                if (claim.channelName != null) {
+                    VideoUiState.fromClaim(claim)
                 } else {
-                    ChannelUiState.fromRelatedClaim(relatedClaim)
+                    ChannelUiState.fromClaim(claim)
                 }
             }
-        }
+        }.cachedIn(viewModelScope)
 
     fun search(query: String?) {
         this.query.value = query
+    }
+
+    override fun onCleared() {
+        externalScope.launch {
+            searchRepository.reset()
+        }
     }
 }

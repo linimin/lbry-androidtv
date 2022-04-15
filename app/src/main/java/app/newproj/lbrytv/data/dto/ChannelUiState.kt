@@ -25,6 +25,7 @@
 package app.newproj.lbrytv.data.dto
 
 import android.net.Uri
+import app.newproj.lbrytv.data.entity.Claim
 
 data class ChannelUiState(
     override val id: String,
@@ -44,6 +45,13 @@ data class ChannelUiState(
         fun fromRelatedClaim(claim: RelatedClaim) = ChannelUiState(
             claim.id,
             claim.thumbnailUrl,
+            claim.title,
+            claim.name
+        )
+
+        fun fromClaim(claim: Claim) = ChannelUiState(
+            claim.id,
+            claim.thumbnail,
             claim.title,
             claim.name
         )
