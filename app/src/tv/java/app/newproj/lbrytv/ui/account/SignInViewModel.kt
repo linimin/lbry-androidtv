@@ -29,7 +29,7 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.newproj.lbrytv.data.repo.AccountRepository
+import app.newproj.lbrytv.data.repo.AccountsRepository
 import app.newproj.lbrytv.data.repo.HomeScreenChannelsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,7 +42,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SignInViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val accountRepository: AccountRepository,
+    private val accountsRepository: AccountsRepository,
     private val homeScreenChannelsRepository: HomeScreenChannelsRepository,
 ) : ViewModel() {
     private val args = SignInFragmentArgs.fromSavedStateHandle(savedStateHandle)
@@ -75,8 +75,8 @@ class SignInViewModel @Inject constructor(
         }
         viewModelScope.launch {
             try {
-                val account = accountRepository.addAccount(args.email, password)
-                accountRepository.setCurrentAccount(account)
+                val account = accountsRepository.addAccount(args.email, password)
+                accountsRepository.setCurrentAccount(account)
                 homeScreenChannelsRepository.synchronize()
                 args.authResponse?.onResult(
                     bundleOf(

@@ -24,10 +24,37 @@
 
 package app.newproj.lbrytv.service
 
+import app.newproj.lbrytv.data.dto.OdyseeServiceResponse
 import app.newproj.lbrytv.data.dto.RecommendedContent
+import com.google.gson.reflect.TypeToken
+import okhttp3.ResponseBody
+import retrofit2.Converter
+import retrofit2.Retrofit
 import retrofit2.http.GET
+import java.lang.reflect.Type
 
 interface OdyseeService {
     @GET("\$/api/content/v1/get")
-    suspend fun content(): Map<String, Map<String, RecommendedContent>>
+    suspend fun recommendedContent(): Map<String, Map<String, RecommendedContent>>
+}
+
+object OdyseeServiceBodyConverterFactory : Converter.Factory() {
+    override fun responseBodyConverter(
+        type: Type,
+        annotations: Array<out Annotation>,
+        retrofit: Retrofit,
+    ): Converter<ResponseBody, *> =
+        ResponseBodyConverter(
+            delegate = retrofit.nextResponseBodyConverter<OdyseeServiceResponse<*>>(
+                this,
+                TypeToken.getParameterized(OdyseeServiceResponse::class.java, type).type,
+                annotations
+            )
+        )
+
+    private class ResponseBodyConverter<T>(
+        private val delegate: Converter<ResponseBody, OdyseeServiceResponse<out T>>,
+    ) : Converter<ResponseBody, T> {
+        override fun convert(value: ResponseBody): T? = delegate.convert(value)?.data
+    }
 }

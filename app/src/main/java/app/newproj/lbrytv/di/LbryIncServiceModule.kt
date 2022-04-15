@@ -24,8 +24,8 @@
 
 package app.newproj.lbrytv.di
 
-import app.newproj.lbrytv.auth.LbryIncServiceAuthInterceptor
 import app.newproj.lbrytv.service.LbryIncService
+import app.newproj.lbrytv.service.LbryIncServiceAuthInterceptor
 import app.newproj.lbrytv.service.LbryIncServiceBodyConverterFactory
 import app.newproj.lbrytv.service.LbryIncServiceErrorInterceptor
 import dagger.Module

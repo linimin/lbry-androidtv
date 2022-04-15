@@ -22,27 +22,15 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.auth
+package app.newproj.lbrytv
 
-import app.newproj.lbrytv.data.repo.AuthTokenRepository
-import kotlinx.coroutines.runBlocking
-import okhttp3.Interceptor
-import okhttp3.Response
+import androidx.work.Configuration
+import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
-class LbrynetServiceAuthInterceptor @Inject constructor(
-    private val authTokenRepo: AuthTokenRepository,
-) : Interceptor {
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val authToken = runBlocking { authTokenRepo.authToken() }
-        return if (authToken != null) {
-            chain.proceed(
-                chain.request().newBuilder()
-                    .addHeader("X-Lbry-Auth-Token", authToken)
-                    .build()
-            )
-        } else {
-            chain.proceed(chain.request())
-        }
-    }
+@HiltAndroidApp
+class TvApplication : BaseApplication(), Configuration.Provider {
+    @Inject lateinit var workerManagerConfiguration: Configuration
+
+    override fun getWorkManagerConfiguration() = workerManagerConfiguration
 }

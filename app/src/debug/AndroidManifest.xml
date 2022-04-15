@@ -16,9 +16,12 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="app.newproj.lbrytv">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="app.newproj.lbrytv"
+    tools:ignore="ImpliedTouchscreenHardware,MissingLeanbackLauncher,MissingLeanbackSupport">
 
-    <application>
+    <application tools:ignore="MissingApplicationIcon">
+        <!-- https://developer.android.com/training/dependency-injection/hilt-testing -->
         <activity
             android:name=".HiltTestActivity"
             android:exported="false" />

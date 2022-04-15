@@ -31,14 +31,20 @@ import app.newproj.lbrytv.data.dto.Subscription
 import app.newproj.lbrytv.data.dto.SyncSetResult
 import app.newproj.lbrytv.data.dto.TokenUser
 import app.newproj.lbrytv.data.dto.WalletSyncData
+import app.newproj.lbrytv.data.repo.AuthTokenRepository
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
+import okhttp3.ResponseBody
+import retrofit2.Converter
+import retrofit2.Retrofit
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
+import java.lang.reflect.Type
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
@@ -111,6 +117,33 @@ interface LbryIncService {
     ): SyncSetResult
 }
 
+private const val KEY_AUTH_TOKEN = "auth_token"
+
+class LbryIncServiceAuthInterceptor @Inject constructor(
+    private val authTokenRepo: AuthTokenRepository,
+) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val request = chain.request()
+        val url = request.url
+        if (url.queryParameter(KEY_AUTH_TOKEN) != null || url.encodedPath == "/user/new") {
+            return chain.proceed(request)
+        } else {
+            val authToken = runBlocking { authTokenRepo.authToken() }
+            return if (authToken != null) {
+                val newUrl = url.newBuilder()
+                    .addQueryParameter(KEY_AUTH_TOKEN, authToken)
+                    .build()
+                val newRequest = request.newBuilder()
+                    .url(newUrl)
+                    .build()
+                chain.proceed(newRequest)
+            } else {
+                chain.proceed(request)
+            }
+        }
+    }
+}
+
 class LbryIncServiceErrorInterceptor @Inject constructor(private val gson: Gson) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val response = chain.proceed(chain.request())
@@ -127,6 +160,29 @@ class LbryIncServiceErrorInterceptor @Inject constructor(private val gson: Gson)
             response.newBuilder()
                 .message(errorMessage)
                 .build()
+        }
+    }
+}
+
+object LbryIncServiceBodyConverterFactory : Converter.Factory() {
+    override fun responseBodyConverter(
+        type: Type,
+        annotations: Array<out Annotation>,
+        retrofit: Retrofit,
+    ): Converter<ResponseBody, *> {
+        val delegate = retrofit.nextResponseBodyConverter<LbryIncServiceResponse<*>>(
+            this,
+            TypeToken.getParameterized(LbryIncServiceResponse::class.java, type).type,
+            annotations
+        )
+        return ResponseBodyConverter(delegate)
+    }
+
+    private class ResponseBodyConverter<T>(
+        private val delegate: Converter<ResponseBody, LbryIncServiceResponse<out T>>,
+    ) : Converter<ResponseBody, T> {
+        override fun convert(value: ResponseBody): T? {
+            return delegate.convert(value)?.data
         }
     }
 }

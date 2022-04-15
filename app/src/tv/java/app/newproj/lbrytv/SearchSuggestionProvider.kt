@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.search
+package app.newproj.lbrytv
 
 import android.content.ContentProvider
 import android.content.ContentValues
@@ -35,6 +35,7 @@ import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.runBlocking
 
+// https://developer.android.com/guide/topics/search/adding-custom-suggestions
 class SearchSuggestionProvider : ContentProvider() {
     @EntryPoint
     @InstallIn(SingletonComponent::class)

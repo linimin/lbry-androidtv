@@ -30,6 +30,7 @@ import app.newproj.lbrytv.data.dto.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -38,14 +39,14 @@ class ChannelsRepository @Inject constructor(
     private val channelLocalDataSource: ChannelLocalDataSource,
     private val channelRemoteDataSource: ChannelRemoteDataSource,
 ) {
-    fun channel(id: String): Flow<Channel?> = flow {
+    fun channel(id: String): Flow<Channel> = flow {
         coroutineScope {
             launch {
                 channelRemoteDataSource.channel(id)?.let {
                     channelLocalDataSource.upsert(it)
                 }
             }
-            emitAll(channelLocalDataSource.channel(id))
+            emitAll(channelLocalDataSource.channel(id).filterNotNull())
         }
     }
 }

@@ -40,6 +40,7 @@ data class ChannelUiState(
             channel.claim.thumbnail,
             channel.claim.title,
             channel.claim.name,
+            channel.isFollowing,
         )
 
         fun fromRelatedClaim(claim: RelatedClaim) = ChannelUiState(

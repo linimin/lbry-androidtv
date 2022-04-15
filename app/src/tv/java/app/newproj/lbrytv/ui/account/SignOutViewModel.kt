@@ -26,7 +26,7 @@ package app.newproj.lbrytv.ui.account
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.newproj.lbrytv.data.repo.AccountRepository
+import app.newproj.lbrytv.data.repo.AccountsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,7 +36,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignOutViewModel @Inject constructor(
-    private val accountsRepository: AccountRepository,
+    private val accountsRepository: AccountsRepository,
 ) : ViewModel() {
     data class UiState(
         val isSignedOut: Boolean = false,

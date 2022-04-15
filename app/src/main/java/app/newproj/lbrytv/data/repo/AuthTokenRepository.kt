@@ -28,16 +28,16 @@ import android.accounts.AccountManager
 import android.accounts.AccountManager.KEY_AUTHTOKEN
 import android.os.Handler
 import android.os.Looper
-import app.newproj.lbrytv.auth.LbryAccountAuthenticator
+import app.newproj.lbrytv.LbryAccountAuthenticator
 import javax.inject.Inject
 import kotlin.coroutines.suspendCoroutine
 
 class AuthTokenRepository @Inject constructor(
     private val accountManager: AccountManager,
-    private val accountRepository: AccountRepository
+    private val accountsRepository: AccountsRepository
 ) {
     suspend fun authToken(): String? {
-        val account = accountRepository.currentAccount() ?: return null
+        val account = accountsRepository.currentAccount() ?: return null
         return suspendCoroutine { continuation ->
             val handler = Looper.myLooper()?.run { Handler(this) }
             accountManager.getAuthToken(

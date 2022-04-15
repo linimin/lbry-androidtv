@@ -26,7 +26,8 @@
 <!-- [App Manifest Overview](https://developer.android.com/guide/topics/manifest/manifest-intro) -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="app.newproj.lbrytv">
+    package="app.newproj.lbrytv"
+    tools:ignore="ImpliedTouchscreenHardware,MissingLeanbackLauncher,MissingLeanbackSupport">
 
     <!-- [Permissions](https://developer.android.com/guide/topics/permissions/overview) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -34,7 +35,7 @@
 
     <!-- [Provide a home screen banner](https://developer.android.com/training/tv/start/start#banner) -->
     <application
-        android:name=".MainApplication"
+        android:name=".BaseApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -63,7 +64,7 @@
 
         <!-- [Create an authenticator service](https://developer.android.com/training/id-auth/custom_auth#TaskFour) -->
         <service
-            android:name=".auth.LbryAccountAuthenticatorService"
+            android:name=".AccountAuthenticatorService"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />

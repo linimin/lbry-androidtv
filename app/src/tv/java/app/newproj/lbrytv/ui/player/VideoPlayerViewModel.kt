@@ -34,7 +34,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -55,6 +56,7 @@ class VideoPlayerViewModel @Inject constructor(
         val claimId: String? = null,
         val channelId: String? = null,
         val errorMessage: String? = null,
+        val isLoadingData: Boolean = true,
     )
 
     private val _uiState = MutableStateFlow(UiState())
@@ -63,19 +65,23 @@ class VideoPlayerViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             try {
-                val video = videosRepository.video(args.claimId).first()
-                val streamingUrl = video.claim.permanentUrl
-                    ?.let { streamingUrlRepository.streamingUrl(it) }
-                _uiState.update {
-                    it.copy(
-                        title = video.claim.title,
-                        subtitle = video.claim.channelName,
-                        streamingUrl = streamingUrl,
-                        claimName = video.claim.name,
-                        claimId = video.claim.id,
-                        channelId = video.claim.channelId,
-                    )
-                }
+                videosRepository.video(args.claimId)
+                    .distinctUntilChanged()
+                    .collectLatest { video ->
+                        val streamingUrl = video.claim.permanentUrl
+                            ?.let { streamingUrlRepository.streamingUrl(it) }
+                        _uiState.update {
+                            it.copy(
+                                title = video.claim.title,
+                                subtitle = video.claim.channelName,
+                                streamingUrl = streamingUrl,
+                                claimName = video.claim.name,
+                                claimId = video.claim.id,
+                                channelId = video.claim.channelId,
+                                isLoadingData = false,
+                            )
+                        }
+                    }
             } catch (error: Throwable) {
                 _uiState.update {
                     it.copy(errorMessage = error.localizedMessage)

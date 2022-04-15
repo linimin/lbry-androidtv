@@ -47,8 +47,13 @@ import app.newproj.lbrytv.data.dto.WalletCreateRequest
 import app.newproj.lbrytv.data.dto.WalletList
 import app.newproj.lbrytv.data.dto.WalletRemoveRequest
 import app.newproj.lbrytv.data.dto.WalletStatus
+import app.newproj.lbrytv.data.repo.AuthTokenRepository
+import kotlinx.coroutines.runBlocking
+import okhttp3.Interceptor
+import okhttp3.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
+import javax.inject.Inject
 
 /**
  * A JSON-RPC API to interact with the LBRY network.
@@ -196,4 +201,32 @@ interface LbrynetService {
     @JsonRpc("get")
     @POST("/")
     suspend fun get(@Body request: DownloadRequest): DownloadResponse
+}
+
+class LbrynetServiceAuthInterceptor @Inject constructor(
+    private val authTokenRepo: AuthTokenRepository,
+) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val authToken = runBlocking { authTokenRepo.authToken() }
+        return if (authToken != null) {
+            chain.proceed(
+                chain.request().newBuilder()
+                    .addHeader("X-Lbry-Auth-Token", authToken)
+                    .build()
+            )
+        } else {
+            chain.proceed(chain.request())
+        }
+    }
+}
+
+object LbrynetProxyServiceInterceptor : Interceptor {
+    override fun intercept(chain: Interceptor.Chain) =
+        with(chain.request()) {
+            val requestBuilder = newBuilder()
+            val newUrl = url.newBuilder()
+                .addPathSegments("api/v1/proxy")
+                .build()
+            return@with requestBuilder.url(newUrl).build()
+        }.let(chain::proceed)
 }

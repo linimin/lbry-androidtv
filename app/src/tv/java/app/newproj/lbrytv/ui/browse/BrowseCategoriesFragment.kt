@@ -47,7 +47,6 @@ import app.newproj.lbrytv.data.dto.VideoUiState
 import app.newproj.lbrytv.databinding.BrowseCategoryHeaderIconsDockBinding
 import app.newproj.lbrytv.ui.presenter.IconRowPresenter
 import app.newproj.lbrytv.ui.presenter.LocalizableRowHeaderPresenter
-import app.newproj.lbrytv.ui.presenter.PagingListRowPresenter
 import app.newproj.lbrytv.ui.presenter.RowPresenterSelector
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -114,8 +113,7 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
                 }
             }
             launch {
-                viewModel.browseCategories
-                    .collectLatest(rowsAdapter::submitData)
+                viewModel.browseCategories.collectLatest(rowsAdapter::submitData)
             }
         }
     }

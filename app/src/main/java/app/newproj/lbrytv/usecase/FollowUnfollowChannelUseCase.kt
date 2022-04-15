@@ -24,24 +24,30 @@
 
 package app.newproj.lbrytv.usecase
 
-import app.newproj.lbrytv.data.repo.AccountRepository
+import app.newproj.lbrytv.data.repo.AccountsRepository
 import app.newproj.lbrytv.data.repo.ChannelsRepository
-import app.newproj.lbrytv.data.repo.SubscriptionRepository
+import app.newproj.lbrytv.data.repo.SubscriptionsRepository
+import app.newproj.lbrytv.di.ApplicationCoroutineScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class FollowUnfollowChannelUseCase @Inject constructor(
-    private val accountRepository: AccountRepository,
+    private val accountsRepository: AccountsRepository,
     private val channelsRepository: ChannelsRepository,
-    private val subscriptionRepository: SubscriptionRepository,
+    private val subscriptionsRepository: SubscriptionsRepository,
+    @ApplicationCoroutineScope private val externalCoroutineScope: CoroutineScope,
 ) {
     suspend operator fun invoke(channelId: String) {
-        val account = accountRepository.requireAccount()
-        val channel = channelsRepository.channel(channelId).first() ?: return
-        if (channel.isFollowing) {
-            subscriptionRepository.unfollow(channel, account.name)
-        } else {
-            subscriptionRepository.follow(channel, account.name)
-        }
+        externalCoroutineScope.launch {
+            val account = accountsRepository.requireAccount()
+            val channel = channelsRepository.channel(channelId).first()
+            if (channel.isFollowing) {
+                subscriptionsRepository.unfollow(channel, account.name)
+            } else {
+                subscriptionsRepository.follow(channel, account.name)
+            }
+        }.join()
     }
 }

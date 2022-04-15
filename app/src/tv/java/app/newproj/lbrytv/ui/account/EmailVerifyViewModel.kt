@@ -29,7 +29,7 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.newproj.lbrytv.data.repo.AccountRepository
+import app.newproj.lbrytv.data.repo.AccountsRepository
 import app.newproj.lbrytv.data.repo.HomeScreenChannelsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,7 +42,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EmailVerifyViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val accountRepository: AccountRepository,
+    private val accountsRepository: AccountsRepository,
     private val homeScreenChannelsRepository: HomeScreenChannelsRepository,
 ) : ViewModel() {
     private val args = EmailVerifyFragmentArgs.fromSavedStateHandle(savedStateHandle)
@@ -58,8 +58,8 @@ class EmailVerifyViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             try {
-                val account = accountRepository.addAccount(args.email)
-                accountRepository.setCurrentAccount(account)
+                val account = accountsRepository.addAccount(args.email)
+                accountsRepository.setCurrentAccount(account)
                 homeScreenChannelsRepository.synchronize()
                 args.authResponse?.onResult(
                     bundleOf(

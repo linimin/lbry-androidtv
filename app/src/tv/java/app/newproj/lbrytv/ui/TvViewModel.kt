@@ -22,34 +22,17 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.service
+package app.newproj.lbrytv.ui
 
-import app.newproj.lbrytv.data.dto.LbryIncServiceResponse
-import com.google.gson.reflect.TypeToken
-import okhttp3.ResponseBody
-import retrofit2.Converter
-import retrofit2.Retrofit
-import java.lang.reflect.Type
+import androidx.datastore.core.DataStore
+import androidx.lifecycle.ViewModel
+import app.newproj.lbrytv.data.AppData
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-object LbryIncServiceBodyConverterFactory : Converter.Factory() {
-    override fun responseBodyConverter(
-        type: Type,
-        annotations: Array<out Annotation>,
-        retrofit: Retrofit,
-    ): Converter<ResponseBody, *> {
-        val delegate = retrofit.nextResponseBodyConverter<LbryIncServiceResponse<*>>(
-            this,
-            TypeToken.getParameterized(LbryIncServiceResponse::class.java, type).type,
-            annotations
-        )
-        return ResponseBodyConverter(delegate)
-    }
-
-    private class ResponseBodyConverter<T>(
-        private val delegate: Converter<ResponseBody, LbryIncServiceResponse<out T>>,
-    ) : Converter<ResponseBody, T> {
-        override fun convert(value: ResponseBody): T? {
-            return delegate.convert(value)?.data
-        }
-    }
+@HiltViewModel
+class TvViewModel @Inject constructor(appDataStore: DataStore<AppData>) : ViewModel() {
+    val wallpaperUrl: Flow<String> = appDataStore.data.map { it.wallpaperUrl }
 }

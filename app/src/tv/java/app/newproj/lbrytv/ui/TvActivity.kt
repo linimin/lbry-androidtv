@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv
+package app.newproj.lbrytv.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -39,8 +39,9 @@ import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import app.newproj.lbrytv.R
 import app.newproj.lbrytv.databinding.TvActivityBinding
-import app.newproj.lbrytv.worker.HomeChannelsUpdateWorker
+import app.newproj.lbrytv.worker.HomeScreenChannelsUpdateWorker
 import coil.imageLoader
 import coil.request.ImageRequest
 import dagger.hilt.android.AndroidEntryPoint
@@ -83,7 +84,7 @@ class TvActivity : FragmentActivity() {
             }
         }
         WorkManager.getInstance(baseContext).enqueue(
-            PeriodicWorkRequestBuilder<HomeChannelsUpdateWorker>(1, TimeUnit.HOURS)
+            PeriodicWorkRequestBuilder<HomeScreenChannelsUpdateWorker>(1, TimeUnit.HOURS)
                 .setConstraints(
                     Constraints.Builder()
                         .setRequiredNetworkType(NetworkType.CONNECTED)

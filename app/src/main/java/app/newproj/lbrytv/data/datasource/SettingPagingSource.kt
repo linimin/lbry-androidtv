@@ -33,13 +33,13 @@ import javax.inject.Inject
 class SettingPagingSource @Inject constructor() : PagingSource<Int, Setting>() {
     override fun getRefreshKey(state: PagingState<Int, Setting>): Int? = null
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Setting> {
-        return LoadResult.Page(listOf(
-            Setting(
-                id = "${R.id.switch_account}",
-                titleRes = R.string.switch_account,
-                iconRes = R.drawable.person_add,
-            )
-        ), null, null)
-    }
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Setting> =
+        LoadResult.Page(
+            listOf(
+                Setting(
+                    id = "${R.id.switch_account}",
+                    titleRes = R.string.switch_account,
+                    iconRes = R.drawable.person_add,
+                )
+            ), null, null)
 }

@@ -27,7 +27,6 @@ package app.newproj.lbrytv.usecase
 import app.newproj.lbrytv.data.dto.ChannelWithVideos
 import app.newproj.lbrytv.data.repo.ChannelsRepository
 import app.newproj.lbrytv.data.repo.VideosRepository
-import kotlinx.coroutines.flow.filterNotNull
 import javax.inject.Inject
 
 class GetChannelWithVideosUseCase @Inject constructor(

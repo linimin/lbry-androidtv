@@ -24,7 +24,6 @@
 
 package app.newproj.lbrytv.data.repo
 
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -35,7 +34,6 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Provider
 
-@OptIn(ExperimentalPagingApi::class)
 class BrowseCategoriesRepository @Inject constructor(
     private val categoryPagingSourceProvider: Provider<BrowseCategoryPagingSource>,
     @SmallPageSize private val pagingConfig: PagingConfig,

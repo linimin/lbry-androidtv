@@ -54,7 +54,7 @@ class HomeScreenChannelsRepository @Inject constructor(
             .setInternalProviderId("RECOMMENDED_CHANNEL")
             .setDisplayName("Channel Name")
             .setAppLinkIntentUri(Uri.parse("https://lbrytv.newproj.app/"))
-            .setDisplayName(appContext.getString(R.string.featured))
+            .setDisplayName(appContext.getString(R.string.odysee_featured))
             .setDescription("Featured channel description")
             .build()
         val channelId = if (defaultChannel != null) {

@@ -22,17 +22,37 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv
+package app.newproj.lbrytv.data.datasource
 
-import androidx.datastore.core.DataStore
-import androidx.lifecycle.ViewModel
-import app.newproj.lbrytv.data.AppData
-import dagger.hilt.android.lifecycle.HiltViewModel
+import androidx.paging.PagingSource
+import app.newproj.lbrytv.data.AppDatabase
+import app.newproj.lbrytv.data.dto.Channel
+import app.newproj.lbrytv.data.entity.Subscription
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-@HiltViewModel
-class TvViewModel @Inject constructor(appDataStore: DataStore<AppData>) : ViewModel() {
-    val wallpaperUrl: Flow<String> = appDataStore.data.map { it.wallpaperUrl }
+class LocalSubscriptionsDataSource @Inject constructor(private val db: AppDatabase) {
+    fun subscriptionsFlow(accountName: String): Flow<List<Subscription>> =
+        db.subscriptionDao().subscriptionsFlow(accountName)
+
+    suspend fun subscriptions(accountName: String): List<Subscription> =
+        db.subscriptionDao().subscriptions(accountName)
+
+    fun subscriptionsPagingSource(accountName: String): PagingSource<Int, Channel> =
+        db.channelDao().subscriptions(accountName)
+
+    suspend fun follow(channel: Channel, accountName: String) {
+        db.subscriptionDao().upsert(
+            Subscription(
+                channel.id,
+                requireNotNull(channel.claim.permanentUrl),
+                isNotificationDisabled = false,
+                accountName
+            )
+        )
+    }
+
+    suspend fun unfollow(channel: Channel, accountName: String) {
+        db.subscriptionDao().delete(channel.id, accountName)
+    }
 }

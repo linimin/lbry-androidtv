@@ -22,20 +22,14 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.data.datasource
+package app.newproj.lbrytv
 
-import android.net.Uri
-import app.newproj.lbrytv.data.repo.UserPreferenceRepository
-import javax.inject.Inject
+import android.app.Application
+import com.google.android.material.color.DynamicColors
 
-class OdyseeSubscriptionDataSource @Inject constructor(
-    private val userPreferenceRepo: UserPreferenceRepository,
-) {
-    suspend fun follow(permanentUrl: Uri) {
-        userPreferenceRepo.addSubscription(permanentUrl)
-    }
-
-    suspend fun unfollow(permanentUrl: Uri) {
-        userPreferenceRepo.removeSubscription(permanentUrl)
+abstract class BaseApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        DynamicColors.applyToActivitiesIfAvailable(this)
     }
 }

@@ -27,7 +27,7 @@ package app.newproj.lbrytv.data.repo
 import android.accounts.Account
 import android.accounts.AccountManager
 import androidx.datastore.core.DataStore
-import app.newproj.lbrytv.auth.LbryAccountAuthenticator
+import app.newproj.lbrytv.LbryAccountAuthenticator
 import app.newproj.lbrytv.data.AppData
 import app.newproj.lbrytv.data.AppDatabase
 import app.newproj.lbrytv.data.dto.TokenUser
@@ -42,13 +42,13 @@ private const val ACCOUNT_TYPE = LbryAccountAuthenticator.ACCOUNT_TYPE
 private const val AUTH_TOKEN_TYPE = LbryAccountAuthenticator.AUTH_TOKEN_TYPE_DEFAULT
 private const val TOKEN_USER_POLLING_PERIOD_MILLIS = 5000L
 
-class AccountRepository @Inject constructor(
+class AccountsRepository @Inject constructor(
     private val accountManager: AccountManager,
     private val appDataStore: DataStore<AppData>,
     // Use [Provider] to break the dependency cycle.
     private val lbryIncServiceProvider: Provider<LbryIncService>,
     private val installationIdRepo: InstallationIdRepository,
-    private val db: AppDatabase,
+    private val appDatabase: AppDatabase,
 ) {
     fun accounts(): List<Account> {
         return accountManager.getAccountsByType(ACCOUNT_TYPE).asList()
@@ -107,7 +107,7 @@ class AccountRepository @Inject constructor(
                         clearAccountName()
                         currentAccount()?.let { account ->
                             accountManager.removeAccountExplicitly(account)
-                            db.subscriptionDao().clearAll(account.name)
+                            appDatabase.subscriptionDao().clearAll(account.name)
                         }
                     }
                 }

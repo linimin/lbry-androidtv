@@ -30,7 +30,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import app.newproj.lbrytv.data.datasource.SettingPagingSource
 import app.newproj.lbrytv.data.dto.Setting
-import app.newproj.lbrytv.di.LargePageSize
+import app.newproj.lbrytv.di.SmallPageSize
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Provider
@@ -38,7 +38,7 @@ import javax.inject.Provider
 @OptIn(ExperimentalPagingApi::class)
 class SettingsRepository @Inject constructor(
     private val settingPagingSourceProvider: Provider<SettingPagingSource>,
-    @LargePageSize private val pagingConfig: PagingConfig,
+    @SmallPageSize private val pagingConfig: PagingConfig,
 ) {
     fun settings(): Flow<PagingData<Setting>> = Pager(
         config = pagingConfig,

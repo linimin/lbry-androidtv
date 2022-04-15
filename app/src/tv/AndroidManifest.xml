@@ -46,13 +46,15 @@
     <!-- https://developer.android.com/reference/androidx/leanback/app/SearchSupportFragment -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
-    <!-- [Provide a home screen banner](https://developer.android.com/training/tv/start/start#banner) -->
-    <application>
+    <application
+        android:name=".TvApplication"
+        tools:ignore="MissingApplicationIcon"
+        tools:replace="android:name">
 
         <!-- [Declare a TV activity](https://developer.android.com/training/tv/start/start#tv-activity) -->
         <!-- [Splash screen](https://developer.android.com/guide/topics/ui/splash-screen/migrate) -->
         <activity
-            android:name=".TvActivity"
+            android:name=".ui.TvActivity"
             android:banner="@drawable/banner"
             android:exported="true"
             android:theme="@style/SplashScreenTheme">
@@ -71,6 +73,7 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
 
+            <!-- https://developer.android.com/guide/navigation/navigation-deep-link#implicit -->
             <nav-graph android:value="@navigation/nav_graph" />
         </activity>
 
@@ -79,25 +82,26 @@
             android:name=".TvLauncherReceiver"
             android:exported="true">
             <intent-filter>
+                <!-- Our app has been installed and should create its channel in the launcher. -->
+                <action android:name="android.media.tv.action.INITIALIZE_PROGRAMS" />
+
+                <!-- User has added a program to the system's watch next channel. -->
+                <action android:name="android.media.tv.action.PREVIEW_PROGRAM_ADDED_TO_WATCH_NEXT" />
+
+                <!-- User has removed a program from one of our channels. -->
+                <action android:name="android.media.tv.action.PREVIEW_PROGRAM_BROWSABLE_DISABLED" />
+
+                <!-- User has removed a program from the system's watch next channel. -->
+                <action android:name="android.media.tv.action.WATCH_NEXT_PROGRAM_BROWSABLE_DISABLED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
-                <!-- Our app has been installed and should create its channel in the launcher -->
-                <action
-                    android:name="android.media.tv.action.INITIALIZE_PROGRAMS" />
-                <!-- User has added a program to the system's watch next channel -->
-                <action
-                    android:name="android.media.tv.action.PREVIEW_PROGRAM_ADDED_TO_WATCH_NEXT" />
-                <!-- User has removed a program from one of our channels -->
-                <action
-                    android:name="android.media.tv.action.PREVIEW_PROGRAM_BROWSABLE_DISABLED" />
-                <!-- User has removed a program from the system's watch next channel -->
-                <action
-                    android:name="android.media.tv.action.WATCH_NEXT_PROGRAM_BROWSABLE_DISABLED" />
             </intent-filter>
         </receiver>
 
+        <!-- https://developer.android.com/guide/topics/search/adding-custom-suggestions#QSB -->
         <provider
-            android:name=".search.SearchSuggestionProvider"
-            android:authorities="app.newproj.lbrytv.search.SearchSuggestionProvider"
+            android:name=".SearchSuggestionProvider"
+            android:authorities="app.newproj.lbrytv.SearchSuggestionProvider"
             android:exported="true"
             tools:ignore="ExportedContentProvider" />
     </application>

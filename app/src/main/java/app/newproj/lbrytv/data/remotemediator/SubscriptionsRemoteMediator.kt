@@ -31,11 +31,12 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import app.newproj.lbrytv.data.AppDatabase
+import app.newproj.lbrytv.data.datasource.LbrySubscriptionsDataSource
+import app.newproj.lbrytv.data.datasource.OdyseeSubscriptionsDataSource
 import app.newproj.lbrytv.data.dto.Channel
 import app.newproj.lbrytv.data.dto.ClaimSearchRequest
 import app.newproj.lbrytv.data.dto.LbryUri
 import app.newproj.lbrytv.data.entity.Subscription
-import app.newproj.lbrytv.service.LbryIncService
 import app.newproj.lbrytv.service.LbrynetService
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -44,15 +45,16 @@ import retrofit2.HttpException
 import java.io.IOException
 
 @OptIn(ExperimentalPagingApi::class)
-class SubscriptionRemoteMediator @AssistedInject constructor(
+class SubscriptionsRemoteMediator @AssistedInject constructor(
     @Assisted private val accountName: String,
+    private val lbrySubscriptionsDataSource: LbrySubscriptionsDataSource,
+    private val odyseeSubscriptionsDataSource: OdyseeSubscriptionsDataSource,
     private val lbrynetService: LbrynetService,
-    private val lbryIncService: LbryIncService,
-    private val db: AppDatabase,
+    private val appDatabase: AppDatabase,
 ) : RemoteMediator<Int, Channel>() {
     @AssistedFactory
     interface Factory {
-        fun SubscriptionRemoteMediator(accountName: String): SubscriptionRemoteMediator
+        fun SubscriptionsRemoteMediator(accountName: String): SubscriptionsRemoteMediator
     }
 
     override suspend fun load(
@@ -61,49 +63,48 @@ class SubscriptionRemoteMediator @AssistedInject constructor(
     ): MediatorResult {
         try {
             if (loadType == LoadType.REFRESH) {
-                val lbrySubscriptions = lbryIncService.subscriptions().mapNotNull {
-                    val channelName = it.channelName ?: return@mapNotNull null
-                    val claimId = it.claimId ?: return@mapNotNull null
-                    val isNotificationsDisabled =
-                        it.isNotificationsDisabled ?: return@mapNotNull null
-                    val lbryUri = LbryUri.Builder()
-                        .setChannelName(channelName)
-                        .setClaimId(claimId)
-                        .build()
-                    Subscription(
-                        claimId = it.claimId,
-                        uri = Uri.parse(lbryUri.toString()),
-                        isNotificationDisabled = isNotificationsDisabled,
-                        accountName = accountName
-                    )
-                }
+                val lbrySubscriptions =
+                    lbrySubscriptionsDataSource
+                        .subscriptions()
+                        .mapNotNull {
+                            val channelName = it.channelName ?: return@mapNotNull null
+                            val claimId = it.claimId ?: return@mapNotNull null
+                            val isNotificationsDisabled =
+                                it.isNotificationsDisabled ?: return@mapNotNull null
+                            val lbryUri = LbryUri.Builder()
+                                .setChannelName(channelName)
+                                .setClaimId(claimId)
+                                .build()
+                            Subscription(
+                                claimId = it.claimId,
+                                uri = Uri.parse(lbryUri.toString()),
+                                isNotificationDisabled = isNotificationsDisabled,
+                                accountName = accountName
+                            )
+                        }
                 val odyseeSubscriptions =
-                    lbrynetService.preference().shared?.value
-                        ?.following
-                        ?.mapNotNull { following ->
-                            val lbryUri = LbryUri.parse(following.uri.toString())
+                    odyseeSubscriptionsDataSource
+                        .subscriptions()
+                        .mapNotNull {
+                            val lbryUri = LbryUri.parse(it.uri.toString())
                             val claimId = lbryUri.claimId ?: return@mapNotNull null
-                            val uri = following.uri ?: return@mapNotNull null
-                            val notificationsDisabled = following.notificationsDisabled ?: false
+                            val uri = it.uri ?: return@mapNotNull null
+                            val notificationsDisabled = it.notificationsDisabled ?: false
                             Subscription(claimId, uri, notificationsDisabled, accountName)
-                        } ?: emptyList()
-                val claimIds = mutableSetOf<String>()
-                lbrySubscriptions.forEach {
-                    claimIds.add(it.claimId)
-                }
-                odyseeSubscriptions.forEach {
-                    claimIds.add(it.claimId)
-                }
-                val claims = if (odyseeSubscriptions.isNotEmpty()) {
-                    lbrynetService.searchClaims(
-                        ClaimSearchRequest(claimIds = claimIds.toList())
-                    ).items ?: emptyList()
-                } else {
-                    emptyList()
-                }
-                db.withTransaction {
-                    db.claimSearchResultDao().upsert(claims)
-                    db.subscriptionDao().upsert(lbrySubscriptions + odyseeSubscriptions)
+                        }
+                val claimIds = (lbrySubscriptions + odyseeSubscriptions)
+                    .map { it.claimId }
+                    .toSortedSet()
+                    .toList()
+                val claims = claimIds
+                    .takeIf { it.isNotEmpty() }
+                    ?.let {
+                        lbrynetService.searchClaims(ClaimSearchRequest(claimIds = it)).items
+                    }
+                    ?: emptyList()
+                appDatabase.withTransaction {
+                    appDatabase.claimSearchResultDao().upsert(claims)
+                    appDatabase.subscriptionDao().upsert(lbrySubscriptions + odyseeSubscriptions)
                 }
             }
             return MediatorResult.Success(endOfPaginationReached = true)

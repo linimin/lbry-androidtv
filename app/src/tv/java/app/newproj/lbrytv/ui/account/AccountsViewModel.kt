@@ -26,7 +26,7 @@ package app.newproj.lbrytv.ui.account
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.newproj.lbrytv.data.repo.AccountRepository
+import app.newproj.lbrytv.data.repo.AccountsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,7 +37,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AccountsViewModel @Inject constructor(
-    private val accountRepo: AccountRepository,
+    private val accountsRepository: AccountsRepository,
 ) : ViewModel() {
     data class UiState(
         val accounts: List<AccountUiState>? = null,
@@ -56,15 +56,15 @@ class AccountsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val currentAccount = accountRepo.currentAccount()
-            accountRepo.accounts().map { account ->
+            val currentAccount = accountsRepository.currentAccount()
+            accountsRepository.accounts().map { account ->
                 AccountUiState(
                     name = account.name,
                     account.name == currentAccount?.name,
                     onSelected = {
                         viewModelScope.launch {
                             try {
-                                accountRepo.setCurrentAccount(account)
+                                accountsRepository.setCurrentAccount(account)
                                 _uiState.update { it.copy(isAccountSelected = true) }
                             } catch (error: Throwable) {
                                 _uiState.update { it.copy(errorMessage = error.localizedMessage) }

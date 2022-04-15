@@ -69,7 +69,7 @@ class FeaturedVideosRemoteMediator @Inject constructor(
                         locale.language
                     }
                     primaryContent = odyseeService
-                        .content()
+                        .recommendedContent()
                         .run {
                             get(languageKey) ?: get("en")
                         }

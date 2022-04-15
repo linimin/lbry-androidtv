@@ -30,7 +30,7 @@ import android.content.Intent
 import androidx.tvprovider.media.tv.TvContractCompat
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import app.newproj.lbrytv.worker.HomeChannelsUpdateWorker
+import app.newproj.lbrytv.worker.HomeScreenChannelsUpdateWorker
 
 /*
  * This [BroadcastReceiver] is invoked when the home screen launcher sends an explicit broadcast
@@ -46,7 +46,7 @@ class TvLauncherReceiver : BroadcastReceiver() {
         when (intent.action) {
             TvContractCompat.ACTION_INITIALIZE_PROGRAMS ->
                 WorkManager.getInstance(context)
-                    .enqueue(OneTimeWorkRequestBuilder<HomeChannelsUpdateWorker>().build())
+                    .enqueue(OneTimeWorkRequestBuilder<HomeScreenChannelsUpdateWorker>().build())
 
             TvContractCompat.ACTION_PREVIEW_PROGRAM_ADDED_TO_WATCH_NEXT -> Unit
             TvContractCompat.ACTION_WATCH_NEXT_PROGRAM_BROWSABLE_DISABLED -> Unit

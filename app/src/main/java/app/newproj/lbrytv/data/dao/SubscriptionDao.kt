@@ -27,6 +27,7 @@ package app.newproj.lbrytv.data.dao
 import androidx.room.Dao
 import androidx.room.Query
 import app.newproj.lbrytv.data.entity.Subscription
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class SubscriptionDao : BaseDao<Subscription>() {
@@ -39,4 +40,10 @@ abstract class SubscriptionDao : BaseDao<Subscription>() {
 
     @Query("DELETE FROM subscription WHERE account_name = :accountName")
     abstract suspend fun clearAll(accountName: String)
+
+    @Query("SELECT * FROM subscription WHERE account_name = :accountName")
+    abstract suspend fun subscriptions(accountName: String): List<Subscription>
+
+    @Query("SELECT * FROM subscription WHERE account_name = :accountName")
+    abstract fun subscriptionsFlow(accountName: String): Flow<List<Subscription>>
 }

@@ -32,7 +32,7 @@ import androidx.paging.map
 import app.newproj.lbrytv.data.dto.ChannelUiState
 import app.newproj.lbrytv.data.dto.ChannelWithVideos
 import app.newproj.lbrytv.data.dto.VideoUiState
-import app.newproj.lbrytv.data.repo.AccountRepository
+import app.newproj.lbrytv.data.repo.AccountsRepository
 import app.newproj.lbrytv.usecase.FollowUnfollowChannelUseCase
 import app.newproj.lbrytv.usecase.GetChannelWithVideosUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -55,7 +55,7 @@ class ChannelVideosViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getChannelWithVideosUseCase: GetChannelWithVideosUseCase,
     private val followUnfollowChannelUseCase: FollowUnfollowChannelUseCase,
-    private val accountRepository: AccountRepository,
+    private val accountsRepository: AccountsRepository,
 ) : ViewModel() {
     private val args = ChannelVideosFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
@@ -71,23 +71,19 @@ class ChannelVideosViewModel @Inject constructor(
     private val channelWithVideos = MutableSharedFlow<ChannelWithVideos>(replay = 1)
     private val channel: Flow<ChannelUiState> = channelWithVideos
         .flatMapLatest { it.channel }
-        .filterNotNull()
-        .map {
-            ChannelUiState(it.id, it.claim.thumbnail, it.claim.title, it.claim.name, it.isFollowing)
-        }
+        .map(ChannelUiState::fromChannel)
+
     val videos: Flow<PagingData<VideoUiState>> = channelWithVideos
         .flatMapLatest { it.videos }
-        .map { pagingData ->
-            pagingData.map { video ->
-                VideoUiState.fromVideo(video)
-            }
+        .map {
+            it.map(VideoUiState::fromVideo)
         }
 
     init {
         viewModelScope.launch {
             try {
                 _uiState.update {
-                    it.copy(isSignedIn = accountRepository.currentAccount() != null)
+                    it.copy(isSignedIn = accountsRepository.currentAccount() != null)
                 }
                 channelWithVideos.emit(getChannelWithVideosUseCase(args.channelId))
                 channel.collect { channel ->

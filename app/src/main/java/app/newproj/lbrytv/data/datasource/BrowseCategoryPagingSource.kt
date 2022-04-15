@@ -28,41 +28,43 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.data.dto.BrowseCategory
-import app.newproj.lbrytv.data.repo.AccountRepository
+import app.newproj.lbrytv.data.repo.AccountsRepository
 import app.newproj.lbrytv.data.repo.SettingsRepository
-import app.newproj.lbrytv.data.repo.SubscriptionRepository
+import app.newproj.lbrytv.data.repo.SubscriptionsRepository
 import app.newproj.lbrytv.data.repo.VideosRepository
 import javax.inject.Inject
 
 class BrowseCategoryPagingSource @Inject constructor(
-    private val accountRepository: AccountRepository,
+    private val accountsRepository: AccountsRepository,
     private val videosRepository: VideosRepository,
+    private val subscriptionsRepository: SubscriptionsRepository,
     private val settingsRepository: SettingsRepository,
-    private val subscriptionRepository: SubscriptionRepository,
 ) : PagingSource<Int, BrowseCategory>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, BrowseCategory> {
         val categories = mutableListOf<BrowseCategory>()
-        categories.add(
-            BrowseCategory(
-                id = R.id.browse_category_featured.toLong(),
-                name = R.string.featured, icon = R.drawable.whatshot,
-                items = videosRepository.featuredVideos()
-            )
-        )
-        val account = accountRepository.currentAccount()
+        val account = accountsRepository.currentAccount()
         if (account != null) {
             categories.add(
                 BrowseCategory(
                     id = R.id.browse_category_subscriptions.toLong(),
                     name = R.string.subscriptions, icon = R.drawable.star,
-                    items = videosRepository.subscriptionVideos()
+                    items = videosRepository.subscriptionVideos(account.name)
                 )
             )
+        }
+        categories.add(
+            BrowseCategory(
+                id = R.id.browse_category_odysee_featured.toLong(),
+                name = R.string.odysee_featured, icon = R.drawable.whatshot,
+                items = videosRepository.featuredVideos()
+            )
+        )
+        if (account != null) {
             categories.add(
                 BrowseCategory(
                     id = R.id.browse_category_channels.toLong(),
                     name = R.string.channels, icon = R.drawable.subscriptions,
-                    items = subscriptionRepository.subscriptions(account.name)
+                    items = subscriptionsRepository.subscriptions(account.name)
                 )
             )
         }

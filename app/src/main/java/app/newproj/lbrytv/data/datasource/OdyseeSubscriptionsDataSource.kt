@@ -22,19 +22,28 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.service
+package app.newproj.lbrytv.data.datasource
 
-import okhttp3.Interceptor
-import okhttp3.Response
+import app.newproj.lbrytv.data.dto.Channel
+import app.newproj.lbrytv.data.dto.UserPreference
+import app.newproj.lbrytv.data.repo.UserPreferenceRepository
+import app.newproj.lbrytv.service.LbrynetService
+import javax.inject.Inject
 
-object LbrynetProxyServiceInterceptor : Interceptor {
-    override fun intercept(chain: Interceptor.Chain): Response {
-        return with(chain.request()) {
-            val requestBuilder = newBuilder()
-            val newUrl = url.newBuilder()
-                .addPathSegments("api/v1/proxy")
-                .build()
-            return@with requestBuilder.url(newUrl).build()
-        }.let(chain::proceed)
+class OdyseeSubscriptionsDataSource @Inject constructor(
+    private val userPreferenceRepo: UserPreferenceRepository,
+    private val lbrynetService: LbrynetService,
+) {
+    suspend fun subscriptions(): List<UserPreference.Shared.Value.Following> =
+        lbrynetService.preference().shared?.value
+            ?.following
+            ?: emptyList()
+
+    suspend fun follow(channel: Channel) {
+        userPreferenceRepo.addSubscription(requireNotNull(channel.claim.permanentUrl))
+    }
+
+    suspend fun unfollow(channel: Channel) {
+        userPreferenceRepo.removeSubscription(requireNotNull(channel.claim.permanentUrl))
     }
 }

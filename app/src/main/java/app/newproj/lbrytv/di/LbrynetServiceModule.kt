@@ -24,12 +24,12 @@
 
 package app.newproj.lbrytv.di
 
-import app.newproj.lbrytv.auth.LbrynetServiceAuthInterceptor
 import app.newproj.lbrytv.service.JsonRpcBodyConverterFactory
 import app.newproj.lbrytv.service.JsonRpcBodyFiller
 import app.newproj.lbrytv.service.JsonRpcInterceptor
 import app.newproj.lbrytv.service.LbrynetProxyServiceInterceptor
 import app.newproj.lbrytv.service.LbrynetService
+import app.newproj.lbrytv.service.LbrynetServiceAuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

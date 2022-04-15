@@ -22,30 +22,34 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.auth
+package app.newproj.lbrytv
 
 import android.accounts.AbstractAccountAuthenticator
 import android.accounts.Account
 import android.accounts.AccountAuthenticatorResponse
-import android.accounts.AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE
-import android.accounts.AccountManager.KEY_ACCOUNT_NAME
-import android.accounts.AccountManager.KEY_ACCOUNT_TYPE
-import android.accounts.AccountManager.KEY_AUTHTOKEN
-import android.accounts.AccountManager.KEY_INTENT
+import android.accounts.AccountManager
 import android.accounts.NetworkErrorException
 import android.app.Service
 import android.content.Intent
-import android.content.Intent.ACTION_VIEW
 import android.net.Uri
 import android.os.Bundle
+import android.os.IBinder
 import androidx.core.os.bundleOf
 import app.newproj.lbrytv.data.repo.InstallationIdRepository
 import app.newproj.lbrytv.di.ApplicationCoroutineScope
 import app.newproj.lbrytv.service.LbryIncService
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import javax.inject.Inject
+
+@AndroidEntryPoint
+class AccountAuthenticatorService : Service() {
+    @Inject lateinit var authenticator: LbryAccountAuthenticator
+
+    override fun onBind(intent: Intent?): IBinder? = authenticator.iBinder
+}
 
 class LbryAccountAuthenticator @Inject constructor(
     service: Service,
@@ -69,10 +73,10 @@ class LbryAccountAuthenticator @Inject constructor(
         options: Bundle,
     ): Bundle {
         val uri = Uri.parse("https://lbrytv.newproj.app/signin")
-        val intent = Intent(ACTION_VIEW, uri).apply {
-            putExtra(KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
+        val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+            putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
         }
-        return bundleOf(KEY_INTENT to intent)
+        return bundleOf(AccountManager.KEY_INTENT to intent)
     }
 
     override fun confirmCredentials(
@@ -94,9 +98,9 @@ class LbryAccountAuthenticator @Inject constructor(
                 val installationId = installationIdRepo.installationId()
                 val newUser = lbryIncService.newUser("en", installationId)
                 val result = bundleOf(
-                    KEY_ACCOUNT_NAME to account.name,
-                    KEY_ACCOUNT_TYPE to account.type,
-                    KEY_AUTHTOKEN to newUser.plainTextAuthToken
+                    AccountManager.KEY_ACCOUNT_NAME to account.name,
+                    AccountManager.KEY_ACCOUNT_TYPE to account.type,
+                    AccountManager.KEY_AUTHTOKEN to newUser.plainTextAuthToken
                 )
                 response.onResult(result)
             } catch (e: HttpException) {

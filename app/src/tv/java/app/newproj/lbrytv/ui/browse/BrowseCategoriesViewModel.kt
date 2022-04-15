@@ -31,12 +31,15 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import app.newproj.lbrytv.R
 import app.newproj.lbrytv.data.dto.BrowseCategoryUiState
 import app.newproj.lbrytv.data.dto.BrowseItemUiStateComparator
 import app.newproj.lbrytv.data.dto.LocalizableHeaderItem
 import app.newproj.lbrytv.data.dto.PagingListRow
 import app.newproj.lbrytv.data.dto.Wallet
+import app.newproj.lbrytv.data.repo.AccountsRepository
 import app.newproj.lbrytv.data.repo.BrowseCategoriesRepository
+import app.newproj.lbrytv.data.repo.SubscriptionsRepository
 import app.newproj.lbrytv.data.repo.WalletRepository
 import app.newproj.lbrytv.ui.presenter.BrowseItemUiStatePresenterSelector
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,6 +48,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -55,6 +59,8 @@ import kotlin.time.Duration.Companion.seconds
 class BrowseCategoriesViewModel @Inject constructor(
     walletRepository: WalletRepository,
     browseCategoriesRepository: BrowseCategoriesRepository,
+    private val subscriptionsRepository: SubscriptionsRepository,
+    private val accountsRepository: AccountsRepository,
 ) : ViewModel() {
     private val _headersWindowAlignOffsetTop = MutableStateFlow(0)
     val headersWindowAlignOffsetTop: StateFlow<Int> = _headersWindowAlignOffsetTop.asStateFlow()
@@ -79,11 +85,21 @@ class BrowseCategoriesViewModel @Inject constructor(
             .map { it.toRows() }
             .cachedIn(viewModelScope)
 
+    private val subscriptionsAdapter =
+        PagingDataAdapter(BrowseItemUiStatePresenterSelector, BrowseItemUiStateComparator())
+
     private fun PagingData<BrowseCategoryUiState>.toRows(): PagingData<Row> = map {
         PagingListRow(
             it.id,
             LocalizableHeaderItem(it.id, it.iconRes, it.nameRes),
-            PagingDataAdapter(BrowseItemUiStatePresenterSelector, BrowseItemUiStateComparator()),
+            pagingDataAdapter = if (it.id == R.id.browse_category_subscriptions.toLong()) {
+                subscriptionsAdapter
+            } else {
+                PagingDataAdapter(
+                    BrowseItemUiStatePresenterSelector,
+                    BrowseItemUiStateComparator()
+                )
+            },
             it.items
         )
     }
@@ -104,14 +120,22 @@ class BrowseCategoriesViewModel @Inject constructor(
                 }
             }
         }
+        viewModelScope.launch {
+            val account = accountsRepository.currentAccount() ?: return@launch
+            subscriptionsRepository
+                .subscriptionsFlow(account.name)
+                .collect {
+                    subscriptionsAdapter.refresh()
+                }
+        }
     }
 
     fun setHeadersAlignment(windowAlignOffsetTop: Int) {
-        _headersWindowAlignOffsetTop.tryEmit(windowAlignOffsetTop)
+        _headersWindowAlignOffsetTop.value = windowAlignOffsetTop
     }
 
     fun setSelectedHeaderPosition(position: Int) {
-        _selectedHeaderPosition.tryEmit(position)
+        _selectedHeaderPosition.value = position
     }
 
     fun errorMessageShown() {

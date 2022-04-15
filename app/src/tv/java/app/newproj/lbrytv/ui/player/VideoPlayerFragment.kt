@@ -28,6 +28,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -82,11 +83,17 @@ class VideoPlayerFragment : VideoSupportFragment() {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundColor(Color.BLACK)
         surfaceView.keepScreenOn = true
+        require(view is ViewGroup)
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.uiState.collect {
                 playbackGlue.apply {
                     title = it.title
                     subtitle = it.subtitle
+                }
+                if (it.isLoadingData) {
+                    progressBarManager.show()
+                } else {
+                    progressBarManager.hide()
                 }
                 it.streamingUrl?.let(::play)
                 it.errorMessage?.let(::goToErrorScreen)

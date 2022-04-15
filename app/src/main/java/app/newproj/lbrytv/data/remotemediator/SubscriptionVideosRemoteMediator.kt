@@ -30,25 +30,36 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import app.newproj.lbrytv.data.AppDatabase
+import app.newproj.lbrytv.data.datasource.LbrySubscriptionsDataSource
+import app.newproj.lbrytv.data.datasource.LocalSubscriptionsDataSource
 import app.newproj.lbrytv.data.dto.ClaimSearchRequest
-import app.newproj.lbrytv.data.dto.LbryUri
 import app.newproj.lbrytv.data.dto.Video
 import app.newproj.lbrytv.data.entity.ClaimLookup
 import app.newproj.lbrytv.data.entity.RemoteKey
+import app.newproj.lbrytv.data.repo.SubscriptionsRepository
 import app.newproj.lbrytv.service.LbrynetService
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import retrofit2.HttpException
 import java.io.IOException
-import javax.inject.Inject
 
 private const val STARTING_PAGE_INDEX = 1
 private const val STARTING_SORTING_ORDER = 1
 
 @OptIn(ExperimentalPagingApi::class)
-class SubscriptionVideosRemoteMediator @Inject constructor(
+class SubscriptionVideosRemoteMediator @AssistedInject constructor(
+    @Assisted private val accountName: String,
     private val lbrynetService: LbrynetService,
-    private val db: AppDatabase,
+    private val localSubscriptionsDataSource: LocalSubscriptionsDataSource,
+    private val appDatabase: AppDatabase,
 ) : RemoteMediator<Int, Video>() {
-    private var subscriptionChannelIds: List<String>? = null
+    @AssistedFactory
+    interface Factory {
+        fun SubscriptionVideosRemoteMediator(accountName: String): SubscriptionVideosRemoteMediator
+    }
+
+    private var subscriptionChannelIds = emptyList<String>()
 
     override suspend fun load(loadType: LoadType, state: PagingState<Int, Video>): MediatorResult {
         try {
@@ -59,51 +70,46 @@ class SubscriptionVideosRemoteMediator @Inject constructor(
                 LoadType.REFRESH -> {
                     page = STARTING_PAGE_INDEX
                     nextSortingOrder = STARTING_SORTING_ORDER
-
-                    subscriptionChannelIds =
-                        lbrynetService.preference().shared?.value?.following?.mapNotNull {
-                            val lbryUri = LbryUri.parse(it.uri.toString())
-                            lbryUri.channelClaimId
-                        }?.takeIf { it.isNotEmpty() }
-                    if (subscriptionChannelIds == null) {
-                        db.withTransaction {
-                            db.remoteKeyDao().delete(remoteKeyLabel)
-                            db.claimLookupDao().deleteAll(remoteKeyLabel)
-                        }
-                        return MediatorResult.Success(endOfPaginationReached = true)
-                    }
+                    subscriptionChannelIds = localSubscriptionsDataSource
+                        .subscriptions(accountName)
+                        .map { it.claimId }
                 }
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
                 LoadType.APPEND -> {
-                    val remoteKey = db.remoteKeyDao().remoteKey(remoteKeyLabel)
+                    val remoteKey = appDatabase.remoteKeyDao().remoteKey(remoteKeyLabel)
                     page = remoteKey?.nextKey
                         ?: return MediatorResult.Success(endOfPaginationReached = true)
                     nextSortingOrder = remoteKey.nextSortingOrder
                 }
             }
-            val request = ClaimSearchRequest(
-                channelIds = subscriptionChannelIds,
-                claimTypes = listOf("stream"),
-                streamTypes = listOf("video"),
-                orderBy = listOf("release_time"),
-                hasSource = true,
-                page = page,
-                pageSize = state.config.pageSize,
-            )
-            val claims = lbrynetService.searchClaims(request).items ?: emptyList()
-            db.withTransaction {
+            val claims = if (subscriptionChannelIds.isNotEmpty()) {
+                lbrynetService.searchClaims(
+                    request = ClaimSearchRequest(
+                        channelIds = subscriptionChannelIds,
+                        claimTypes = listOf("stream"),
+                        streamTypes = listOf("video"),
+                        orderBy = listOf("release_time"),
+                        hasSource = true,
+                        page = page,
+                        pageSize = state.config.pageSize,
+                    )
+                ).items ?: emptyList()
+            } else {
+                emptyList()
+            }
+            appDatabase.withTransaction {
                 if (loadType == LoadType.REFRESH) {
-                    db.remoteKeyDao().delete(remoteKeyLabel)
-                    db.claimLookupDao().deleteAll(remoteKeyLabel)
+                    appDatabase.remoteKeyDao().delete(remoteKeyLabel)
+                    appDatabase.claimLookupDao().deleteAll(remoteKeyLabel)
                 }
-                db.claimSearchResultDao().upsert(claims)
+                appDatabase.claimSearchResultDao().upsert(claims)
                 val claimLookups = claims.map {
                     ClaimLookup(remoteKeyLabel, it.claimId, nextSortingOrder++)
                 }
-                db.claimLookupDao().upsert(claimLookups)
+                appDatabase.claimLookupDao().upsert(claimLookups)
                 val nextKey = if (claims.isEmpty()) null else page.inc()
                 val remoteKey = RemoteKey(remoteKeyLabel, nextKey, nextSortingOrder)
-                db.remoteKeyDao().upsert(remoteKey)
+                appDatabase.remoteKeyDao().upsert(remoteKey)
             }
             return MediatorResult.Success(endOfPaginationReached = claims.isEmpty())
         } catch (e: HttpException) {

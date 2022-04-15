@@ -70,10 +70,10 @@ interface VideoDao {
 
     @Query(
         """
-        SELECT * FROM claim 
-        INNER JOIN claim_lookup 
-        ON claim_lookup.label = 'SUBSCRIPTION_VIDEOS' 
-        AND claim.id = claim_lookup.claim_id 
+        SELECT * FROM claim
+        INNER JOIN claim_lookup
+          ON claim_lookup.label = 'SUBSCRIPTION_VIDEOS' 
+          AND claim.id = claim_lookup.claim_id 
         ORDER BY claim_lookup.sorting_order ASC
         """
     )

@@ -35,9 +35,11 @@ import app.newproj.lbrytv.data.remotemediator.ChannelVideosRemoteMediator
 import app.newproj.lbrytv.data.remotemediator.FeaturedVideosRemoteMediator
 import app.newproj.lbrytv.data.remotemediator.SubscriptionVideosRemoteMediator
 import app.newproj.lbrytv.di.LargePageSize
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
@@ -46,14 +48,18 @@ class VideosRepository @Inject constructor(
     private val videoRemoteDataSource: VideoRemoteDataSource,
     private val featuredVideosRemoteMediator: FeaturedVideosRemoteMediator,
     private val channelVideosMediatorFactory: ChannelVideosRemoteMediator.Factory,
-    private val subscriptionVideosMediator: SubscriptionVideosRemoteMediator,
+    private val subscriptionVideosMediatorFactory: SubscriptionVideosRemoteMediator.Factory,
     @LargePageSize private val pagingConfig: PagingConfig,
 ) {
     fun video(id: String): Flow<Video> = flow {
-        videoRemoteDataSource.video(id)?.let {
-            videoLocalDataSource.upsert(it)
+        coroutineScope {
+            launch {
+                videoRemoteDataSource.video(id)?.let {
+                    videoLocalDataSource.upsert(it)
+                }
+            }
+            emitAll(videoLocalDataSource.video(id))
         }
-        emitAll(videoLocalDataSource.video(id))
     }
 
     fun channelVideos(channelId: String): Flow<PagingData<Video>> = Pager(
@@ -75,9 +81,10 @@ class VideosRepository @Inject constructor(
             }.getOrDefault(videoRemoteDataSource.featuredVideos())
         )
 
-    fun subscriptionVideos(): Flow<PagingData<Video>> = Pager(
+    fun subscriptionVideos(accountName: String): Flow<PagingData<Video>> = Pager(
         config = pagingConfig,
-        remoteMediator = subscriptionVideosMediator,
+        remoteMediator = subscriptionVideosMediatorFactory
+            .SubscriptionVideosRemoteMediator(accountName),
         pagingSourceFactory = { videoLocalDataSource.subscriptionVideoPagingSource() }
     ).flow
 }

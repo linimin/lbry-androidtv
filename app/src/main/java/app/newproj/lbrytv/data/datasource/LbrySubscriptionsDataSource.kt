@@ -22,34 +22,32 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv.service
+package app.newproj.lbrytv.data.datasource
 
-import app.newproj.lbrytv.data.dto.OdyseeServiceResponse
-import com.google.gson.reflect.TypeToken
-import okhttp3.ResponseBody
-import retrofit2.Converter
-import retrofit2.Retrofit
-import java.lang.reflect.Type
+import app.newproj.lbrytv.data.dto.Channel
+import app.newproj.lbrytv.data.dto.Subscription
+import app.newproj.lbrytv.service.LbryIncService
+import javax.inject.Inject
 
-object OdyseeServiceBodyConverterFactory : Converter.Factory() {
-    override fun responseBodyConverter(
-        type: Type,
-        annotations: Array<out Annotation>,
-        retrofit: Retrofit,
-    ): Converter<ResponseBody, *> {
-        val delegate = retrofit.nextResponseBodyConverter<OdyseeServiceResponse<*>>(
-            this,
-            TypeToken.getParameterized(OdyseeServiceResponse::class.java, type).type,
-            annotations
-        )
-        return ResponseBodyConverter(delegate)
+class LbrySubscriptionsDataSource @Inject constructor(
+    private val lbryIncService: LbryIncService,
+) {
+    suspend fun subscriptions(): List<Subscription> = try {
+        lbryIncService.subscriptions()
+    } catch (error: KotlinNullPointerException) {
+        // TODO: Handle the null body error.
+        emptyList()
     }
 
-    private class ResponseBodyConverter<T>(
-        private val delegate: Converter<ResponseBody, OdyseeServiceResponse<out T>>,
-    ) : Converter<ResponseBody, T> {
-        override fun convert(value: ResponseBody): T? {
-            return delegate.convert(value)?.data
-        }
+    suspend fun follow(channel: Channel) {
+        lbryIncService.subscribeChannel(
+            channel.id,
+            channelName = requireNotNull(channel.claim.name),
+            notificationsDisabled = false
+        )
+    }
+
+    suspend fun unfollow(channel: Channel) {
+        lbryIncService.unsubscribeChannel(channel.id)
     }
 }

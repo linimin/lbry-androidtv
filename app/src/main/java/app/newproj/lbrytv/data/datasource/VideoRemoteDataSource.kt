@@ -48,7 +48,7 @@ class VideoRemoteDataSource @Inject constructor(
             locale.language
         }
         val channelIds = odyseeService
-            .content()
+            .recommendedContent()
             .run {
                 get(languageKey) ?: get("en")
             }

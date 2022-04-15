@@ -35,17 +35,17 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import javax.inject.Inject
 
-class HomeChannelsUpdateWorker @AssistedInject constructor(
+class HomeScreenChannelsUpdateWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val homeScreenChannelsRepository: HomeScreenChannelsRepository,
 ) : CoroutineWorker(appContext, workerParams) {
     @AssistedFactory
     interface Factory {
-        fun HomeChannelsUpdateWorker(
+        fun HomeScreenChannelsUpdateWorker(
             appContext: Context,
             workerParameters: WorkerParameters,
-        ): HomeChannelsUpdateWorker
+        ): HomeScreenChannelsUpdateWorker
     }
 
     override suspend fun doWork(): Result {
@@ -59,15 +59,18 @@ class HomeChannelsUpdateWorker @AssistedInject constructor(
 }
 
 class HomeChannelsUpdateWorkerFactory @Inject constructor(
-    private val homeChannelsUpdateWorkerFactory: HomeChannelsUpdateWorker.Factory,
+    private val homeScreenChannelsUpdateWorkerFactory: HomeScreenChannelsUpdateWorker.Factory,
 ) : WorkerFactory() {
     override fun createWorker(
         appContext: Context,
         workerClassName: String,
         workerParameters: WorkerParameters,
     ): ListenableWorker? =
-        if (workerClassName == HomeChannelsUpdateWorker::class.java.name) {
-            homeChannelsUpdateWorkerFactory.HomeChannelsUpdateWorker(appContext, workerParameters)
+        if (workerClassName == HomeScreenChannelsUpdateWorker::class.java.name) {
+            homeScreenChannelsUpdateWorkerFactory.HomeScreenChannelsUpdateWorker(
+                appContext,
+                workerParameters
+            )
         } else {
             null
         }
