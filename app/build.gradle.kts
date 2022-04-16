@@ -54,8 +54,8 @@ android {
         applicationId = "app.newproj.lbrytv"
         minSdk = 26
         targetSdk = 31
-        versionCode = 4
-        versionName = "1.0.0-beta.2"
+        versionCode = 5
+        versionName = "1.0.0-beta.3"
         javaCompileOptions {
             annotationProcessorOptions {
                 /*
