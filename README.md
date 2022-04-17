@@ -9,7 +9,7 @@ LBRYtv is an Android/Fire TV browser for the [LBRY](https://lbry.com) network.
 
 ## Installation
 
-The minimum supported Android version is 8.0 (API level 26), and the latest APK can be downloaded at
+The minimum supported Android version is 8.0 (API level 26), the latest APK can be downloaded at
 the [release](https://github.com/linimin/lbry-androidtv/releases) page.
 
 ## Screenshots
@@ -20,11 +20,11 @@ the [release](https://github.com/linimin/lbry-androidtv/releases) page.
         <td><img src="/screenshot/browse2.jpg"></td>
     </tr> 
     <tr>
-        <td><img src="/screenshot/channel.jpg"></td>
         <td><img src="/screenshot/player.jpg"></td>
+        <td><img src="/screenshot/quality.jpg"></td>
     </tr> 
     <tr>
-        <td><img src="/screenshot/accounts.jpg"></td>
+        <td><img src="/screenshot/channel.jpg"></td>
         <td><img src="/screenshot/search.jpg"></td>
     </tr> 
 </table>
