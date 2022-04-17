@@ -42,6 +42,7 @@ plugins {
     alias(libs.plugins.navigation.safeArgs)
     alias(libs.plugins.protobuf)
     alias(libs.plugins.googleServices)
+    // https://github.com/firebase/firebase-android-sdk/issues/2665#issuecomment-849897741
     alias(libs.plugins.firebaseCrashlytics)
 }
 
