@@ -49,24 +49,6 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
             app:uri="https://lbrytv.newproj.app/" />
     </fragment>
     <fragment
-        android:id="@+id/videoPlayerFragment"
-        android:name="app.newproj.lbrytv.ui.player.VideoPlayerFragment"
-        android:label="VideoPlayerFragment">
-        <argument
-            android:name="claimId"
-            app:argType="string" />
-        <action
-            android:id="@+id/action_videoPlayerFragment_to_supportFragment"
-            app:destination="@id/supportFragment" />
-        <action
-            android:id="@+id/action_videoPlayerFragment_to_channelVideosFragment"
-            app:destination="@id/channelVideosFragment" />
-        <deepLink
-            android:id="@+id/deepLink3"
-            app:action="ACTION_VIEW"
-            app:uri="https://lbrytv.newproj.app/video/{claimId}" />
-    </fragment>
-    <fragment
         android:id="@+id/searchFragment"
         android:name="app.newproj.lbrytv.ui.search.SearchFragment"
         android:label="SearchFragment" >
@@ -110,7 +92,7 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
     </fragment>
     <action
         android:id="@+id/action_global_videoPlayerFragment"
-        app:destination="@id/videoPlayerFragment" />
+        app:destination="@id/video_player" />
     <navigation
         android:id="@+id/addAccount"
         android:label="AddAccount"
@@ -212,4 +194,39 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
             app:popUpTo="@id/browseCategoriesFragment"
             app:popUpToInclusive="true" />
     </fragment>
+    <navigation android:id="@+id/video_player"
+        app:startDestination="@id/videoPlayerFragment">
+        <argument
+            android:name="claimId"
+            app:argType="string" />
+        <fragment
+            android:id="@+id/videoPlayerFragment"
+            android:name="app.newproj.lbrytv.ui.player.VideoPlayerFragment"
+            android:label="VideoPlayerFragment">
+            <argument
+                android:name="claimId"
+                app:argType="string" />
+            <action
+                android:id="@+id/action_videoPlayerFragment_to_supportFragment"
+                app:destination="@id/supportFragment" />
+            <action
+                android:id="@+id/action_videoPlayerFragment_to_channelVideosFragment"
+                app:destination="@id/channelVideosFragment" />
+            <deepLink
+                android:id="@+id/deepLink3"
+                app:action="ACTION_VIEW"
+                app:uri="https://lbrytv.newproj.app/video/{claimId}" />
+            <action
+                android:id="@+id/action_videoPlayerFragment_to_qualitySettingsFragment"
+                app:destination="@id/videoQualitySettingsFragment" />
+        </fragment>
+        <fragment
+            android:id="@+id/videoQualitySettingsFragment"
+            android:name="app.newproj.lbrytv.ui.player.VideoQualitySettingsFragment"
+            android:label="QualitySettingsFragment" >
+            <argument
+                android:name="tracksInfo"
+                app:argType="android.os.Bundle" />
+        </fragment>
+    </navigation>
 </navigation>

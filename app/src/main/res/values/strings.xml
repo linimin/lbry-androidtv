@@ -69,4 +69,6 @@
     <string name="search_lbry">Search LBRY</string>
     <string name="videos_on_lbry">Videos on LBRY</string>
     <string name="search_suggest_authority" translatable="false">app.newproj.lbrytv.search.SearchSuggestionProvider</string>
+    <string name="video_quality">Video quality</string>
+    <string name="auto">Auto</string>
 </resources>
