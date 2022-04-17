@@ -39,8 +39,12 @@ import androidx.leanback.widget.Action
 import androidx.leanback.widget.ArrayObjectAdapter
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MimeTypes
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.hls.HlsMediaSource
+import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.leanback.LeanbackPlayerAdapter
 import androidx.navigation.NavOptions
@@ -54,6 +58,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
+
 
 private const val PLAYER_CONTROL_UPDATE_PERIOD_MILLIS = 100
 private const val KEY_LAST_PLAYBACK_POSITION = "KEY_LAST_PLAYBACK_POSITION"
@@ -140,7 +145,18 @@ class VideoPlayerFragment : VideoSupportFragment() {
 
     private fun initializePlayer() {
         val context = requireContext()
-        player = ExoPlayer.Builder(context).build()
+        player = ExoPlayer.Builder(context)
+            .setLoadControl(
+                DefaultLoadControl.Builder()
+                    .setBufferDurationsMs(
+                        120_000,
+                        120_000,
+                        1500,
+                        DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
+                    )
+                    .build()
+            )
+            .build()
         mediaSession = MediaSession.Builder(context, player).build()
         val playerAdapter = LeanbackPlayerAdapter(
             context,
@@ -169,15 +185,15 @@ class VideoPlayerFragment : VideoSupportFragment() {
     }
 
     private fun play(streamUrl: StreamingUrl) {
-        val mediaItem = MediaItem.Builder()
-            .setUri(streamUrl.url)
-            .apply {
-                if (streamUrl.videoIsTranscoded) {
-                    setMimeType(MimeTypes.APPLICATION_M3U8)
-                }
-            }
-            .build()
-        player.setMediaItem(mediaItem)
+        if (streamUrl.videoIsTranscoded) {
+            val dataSourceFactory = DefaultHttpDataSource.Factory()
+            val hlsMediaSource = HlsMediaSource.Factory(dataSourceFactory)
+                .setLoadErrorHandlingPolicy(StreamLoadErrorPolicy())
+                .createMediaSource(MediaItem.fromUri(streamUrl.url))
+            player.setMediaSource(hlsMediaSource)
+        } else {
+            player.setMediaItem(MediaItem.fromUri(streamUrl.url))
+        }
         player.prepare()
         player.play()
         lastPlaybackPosition?.let { player.seekTo(it) }
@@ -233,5 +249,11 @@ private class CustomPlaybackTransportControlGlue(
     override fun onActionClicked(action: Action) {
         super.onActionClicked(action)
         onActionClicked.invoke(action)
+    }
+}
+
+private class StreamLoadErrorPolicy : DefaultLoadErrorHandlingPolicy() {
+    override fun getMinimumLoadableRetryCount(dataType: Int): Int {
+        return Int.MAX_VALUE
     }
 }
