@@ -22,9 +22,29 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv
+package app.newproj.lbrytv.startup
 
-import dagger.hilt.android.HiltAndroidApp
+import android.content.Context
+import androidx.startup.Initializer
+import app.newproj.lbrytv.data.repo.HomeScreenChannelsRepository
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
+import java.util.concurrent.TimeUnit
 
-@HiltAndroidApp
-class TvApplication : BaseApplication()
+class HomeScreenChannelInitializer : Initializer<Unit> {
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface HiltEntryPoint {
+        fun homeScreenChannelsRepository(): HomeScreenChannelsRepository
+    }
+
+    override fun create(context: Context) {
+        val entryPoint = EntryPointAccessors.fromApplication(context, HiltEntryPoint::class.java)
+        entryPoint.homeScreenChannelsRepository()
+            .schedulePeriodicUpdate(1, TimeUnit.HOURS)
+    }
+
+    override fun dependencies() = listOf(WorkManagerInitializer::class.java)
+}

@@ -23,13 +23,9 @@
   ~ SOFTWARE.
   -->
 
-<resources>
-    <array name="pref_wifi_networks">
-        <item>Wi-Fi network 1</item>
-        <item>Wi-Fi network 2</item>
-        <item>Wi-Fi network 3</item>
-        <item>Wi-Fi network 4</item>
-        <item>Wi-Fi network 5</item>
-        <item>Wi-Fi network 6</item>
-    </array>
-</resources>
+<androidx.fragment.app.FragmentContainerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragmentContainerView"
+    android:name="app.newproj.lbrytv.ui.player.VideoQualitySettingsFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />

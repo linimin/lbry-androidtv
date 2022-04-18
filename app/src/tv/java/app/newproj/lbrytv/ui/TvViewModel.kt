@@ -33,6 +33,8 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
-class TvViewModel @Inject constructor(appDataStore: DataStore<AppData>) : ViewModel() {
+class TvViewModel @Inject constructor(
+    appDataStore: DataStore<AppData>,
+) : ViewModel() {
     val wallpaperUrl: Flow<String> = appDataStore.data.map { it.wallpaperUrl }
 }

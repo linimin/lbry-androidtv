@@ -30,13 +30,11 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import app.newproj.lbrytv.data.AppDatabase
-import app.newproj.lbrytv.data.datasource.LbrySubscriptionsDataSource
 import app.newproj.lbrytv.data.datasource.LocalSubscriptionsDataSource
 import app.newproj.lbrytv.data.dto.ClaimSearchRequest
 import app.newproj.lbrytv.data.dto.Video
 import app.newproj.lbrytv.data.entity.ClaimLookup
 import app.newproj.lbrytv.data.entity.RemoteKey
-import app.newproj.lbrytv.data.repo.SubscriptionsRepository
 import app.newproj.lbrytv.service.LbrynetService
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

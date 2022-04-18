@@ -217,13 +217,21 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
                 app:action="ACTION_VIEW"
                 app:uri="https://lbrytv.newproj.app/video/{claimId}" />
             <action
-                android:id="@+id/action_videoPlayerFragment_to_qualitySettingsFragment"
-                app:destination="@id/videoQualitySettingsFragment" />
+                android:id="@+id/action_videoPlayerFragment_to_videoQualitySettingsDialogFragment"
+                app:destination="@id/videoQualitySettingsDialogFragment" />
         </fragment>
+        <dialog
+            android:id="@+id/videoQualitySettingsDialogFragment"
+            android:name="app.newproj.lbrytv.ui.player.VideoQualitySettingsDialogFragment"
+            android:label="VideoQualitySettingsDialogFragment" >
+            <argument
+                android:name="tracksInfo"
+                app:argType="android.os.Bundle" />
+        </dialog>
         <fragment
             android:id="@+id/videoQualitySettingsFragment"
             android:name="app.newproj.lbrytv.ui.player.VideoQualitySettingsFragment"
-            android:label="QualitySettingsFragment" >
+            android:label="VideoQualitySettingsFragment" >
             <argument
                 android:name="tracksInfo"
                 app:argType="android.os.Bundle" />

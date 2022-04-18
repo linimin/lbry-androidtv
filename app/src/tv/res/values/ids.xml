@@ -32,7 +32,7 @@
     <item name="amount_option_5_credits" type="id" />
     <item name="check_set_sign_in_method" type="id" />
     <item name="guided_action_amount" type="id" />
-    <item name="guided_action_channel" type="id" />
+    <item name="player_action_channel" type="id" />
     <item name="guided_action_check_set_amount" type="id" />
     <item name="guided_action_check_set_support_type" type="id" />
     <item name="guided_action_email" type="id" />
@@ -41,7 +41,7 @@
     <item name="guided_action_send" type="id" />
     <item name="guided_action_sign_in_method" type="id" />
     <item name="guided_action_sign_in_with_password" type="id" />
-    <item name="guided_action_support" type="id" />
+    <item name="player_action_support" type="id" />
     <item name="guided_action_support_type" type="id" />
     <item name="guided_action_use_magic_link" type="id" />
     <item name="guided_action_use_password" type="id" />

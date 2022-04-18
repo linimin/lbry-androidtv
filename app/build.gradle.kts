@@ -176,7 +176,7 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.constraintLayout)
     implementation(libs.core)
-    implementation(libs.dataStore)
+    implementation(libs.bundles.dataStore)
     implementation(libs.fragment)
     implementation(libs.gson)
     implementation(libs.hilt.android)

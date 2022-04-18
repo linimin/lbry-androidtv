@@ -57,7 +57,8 @@ blitz = { module = "com.github.perfomer:blitz", version.ref = "blitz" }
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintLayout" }
 core = { module = "androidx.core:core-ktx", version.ref = "core" }
-dataStore = { module = "androidx.datastore:datastore", version.ref = "dataStore" }
+dataStore-typed = { module = "androidx.datastore:datastore", version.ref = "dataStore" }
+dataStore-preference = { module = "androidx.datastore:datastore-preferences", version.ref = "dataStore" }
 espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
 firebaseAnalytics = { module = "com.google.firebase:firebase-analytics-ktx" }
 firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
@@ -118,6 +119,7 @@ workerManager = { module = "androidx.work:work-runtime-ktx", version.ref = "work
 zxing = { module = "com.google.zxing:core", version.ref = "zxing" }
 
 [bundles]
+dataStore = ["dataStore-typed", "dataStore-preference"]
 firebase = ["firebaseAnalytics", "firebaseCrashlytics"]
 leanback = ["leanback", "leanback-grid", "leanback-paging", "leanback-preference", "leanback-tab"]
 lifecycle = ["lifecycle-viewModel"]

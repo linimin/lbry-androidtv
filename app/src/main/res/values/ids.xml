@@ -29,5 +29,5 @@
     <item name="browse_category_settings" type="id" />
     <item name="browse_category_subscriptions" type="id" />
     <item name="video_quality_settings" type="id" />
-    <item name="guided_action_settings" type="id" />
+    <item name="player_action_settings" type="id" />
 </resources>

@@ -22,9 +22,27 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv
+package app.newproj.lbrytv.di
 
-import dagger.hilt.android.HiltAndroidApp
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStoreFile
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
-@HiltAndroidApp
-class TvApplication : BaseApplication()
+@Module
+@InstallIn(SingletonComponent::class)
+object PreferenceDataStoreModule {
+    @Provides
+    @Singleton
+    fun preferenceDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
+        PreferenceDataStoreFactory.create {
+            context.preferencesDataStoreFile("settings")
+        }
+}

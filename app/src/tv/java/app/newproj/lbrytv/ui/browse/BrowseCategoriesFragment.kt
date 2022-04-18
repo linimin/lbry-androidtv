@@ -159,11 +159,10 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
     private fun onBackPressed() {
         when {
             isShowingHeaders -> requireActivity().finish()
-            (selectedRowViewHolder as ListRowPresenter.ViewHolder).selectedPosition == 0 -> {
+            (selectedRowViewHolder as ListRowPresenter.ViewHolder?)?.selectedPosition == 0 -> {
                 startHeadersTransition(true)
                 (selectedRowViewHolder.row as PagingListRow).pagingDataAdapter.refresh()
             }
-
             else -> {
                 setSelectedPosition(
                     selectedPosition,
@@ -172,7 +171,7 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
                         isSmoothScroll = false
                     }
                 )
-                (selectedRowViewHolder.row as PagingListRow).pagingDataAdapter.refresh()
+                (selectedRowViewHolder?.row as PagingListRow?)?.pagingDataAdapter?.refresh()
             }
         }
     }

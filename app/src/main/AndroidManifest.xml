@@ -60,6 +60,9 @@
                 android:name="androidx.work.WorkManagerInitializer"
                 android:value="androidx.startup"
                 tools:node="remove" />
+            <meta-data
+                android:name="app.newproj.lbrytv.startup.HomeScreenChannelInitializer"
+                android:value="androidx.startup" />
         </provider>
 
         <!-- [Create an authenticator service](https://developer.android.com/training/id-auth/custom_auth#TaskFour) -->

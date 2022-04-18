@@ -22,9 +22,37 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv
+package app.newproj.lbrytv.ui.player
 
-import dagger.hilt.android.HiltAndroidApp
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.DialogFragment
+import app.newproj.lbrytv.databinding.VideoQualitySettingsDialogFragmentBinding
 
-@HiltAndroidApp
-class TvApplication : BaseApplication()
+class VideoQualitySettingsDialogFragment : DialogFragment() {
+    private lateinit var binding: VideoQualitySettingsDialogFragmentBinding
+
+    override fun getTheme(): Int {
+        return android.R.style.Theme_Translucent_NoTitleBar_Fullscreen
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View = VideoQualitySettingsDialogFragmentBinding
+        .inflate(inflater, container, false)
+        .also {
+            binding = it
+        }
+        .root
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.fragmentContainerView
+            .getFragment<VideoQualitySettingsFragment>()
+            .arguments = requireArguments()
+    }
+}

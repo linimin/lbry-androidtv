@@ -71,4 +71,5 @@
     <string name="videos_on_lbry">Videos on LBRY</string>
     <string name="welcome_to_lbry">Welcome to LBRY</string>
     <string name="would_you_like_to_sign_out">Would you like to sign out?</string>
+    <string name="channel">Channel</string>
 </resources>

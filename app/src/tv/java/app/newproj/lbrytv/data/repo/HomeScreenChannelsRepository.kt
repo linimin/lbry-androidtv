@@ -34,18 +34,41 @@ import androidx.tvprovider.media.tv.ChannelLogoUtils
 import androidx.tvprovider.media.tv.PreviewChannelHelper
 import androidx.tvprovider.media.tv.PreviewProgram
 import androidx.tvprovider.media.tv.TvContractCompat
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.di.IODispatcher
+import app.newproj.lbrytv.worker.HomeScreenChannelsUpdateWorker
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class HomeScreenChannelsRepository @Inject constructor(
     @ApplicationContext private val appContext: Context,
     private val videosRepository: VideosRepository,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val workManager: WorkManager,
 ) {
+    fun schedulePeriodicUpdate(
+        repeatInterval: Long,
+        repeatIntervalTimeUnit: TimeUnit,
+    ) {
+        workManager.enqueue(
+            PeriodicWorkRequestBuilder<HomeScreenChannelsUpdateWorker>(
+                repeatInterval,
+                repeatIntervalTimeUnit
+            ).setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+            ).build()
+        )
+    }
+
     @Suppress("BlockingMethodInNonBlockingContext")
     suspend fun synchronize() = withContext(ioDispatcher) {
         val defaultChannel = PreviewChannelHelper(appContext).allChannels.firstOrNull()

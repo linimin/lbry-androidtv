@@ -22,9 +22,22 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv
+package app.newproj.lbrytv.di
 
-import dagger.hilt.android.HiltAndroidApp
+import android.content.Context
+import androidx.work.WorkManager
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
-@HiltAndroidApp
-class TvApplication : BaseApplication()
+@Module
+@InstallIn(SingletonComponent::class)
+object WorkManagerModule {
+    @Provides
+    @Singleton
+    fun workManager(@ApplicationContext context: Context): WorkManager =
+        WorkManager.getInstance(context)
+}

@@ -37,7 +37,7 @@
     <dimen name="setting_card_width">196dp</dimen>
     <dimen name="vertical_spacing">20dp</dimen>
     <dimen name="video_card_height">110dp</dimen>
-    <dimen name="video_card_width">196dp</dimen>
+    <dimen name="video_card_width">195dp</dimen>
     <dimen name="qrcode_size">256dp</dimen>
     <dimen name="header_vertical_spacing">10dp</dimen>
     <dimen name="details_description_title_text_size">30sp</dimen>

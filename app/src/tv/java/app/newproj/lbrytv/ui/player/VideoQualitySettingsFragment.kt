@@ -43,6 +43,7 @@ import javax.inject.Inject
 import javax.inject.Provider
 
 const val VIDEO_QUALITY_AUTO_SIZE = -1
+const val KEY_VIDEO_SIZE = "KEY_VIDEO_SIZE"
 
 @AndroidEntryPoint
 class VideoQualitySettingsFragment : LeanbackSettingsFragmentCompat() {
@@ -84,7 +85,9 @@ class VideoQualityPreferenceFragment @Inject constructor() : LeanbackPreferenceF
                             (listOf(VIDEO_QUALITY_AUTO_SIZE.toString())
                                     + it.qualityOptions.map { it.size.toString() })
                                 .toTypedArray()
-                        setOnPreferenceChangeListener { _, _ ->
+                        setOnPreferenceChangeListener { _, videoSize ->
+                            navController.getBackStackEntry(R.id.videoPlayerFragment)
+                                .savedStateHandle[KEY_VIDEO_SIZE] = videoSize.toString().toInt()
                             navController.popBackStack()
                             true
                         }
