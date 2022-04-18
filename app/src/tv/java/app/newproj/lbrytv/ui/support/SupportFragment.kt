@@ -49,7 +49,7 @@ class SupportFragment : GuidedStepSupportFragment() {
     private val navController by lazy { findNavController() }
 
     override fun onCreateGuidance(savedInstanceState: Bundle?) = GuidanceStylist.Guidance(
-        getString(R.string.support_this_content),
+        getString(R.string.support),
         getString(R.string.tip_and_boost_your_favorite_creators_by_using_your_lbc),
         null,
         null

@@ -78,7 +78,7 @@ class VideoQualityPreferenceFragment @Inject constructor() : LeanbackPreferenceF
                         key = R.id.video_quality_settings.toString()
                         title = getString(R.string.video_quality)
                         entries =
-                            (listOf(getString(R.string.auto)) + it.qualityOptions.map { it.name })
+                            (listOf(getString(R.string.auto_quality)) + it.qualityOptions.map { it.name })
                                 .toTypedArray()
                         entryValues =
                             (listOf(VIDEO_QUALITY_AUTO_SIZE.toString())
@@ -92,7 +92,7 @@ class VideoQualityPreferenceFragment @Inject constructor() : LeanbackPreferenceF
                             it.qualityOptions
                                 .find { it.size.toString() == preference.value }
                                 ?.name
-                                ?: getString(R.string.auto)
+                                ?: getString(R.string.auto_quality)
                         }
                     }
                 )

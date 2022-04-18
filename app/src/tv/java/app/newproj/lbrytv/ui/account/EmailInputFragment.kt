@@ -59,13 +59,13 @@ class EmailInputFragment : GuidedStepSupportFragment() {
         val signInMethodActions = listOf(
             GuidedAction.Builder(requireContext())
                 .id(R.id.guided_action_use_magic_link)
-                .title(R.string.user_magic_link)
+                .title(R.string.use_email_link)
                 .checkSetId(R.id.check_set_sign_in_method)
                 .checked(true)
                 .build(),
             GuidedAction.Builder(requireContext())
                 .id(R.id.guided_action_use_password)
-                .title(R.string.use_password)
+                .title(R.string.password)
                 .checkSetId(R.id.check_set_sign_in_method)
                 .build(),
         )

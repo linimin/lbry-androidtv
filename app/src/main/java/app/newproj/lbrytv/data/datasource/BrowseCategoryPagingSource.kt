@@ -47,7 +47,7 @@ class BrowseCategoryPagingSource @Inject constructor(
             categories.add(
                 BrowseCategory(
                     id = R.id.browse_category_subscriptions.toLong(),
-                    name = R.string.subscriptions, icon = R.drawable.star,
+                    name = R.string.from_your_subscriptions, icon = R.drawable.star,
                     items = videosRepository.subscriptionVideos(account.name)
                 )
             )
@@ -63,7 +63,7 @@ class BrowseCategoryPagingSource @Inject constructor(
             categories.add(
                 BrowseCategory(
                     id = R.id.browse_category_channels.toLong(),
-                    name = R.string.channels, icon = R.drawable.subscriptions,
+                    name = R.string.subscriptions, icon = R.drawable.subscriptions,
                     items = subscriptionsRepository.subscriptions(account.name)
                 )
             )

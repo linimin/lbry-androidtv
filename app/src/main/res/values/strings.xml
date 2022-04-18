@@ -31,44 +31,44 @@
     <string name="add_another_account">Add another account</string>
     <string name="amount">Amount</string>
     <string name="app_name">LBRYtv</string>
-    <string name="channels">Channels</string>
+    <string name="auto_quality">Auto quality</string>
+    <string name="subscriptions">Subscriptions</string>
+    <string name="check_your_email">Check your email</string>
     <string name="click_the_verification_link_in_the_email">Click the verification link in the email.</string>
     <string name="close">Close</string>
-    <string name="email_address_example">name@example.com</string>
+    <string name="email">Email</string>
+    <string name="email_address_example" translatable="false">name@example.com</string>
+    <string name="email_is_sent_click_to_verify">An email has been sent to the address you provided. Please click the link in the message to complete signing in.</string>
     <string name="enter_email_address">Enter email address</string>
+    <string name="enter_password">Enter password</string>
     <string name="enter_the_email_address_associated_with_your_existing_lbry_account">Enter the email address associated with your existing LBRY account.</string>
-    <string name="signing_in_as">Signing in as %s</string>
+    <string name="follow">Follow</string>
     <string name="following">Following</string>
+    <string name="from_your_subscriptions">From your subscriptions</string>
     <string name="invalid_email_address">Invalid email address</string>
-    <string name="not_following">Not following</string>
+    <string name="lbc_address" translatable="false">bFSpMqdSKmLie8tV2LGPEz5sGfLTzrwqq4</string>
+    <string name="odysee_featured">Odysee featured</string>
+    <string name="password">Password</string>
     <string name="revocable_support">Revocable support</string>
+    <string name="search_lbry">Search LBRY</string>
     <string name="search_result">Search Result</string>
+    <string name="search_suggest_authority" translatable="false">app.newproj.lbrytv.search.SearchSuggestionProvider</string>
     <string name="send">Send</string>
     <string name="settings">Settings</string>
     <string name="sign_in">Sign in</string>
-    <string name="subscriptions">Subscriptions</string>
+    <string name="sign_in_method">Sign-in method</string>
+    <string name="sign_in_with_password">Sign-in with password</string>
+    <string name="signing_in_as">Signing in as %s</string>
+    <string name="support">Support</string>
     <string name="support_type">Support type</string>
     <string name="switch_account">Switch account</string>
     <string name="tip">Tip</string>
-    <string name="odysee_featured">Odysee featured</string>
-    <string name="welcome_to_lbry">Welcome to LBRY</string>
-    <string name="lbc_address">bFSpMqdSKmLie8tV2LGPEz5sGfLTzrwqq4</string>
-    <string name="check_your_email">Check Your email</string>
-    <string name="email_is_sent_click_to_verify">An email has been sent to the address you provided. Please click the link in the message to complete signing in.</string>
-    <string name="support_this_content">Support this content</string>
     <string name="tip_and_boost_your_favorite_creators_by_using_your_lbc">Tip and boost your favorite creators by using your LBC.</string>
-    <string name="would_you_like_to_sign_out">Would you like to sign out?</string>
+    <string name="use_email_link">Email link</string>
+    <string name="use_password">Password</string>
     <string name="using_account">Using account</string>
-    <string name="password">Password</string>
-    <string name="email">Email</string>
-    <string name="sign_in_with_password">Sign-in with password</string>
-    <string name="use_password">Use password</string>
-    <string name="user_magic_link">Use magic link</string>
-    <string name="sign_in_method">Sign-in method</string>
-    <string name="enter_password">Enter password</string>
-    <string name="search_lbry">Search LBRY</string>
-    <string name="videos_on_lbry">Videos on LBRY</string>
-    <string name="search_suggest_authority" translatable="false">app.newproj.lbrytv.search.SearchSuggestionProvider</string>
     <string name="video_quality">Video quality</string>
-    <string name="auto">Auto</string>
+    <string name="videos_on_lbry">Videos on LBRY</string>
+    <string name="welcome_to_lbry">Welcome to LBRY</string>
+    <string name="would_you_like_to_sign_out">Would you like to sign out?</string>
 </resources>
