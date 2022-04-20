@@ -57,6 +57,7 @@
             android:name=".ui.TvActivity"
             android:banner="@drawable/banner"
             android:exported="true"
+            android:screenOrientation="landscape"
             android:theme="@style/SplashScreenTheme">
 
             <intent-filter>
