@@ -26,13 +26,35 @@ package app.newproj.lbrytv.data.repo
 
 import app.newproj.lbrytv.data.dto.Wallet
 import app.newproj.lbrytv.service.LbrynetService
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import java.math.BigDecimal
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
-class WalletRepository @Inject constructor(private val lbrynetService: LbrynetService) {
-    suspend fun wallet(): Wallet {
-        val totalBalance = lbrynetService.walletBalance().total ?: BigDecimal.ZERO
-        val walletAddress = lbrynetService.addressUnused()
-        return Wallet(walletAddress, totalBalance)
-    }
+class WalletRepository @Inject constructor(
+    private val accountsRepository: AccountsRepository,
+    private val lbrynetService: LbrynetService,
+) {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    suspend fun wallet(): Flow<Wallet?> = accountsRepository
+        .currentAccount()
+        .flatMapLatest { account ->
+            flow {
+                if (account != null) {
+                    while (true) {
+                        val totalBalance = lbrynetService.walletBalance().total ?: BigDecimal.ZERO
+                        val walletAddress = lbrynetService.addressUnused()
+                        emit(Wallet(walletAddress, totalBalance))
+                        delay(5.seconds)
+                    }
+                } else {
+                    emit(null)
+                }
+                delay(5.seconds)
+            }
+        }
 }

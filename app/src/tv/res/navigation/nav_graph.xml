@@ -64,11 +64,6 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
             android:name="message"
             app:argType="string"
             app:nullable="true" />
-        <action
-            android:id="@+id/action_errorFragment_to_browseCategoriesFragment"
-            app:destination="@id/browseCategoriesFragment"
-            app:popUpTo="@id/browseCategoriesFragment"
-            app:popUpToInclusive="true" />
         <argument
             android:name="requestKey"
             android:defaultValue="null"
@@ -77,7 +72,8 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
     </fragment>
     <action
         android:id="@+id/action_global_errorFragment"
-        app:destination="@id/errorFragment" />
+        app:destination="@id/errorFragment"
+        />
     <fragment
         android:id="@+id/channelVideosFragment"
         android:name="app.newproj.lbrytv.ui.channel.ChannelVideosFragment"
@@ -230,7 +226,7 @@ https://developer.android.com/guide/navigation/navigation-getting-started#create
         </dialog>
         <fragment
             android:id="@+id/videoQualitySettingsFragment"
-            android:name="app.newproj.lbrytv.ui.player.VideoQualitySettingsFragment"
+            android:name="app.newproj.lbrytv.ui.player.VideoPlayerSettingsFragment"
             android:label="VideoQualitySettingsFragment" >
             <argument
                 android:name="tracksInfo"

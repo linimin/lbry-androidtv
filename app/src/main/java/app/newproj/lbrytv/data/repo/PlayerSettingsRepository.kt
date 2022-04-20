@@ -24,36 +24,13 @@
 
 package app.newproj.lbrytv.data.repo
 
-import android.accounts.AccountManager
-import android.accounts.AccountManager.KEY_AUTHTOKEN
-import android.os.Handler
-import android.os.Looper
-import app.newproj.lbrytv.LbryAccountAuthenticator
-import kotlinx.coroutines.flow.firstOrNull
+import android.util.Size
+import app.newproj.lbrytv.data.datasource.PlayerSettingsDataSource
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
-import kotlin.coroutines.suspendCoroutine
 
-class AuthTokenRepository @Inject constructor(
-    private val accountManager: AccountManager,
-    private val accountsRepository: AccountsRepository
+class PlayerSettingsRepository @Inject constructor(
+    private val playerSettingsDataSource: PlayerSettingsDataSource,
 ) {
-    suspend fun authToken(): String? {
-        val account = accountsRepository.currentAccount().firstOrNull() ?: return null
-        return suspendCoroutine { continuation ->
-            val handler = Looper.myLooper()?.run { Handler(this) }
-            accountManager.getAuthToken(
-                account,
-                LbryAccountAuthenticator.AUTH_TOKEN_TYPE_DEFAULT,
-                null,
-                true, {
-                    val authToken = it.result.getString(KEY_AUTHTOKEN)
-                    continuation.resumeWith(Result.success(authToken))
-                }, handler
-            )
-        }
-    }
-
-    suspend fun invalidAuthToken() {
-        accountManager.invalidateAuthToken(LbryAccountAuthenticator.ACCOUNT_TYPE, authToken())
-    }
+    fun preferredVideoSize(): Flow<Size> = playerSettingsDataSource.preferredVideoSize()
 }

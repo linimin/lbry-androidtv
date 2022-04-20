@@ -35,6 +35,8 @@ import androidx.leanback.paging.PagingDataAdapter
 import androidx.leanback.widget.ArrayObjectAdapter
 import androidx.leanback.widget.ListRowPresenter
 import androidx.leanback.widget.ObjectAdapter
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
@@ -89,13 +91,15 @@ class SearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchResu
         require(view is ViewGroup)
         progressBarManager.setRootView(view)
         viewLifecycleOwner.lifecycleScope.launch {
-            resultItemsAdapter.loadStateFlow.collectLatest {
-                when (val refreshLoadState = it.refresh) {
-                    LoadState.Loading -> progressBarManager.show()
-                    is LoadState.NotLoading -> progressBarManager.hide()
-                    is LoadState.Error -> goToErrorScreen(refreshLoadState.error.localizedMessage)
+            resultItemsAdapter.loadStateFlow
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+                .collectLatest {
+                    when (val refreshLoadState = it.refresh) {
+                        LoadState.Loading -> progressBarManager.show()
+                        is LoadState.NotLoading -> progressBarManager.hide()
+                        is LoadState.Error -> goToErrorScreen(refreshLoadState.error.localizedMessage)
+                    }
                 }
-            }
         }
     }
 

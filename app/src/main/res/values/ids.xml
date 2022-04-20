@@ -24,7 +24,7 @@
   -->
 
 <resources>
-    <item name="browse_category_channels" type="id" />
+    <item name="browse_category_subscription_videos" type="id" />
     <item name="browse_category_odysee_featured" type="id" />
     <item name="browse_category_settings" type="id" />
     <item name="browse_category_subscriptions" type="id" />

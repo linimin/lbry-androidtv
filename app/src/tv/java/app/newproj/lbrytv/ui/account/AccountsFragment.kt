@@ -30,6 +30,8 @@ import androidx.fragment.app.viewModels
 import androidx.leanback.app.GuidedStepSupportFragment
 import androidx.leanback.widget.GuidanceStylist
 import androidx.leanback.widget.GuidedAction
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
@@ -54,35 +56,37 @@ class AccountsFragment : GuidedStepSupportFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect { uiState ->
-                when {
-                    uiState.isAccountSelected -> goToBrowseScreen()
-                    uiState.accounts?.isEmpty() == true -> goToAccountAddScreen(true)
-                    else -> {
-                        uiState.accounts?.mapIndexed { index, account ->
-                            GuidedAction.Builder(requireContext())
-                                .id(index)
-                                .icon(R.drawable.person)
-                                .title(account.name)
-                                .description(
-                                    if (account.isUsingAccount) {
-                                        getString(R.string.using_account)
-                                    } else {
-                                        null
-                                    }
-                                )
-                                .build()
-                        }?.run {
-                            this + GuidedAction.Builder(requireContext())
-                                .id(size)
-                                .icon(R.drawable.person_add)
-                                .title(R.string.add_another_account)
-                                .build()
-                        }?.let(this@AccountsFragment::setActions)
-                        uiState.errorMessage?.let(this@AccountsFragment::goToErrorScreen)
+            viewModel.uiState
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+                .collect { uiState ->
+                    when {
+                        uiState.isAccountSelected -> goToBrowseScreen()
+                        uiState.accounts?.isEmpty() == true -> goToAccountAddScreen(true)
+                        else -> {
+                            uiState.accounts?.mapIndexed { index, account ->
+                                GuidedAction.Builder(requireContext())
+                                    .id(index)
+                                    .icon(R.drawable.person)
+                                    .title(account.name)
+                                    .description(
+                                        if (account.isUsingAccount) {
+                                            getString(R.string.using_account)
+                                        } else {
+                                            null
+                                        }
+                                    )
+                                    .build()
+                            }?.run {
+                                this + GuidedAction.Builder(requireContext())
+                                    .id(size)
+                                    .icon(R.drawable.person_add)
+                                    .title(R.string.add_another_account)
+                                    .build()
+                            }?.let(this@AccountsFragment::setActions)
+                            uiState.errorMessage?.let(this@AccountsFragment::goToErrorScreen)
+                        }
                     }
                 }
-            }
         }
     }
 

@@ -51,4 +51,5 @@
     <color name="md_theme_dark_inverseOnSurface">#1C1B1F</color>
     <color name="md_theme_dark_inverseSurface">#E6E1E5</color>
     <color name="md_theme_dark_primaryInverse">#6750A4</color>
+    <color name="playback_progress_primary_color">#E50914</color>
 </resources>

@@ -42,8 +42,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -52,16 +54,16 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 class ChannelVideosViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val getChannelWithVideosUseCase: GetChannelWithVideosUseCase,
-    private val followUnfollowChannelUseCase: FollowUnfollowChannelUseCase,
+    private val getChannelWithVideos: GetChannelWithVideosUseCase,
+    private val followUnfollowChannel: FollowUnfollowChannelUseCase,
     private val accountsRepository: AccountsRepository,
 ) : ViewModel() {
     private val args = ChannelVideosFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
     data class UiState(
         val channel: ChannelUiState? = null,
-        val errorMessage: String? = null,
         val isSignedIn: Boolean = false,
+        val errorMessage: String? = null,
     )
 
     private val _uiState = MutableStateFlow(UiState())
@@ -80,16 +82,24 @@ class ChannelVideosViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            try {
-                _uiState.update {
-                    it.copy(isSignedIn = accountsRepository.currentAccount() != null)
-                }
-                channelWithVideos.emit(getChannelWithVideosUseCase(args.channelId))
-                channel.collect { channel ->
+            accountsRepository.currentAccount()
+                .retryWhen { _, _ -> true }
+                .collectLatest { account ->
                     _uiState.update {
-                        it.copy(channel = channel)
+                        it.copy(isSignedIn = account != null)
                     }
                 }
+        }
+        viewModelScope.launch {
+            channel.collectLatest { channel ->
+                _uiState.update {
+                    it.copy(channel = channel)
+                }
+            }
+        }
+        viewModelScope.launch {
+            try {
+                channelWithVideos.emit(getChannelWithVideos(args.channelId))
             } catch (error: Throwable) {
                 _uiState.update {
                     it.copy(errorMessage = error.localizedMessage)
@@ -102,7 +112,7 @@ class ChannelVideosViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.value.channel?.let {
-                    followUnfollowChannelUseCase(it.id)
+                    followUnfollowChannel(it.id)
                 }
             } catch (error: Throwable) {
                 _uiState.update {

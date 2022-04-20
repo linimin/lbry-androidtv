@@ -31,7 +31,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.leanback.app.VerticalGridSupportFragment
 import androidx.leanback.paging.PagingDataAdapter
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import app.newproj.lbrytv.NavGraphDirections
@@ -80,25 +82,30 @@ class ChannelVideosFragment : VerticalGridSupportFragment() {
         channelTitleView?.setFollowUnfollowButtonClickListener {
             viewModel.followUnfollow()
         }
-        with(viewLifecycleOwner.lifecycleScope) {
-            launch {
-                viewModel.uiState.collect { uiState ->
-                    channelTitleView?.followUnfollowButton?.isEnabled = uiState.isSignedIn
-                    channelTitleView?.setChannel(uiState.channel)
-                    uiState.errorMessage?.let(::goToErrorScreen)
-                }
-            }
-            launch {
-                videosAdapter.loadStateFlow.collect {
-                    when (val refreshLoadState = it.refresh) {
-                        LoadState.Loading -> return@collect
-                        is LoadState.NotLoading -> startEntranceTransition()
-                        is LoadState.Error -> goToErrorScreen(refreshLoadState.error.localizedMessage)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.uiState.collect { uiState ->
+                        channelTitleView?.followUnfollowButton?.isEnabled = uiState.isSignedIn
+                        channelTitleView?.setChannel(uiState.channel)
+                        uiState.errorMessage?.let(::goToErrorScreen).also {
+                            viewModel.errorMessageShown()
+                        }
                     }
                 }
-            }
-            launch {
-                viewModel.videos.collectLatest(videosAdapter::submitData)
+                launch {
+                    videosAdapter.loadStateFlow.collect {
+                        when (val refreshLoadState = it.refresh) {
+                            LoadState.Loading -> return@collect
+                            is LoadState.NotLoading -> startEntranceTransition()
+                            is LoadState.Error ->
+                                goToErrorScreen(refreshLoadState.error.localizedMessage)
+                        }
+                    }
+                }
+                launch {
+                    viewModel.videos.collectLatest(videosAdapter::submitData)
+                }
             }
         }
     }
@@ -109,6 +116,5 @@ class ChannelVideosFragment : VerticalGridSupportFragment() {
 
     private fun goToErrorScreen(message: String?) {
         navController.navigate(NavGraphDirections.actionGlobalErrorFragment(message))
-        viewModel.errorMessageShown()
     }
 }

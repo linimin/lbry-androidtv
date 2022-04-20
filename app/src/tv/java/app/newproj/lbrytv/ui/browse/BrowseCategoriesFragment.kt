@@ -33,7 +33,9 @@ import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.paging.PagingDataAdapter
 import androidx.leanback.widget.ListRowPresenter
 import androidx.leanback.widget.SinglePresenterSelector
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import app.newproj.lbrytv.NavGraphDirections
@@ -49,7 +51,10 @@ import app.newproj.lbrytv.ui.presenter.IconRowPresenter
 import app.newproj.lbrytv.ui.presenter.LocalizableRowHeaderPresenter
 import app.newproj.lbrytv.ui.presenter.RowPresenterSelector
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -88,32 +93,35 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
         require(view is ViewGroup)
         BrowseCategoryHeaderIconsDockBinding
             .inflate(layoutInflater, view, true)
+            .browseHeaderIconsDock
+            .getFragment<BrowseCategoryHeaderIconsFragment>()
             .apply {
-                browseHeaderIconsDock
-                    .getFragment<BrowseCategoryHeaderIconsFragment>()
-                    .apply {
-                        presenterSelector = SinglePresenterSelector(IconRowPresenter())
-                        adapter = rowsAdapter
-                    }
+                presenterSelector = SinglePresenterSelector(IconRowPresenter())
+                adapter = rowsAdapter
             }
-        with(viewLifecycleOwner.lifecycleScope) {
-            launch {
-                viewModel.uiState.collect { uiState ->
-                    walletTitleView?.setWallet(uiState.wallet)
-                    uiState.errorMessage?.let(::goToErrorScreen)
-                }
-            }
-            launch {
-                rowsAdapter.loadStateFlow.collect {
-                    when (val refreshLoadState = it.refresh) {
-                        LoadState.Loading -> return@collect
-                        is LoadState.NotLoading -> startEntranceTransition()
-                        is LoadState.Error -> goToErrorScreen(refreshLoadState.error.localizedMessage)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                launch {
+                    viewModel.uiState.collect {
+                        walletTitleView?.setWallet(it.wallet)
+                        it.errorMessage?.let(::goToErrorScreen).also {
+                            viewModel.errorMessageShown()
+                        }
                     }
                 }
-            }
-            launch {
-                viewModel.browseCategories.collectLatest(rowsAdapter::submitData)
+                launch {
+                    rowsAdapter.loadStateFlow.collect {
+                        when (val refreshLoadState = it.refresh) {
+                            LoadState.Loading -> return@collect
+                            is LoadState.NotLoading -> startEntranceTransition()
+                            is LoadState.Error ->
+                                goToErrorScreen(refreshLoadState.error.localizedMessage)
+                        }
+                    }
+                }
+                launch {
+                    viewModel.browseCategories.collectLatest(rowsAdapter::submitData)
+                }
             }
         }
     }
@@ -124,6 +132,30 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
             is ChannelUiState -> goToChannelVideosScreen(item.id)
             is Setting -> when (item.id) {
                 "${R.id.switch_account}" -> goToAccountsScreen()
+            }
+        }
+    }
+
+    private fun onBackPressed() {
+        fun refreshSelectedRow() {
+            (selectedRowViewHolder?.row as PagingListRow?)?.pagingDataAdapter?.refresh()
+        }
+
+        when {
+            isShowingHeaders -> startHeadersTransition(false)
+            (selectedRowViewHolder as ListRowPresenter.ViewHolder?)?.selectedPosition == 0 -> {
+                startHeadersTransition(true)
+                refreshSelectedRow()
+            }
+            else -> {
+                setSelectedPosition(
+                    selectedPosition,
+                    true,
+                    ListRowPresenter.SelectItemViewHolderTask(0).apply {
+                        isSmoothScroll = false
+                    }
+                )
+                refreshSelectedRow()
             }
         }
     }
@@ -153,26 +185,5 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
 
     private fun goToErrorScreen(message: String?) {
         navController.navigate(NavGraphDirections.actionGlobalErrorFragment(message))
-        viewModel.errorMessageShown()
-    }
-
-    private fun onBackPressed() {
-        when {
-            isShowingHeaders -> requireActivity().finish()
-            (selectedRowViewHolder as ListRowPresenter.ViewHolder?)?.selectedPosition == 0 -> {
-                startHeadersTransition(true)
-                (selectedRowViewHolder.row as PagingListRow).pagingDataAdapter.refresh()
-            }
-            else -> {
-                setSelectedPosition(
-                    selectedPosition,
-                    true,
-                    ListRowPresenter.SelectItemViewHolderTask(0).apply {
-                        isSmoothScroll = false
-                    }
-                )
-                (selectedRowViewHolder?.row as PagingListRow?)?.pagingDataAdapter?.refresh()
-            }
-        }
     }
 }

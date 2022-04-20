@@ -27,10 +27,11 @@ package app.newproj.lbrytv.ui.player
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Size
 import android.view.View
+import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import androidx.core.view.doOnLayout
 import androidx.fragment.app.viewModels
 import androidx.leanback.app.VideoSupportFragment
 import androidx.leanback.app.VideoSupportFragmentGlueHost
@@ -39,13 +40,12 @@ import androidx.leanback.widget.Action
 import androidx.leanback.widget.ArrayObjectAdapter
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.TrackGroup
 import androidx.media3.common.TrackSelectionOverrides
 import androidx.media3.common.TracksInfo
 import androidx.media3.datasource.DefaultHttpDataSource
@@ -58,13 +58,15 @@ import androidx.media3.session.MediaSession
 import androidx.media3.ui.leanback.LeanbackPlayerAdapter
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceManager
 import app.newproj.lbrytv.NavGraphDirections
 import app.newproj.lbrytv.R
 import app.newproj.lbrytv.data.dto.StreamingUrl
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
@@ -87,52 +89,31 @@ class VideoPlayerFragment : VideoSupportFragment() {
     @Inject lateinit var firebaseAnalytics: FirebaseAnalytics
     private lateinit var player: ExoPlayer
     private lateinit var mediaSession: MediaSession
-    private var lastPlaybackPosition: Long? = null
     private lateinit var playbackGlue: PlaybackTransportControlGlue<LeanbackPlayerAdapter>
     private lateinit var channelAction: Action
     private lateinit var settingsAction: Action
     private lateinit var supportAction: Action
-    private val playerListener = object : Player.Listener {
-        override fun onTracksInfoChanged(tracksInfo: TracksInfo) {
-            val trackGroup = tracksInfo.trackGroupInfos
-                .find { it.trackType == C.TRACK_TYPE_VIDEO }
-                ?.trackGroup
-                ?: return
-            val preference = PreferenceManager.getDefaultSharedPreferences(requireContext())
-            val size = preference
-                .getString(R.id.video_quality_settings.toString(), null)
-                ?.toInt() ?: VIDEO_QUALITY_AUTO_SIZE
-            if (size != VIDEO_QUALITY_AUTO_SIZE) {
-                val index = (0 until trackGroup.length)
-                    .map { trackGroup.getFormat(it) }
-                    .indexOfFirst { (it.width * it.height) <= size }
-                if (index >= 0) {
-                    setTrackSelectionOverrides(trackGroup, index)
-                } else {
-                    setTrackSelectionOverrides(trackGroup, null)
-                }
-            } else {
-                setTrackSelectionOverrides(trackGroup, null)
-            }
-        }
-    }
+    private var lastPlaybackPosition: Long? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        fun getDrawable(@DrawableRes id: Int) = ContextCompat.getDrawable(requireContext(), id)
+
         channelAction = Action(
             R.id.player_action_channel.toLong(),
             getString(R.string.channel), null,
-            ContextCompat.getDrawable(requireContext(), R.drawable.subscriptions)
+            getDrawable(R.drawable.subscriptions)
         )
         settingsAction = Action(
             R.id.player_action_settings.toLong(),
             getString(R.string.settings), null,
-            ContextCompat.getDrawable(requireContext(), R.drawable.video_settings_24)
+            getDrawable(R.drawable.video_settings_24)
         )
         supportAction = Action(
             R.id.player_action_support.toLong(),
             getString(R.string.support), null,
-            ContextCompat.getDrawable(requireContext(), R.drawable.lbc)
+            getDrawable(R.drawable.lbc)
         )
         savedInstanceState?.let {
             lastPlaybackPosition = it.getLong(KEY_LAST_PLAYBACK_POSITION)
@@ -143,47 +124,40 @@ class VideoPlayerFragment : VideoSupportFragment() {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundColor(Color.BLACK)
         surfaceView.keepScreenOn = true
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.uiState.collect { uiState ->
-                with(playbackGlue) {
-                    title = uiState.title
-                    subtitle = uiState.subtitle
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.uiState.collect { uiState ->
+                        with(playbackGlue) {
+                            title = uiState.title
+                            subtitle = uiState.subtitle
+                        }
+                        if (uiState.isLoadingData) {
+                            progressBarManager.show()
+                        } else {
+                            progressBarManager.hide()
+                        }
+                        uiState.errorMessage?.let(::goToErrorScreen).also {
+                            viewModel.errorMessageShown()
+                        }
+                    }
                 }
-                if (uiState.isLoadingData) {
-                    progressBarManager.show()
-                } else {
-                    progressBarManager.hide()
+                launch {
+                    viewModel.uiState
+                        .distinctUntilChangedBy { it.preferredVideoSize }
+                        .map { it.preferredVideoSize }
+                        .filterNotNull()
+                        .collect(::setPreferredVideoSize)
                 }
-                uiState.streamingUrl?.let(::play)
-                uiState.errorMessage?.let(::goToErrorScreen).also {
-                    viewModel.errorMessageShown()
+                launch {
+                    viewModel.uiState
+                        .distinctUntilChangedBy { it.streamingUrl }
+                        .map { it.streamingUrl }
+                        .filterNotNull()
+                        .collect(::play)
                 }
             }
         }
-        navController.getBackStackEntry(R.id.videoPlayerFragment)
-            .savedStateHandle
-            .getLiveData<Int>(KEY_VIDEO_SIZE)
-            .observe(viewLifecycleOwner) { size ->
-                val trackGroup = player.currentTracksInfo
-                    .trackGroupInfos
-                    .find { it.trackType == C.TRACK_TYPE_VIDEO }
-                    ?.trackGroup
-                    ?: return@observe
-                if (size != VIDEO_QUALITY_AUTO_SIZE) {
-                    val index = (0 until trackGroup.length)
-                        .map { trackGroup.getFormat(it) }
-                        .indexOfFirst { (it.width * it.height) <= size }
-                    if (index >= 0) {
-                        setTrackSelectionOverrides(trackGroup, index)
-                    } else {
-                        setTrackSelectionOverrides(trackGroup, null)
-                    }
-                } else {
-                    setTrackSelectionOverrides(trackGroup, null)
-                }
-                playbackGlue.play()
-                hideControlsOverlay(true)
-            }
     }
 
     override fun onStart() {
@@ -238,7 +212,13 @@ class VideoPlayerFragment : VideoSupportFragment() {
             )
             .build()
             .apply {
-                addListener(playerListener)
+                addListener(object : Player.Listener {
+                    override fun onTracksInfoChanged(tracksInfo: TracksInfo) {
+                        viewModel.uiState.value.preferredVideoSize?.let {
+                            setPreferredVideoSize(it)
+                        }
+                    }
+                })
             }
         mediaSession = MediaSession.Builder(context, player).build()
         playbackGlue = PlaybackGlue(
@@ -278,40 +258,31 @@ class VideoPlayerFragment : VideoSupportFragment() {
         lastPlaybackPosition?.let { player.seekTo(it) }
     }
 
-    private fun setTrackSelectionOverrides(trackGroup: TrackGroup, index: Int?) {
-        val overrides = if (index != null) {
-            val format = trackGroup.getFormat(index)
-            PreferenceManager.getDefaultSharedPreferences(requireContext())
-                .edit()
-                .putString(
-                    R.id.video_quality_settings.toString(),
-                    (format.width * format.height).toString()
-                )
-                .apply()
-            TrackSelectionOverrides.Builder()
-                .addOverride(
-                    TrackSelectionOverrides.TrackSelectionOverride(
-                        trackGroup,
-                        listOf(index)
-                    )
-                )
-                .build()
-        } else {
-            PreferenceManager.getDefaultSharedPreferences(requireContext())
-                .edit()
-                .putString(
-                    R.id.video_quality_settings.toString(),
-                    VIDEO_QUALITY_AUTO_SIZE.toString()
-                )
-                .apply()
-            TrackSelectionOverrides.Builder()
-                .clearOverride(trackGroup)
-                .build()
-        }
+    private fun setPreferredVideoSize(preferredVideoSize: Size) {
+        val videoTrackGroup = player.currentTracksInfo
+            .trackGroupInfos.find {
+                it.trackType == C.TRACK_TYPE_VIDEO
+            }?.trackGroup ?: return
+        val indexOfTargetFormat = (0 until videoTrackGroup.length)
+            .map { videoTrackGroup.getFormat(it) }
+            .indexOfFirst { it.height <= preferredVideoSize.height }
         player.trackSelectionParameters = player.trackSelectionParameters
             .buildUpon()
-            .setTrackSelectionOverrides(overrides)
-            .build()
+            .setTrackSelectionOverrides(
+                if (indexOfTargetFormat == -1) {
+                    TrackSelectionOverrides.Builder()
+                        .clearOverride(videoTrackGroup)
+                        .build()
+                } else {
+                    TrackSelectionOverrides.Builder()
+                        .addOverride(
+                            TrackSelectionOverrides.TrackSelectionOverride(
+                                videoTrackGroup,
+                                listOf(indexOfTargetFormat)
+                            )
+                        ).build()
+                }
+            ).build()
     }
 
     private fun goToChannelScreen() {
@@ -372,7 +343,6 @@ class VideoPlayerFragment : VideoSupportFragment() {
         PlaybackTransportControlGlue<LeanbackPlayerAdapter>(context, playerAdapter) {
 
         override fun onCreatePrimaryActions(primaryActionsAdapter: ArrayObjectAdapter) {
-            super.onCreatePrimaryActions(primaryActionsAdapter)
             with(primaryActionsAdapter) {
                 add(channelAction)
                 add(settingsAction)

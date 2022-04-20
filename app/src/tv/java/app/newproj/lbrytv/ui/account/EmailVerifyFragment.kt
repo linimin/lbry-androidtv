@@ -31,6 +31,8 @@ import androidx.leanback.app.GuidedStepSupportFragment
 import androidx.leanback.widget.GuidanceStylist
 import androidx.leanback.widget.GuidedAction
 import androidx.leanback.widget.GuidedActionsStylist
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import app.newproj.lbrytv.NavGraphDirections
@@ -69,13 +71,15 @@ class EmailVerifyFragment : GuidedStepSupportFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect {
-                if (it.isEmailVerified) {
-                    goToBrowseScreen()
-                } else if (it.errorMessage != null) {
-                    goToErrorScreen(it.errorMessage)
+            viewModel.uiState
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+                .collect {
+                    if (it.isEmailVerified) {
+                        goToBrowseScreen()
+                    } else if (it.errorMessage != null) {
+                        goToErrorScreen(it.errorMessage)
+                    }
                 }
-            }
         }
     }
 

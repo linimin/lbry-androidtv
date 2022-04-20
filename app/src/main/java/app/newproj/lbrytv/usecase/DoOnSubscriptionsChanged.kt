@@ -25,29 +25,28 @@
 package app.newproj.lbrytv.usecase
 
 import app.newproj.lbrytv.data.repo.AccountsRepository
-import app.newproj.lbrytv.data.repo.ChannelsRepository
 import app.newproj.lbrytv.data.repo.SubscriptionsRepository
-import app.newproj.lbrytv.di.ApplicationCoroutineScope
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.retryWhen
 import javax.inject.Inject
 
-class FollowUnfollowChannelUseCase @Inject constructor(
-    private val accountsRepository: AccountsRepository,
-    private val channelsRepository: ChannelsRepository,
+class DoOnSubscriptionsChanged @Inject constructor(
     private val subscriptionsRepository: SubscriptionsRepository,
-    @ApplicationCoroutineScope private val externalCoroutineScope: CoroutineScope,
+    private val accountsRepository: AccountsRepository,
 ) {
-    suspend operator fun invoke(channelId: String) {
-        externalCoroutineScope.launch {
-            val account = accountsRepository.currentAccount().first() ?: return@launch
-            val channel = channelsRepository.channel(channelId).first()
-            if (channel.isFollowing) {
-                subscriptionsRepository.unfollow(channel, account.name)
-            } else {
-                subscriptionsRepository.follow(channel, account.name)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    suspend operator fun invoke(action: suspend () -> Unit) {
+        accountsRepository.currentAccount()
+            .filterNotNull()
+            .flatMapLatest {
+                subscriptionsRepository.subscriptionsFlow(it.name)
             }
-        }.join()
+            .retryWhen { _, _ -> true }
+            .onEach { action() }
+            .collect()
     }
 }

@@ -31,6 +31,8 @@ import androidx.fragment.app.viewModels
 import androidx.leanback.app.GuidedStepSupportFragment
 import androidx.leanback.widget.GuidanceStylist
 import androidx.leanback.widget.GuidedAction
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -105,19 +107,22 @@ class EmailInputFragment : GuidedStepSupportFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect { uiState ->
-                updateAction(R.id.guided_action_email) {
-                    it.title = it.editTitle.ifEmpty { getString(R.string.email_address_example) }
-                    it.description = if (uiState.isValidEmail) {
-                        getString(R.string.enter_email_address)
-                    } else {
-                        getString(R.string.invalid_email_address)
+            viewModel.uiState
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+                .collect { uiState ->
+                    updateAction(R.id.guided_action_email) {
+                        it.title =
+                            it.editTitle.ifEmpty { getString(R.string.email_address_example) }
+                        it.description = if (uiState.isValidEmail) {
+                            getString(R.string.enter_email_address)
+                        } else {
+                            getString(R.string.invalid_email_address)
+                        }
+                    }
+                    updateButtonAction(GuidedAction.ACTION_ID_CONTINUE) {
+                        it.isEnabled = uiState.isValidEmail
                     }
                 }
-                updateButtonAction(GuidedAction.ACTION_ID_CONTINUE) {
-                    it.isEnabled = uiState.isValidEmail
-                }
-            }
         }
     }
 

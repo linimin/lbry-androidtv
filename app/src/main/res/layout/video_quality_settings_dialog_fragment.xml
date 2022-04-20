@@ -26,6 +26,6 @@
 <androidx.fragment.app.FragmentContainerView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/fragmentContainerView"
-    android:name="app.newproj.lbrytv.ui.player.VideoQualitySettingsFragment"
+    android:name="app.newproj.lbrytv.ui.player.VideoPlayerSettingsFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />

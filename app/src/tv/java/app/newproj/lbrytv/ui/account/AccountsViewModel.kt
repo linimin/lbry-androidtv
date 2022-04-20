@@ -31,6 +31,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -56,7 +57,7 @@ class AccountsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val currentAccount = accountsRepository.currentAccount()
+            val currentAccount = accountsRepository.currentAccount().firstOrNull()
             accountsRepository.accounts().map { account ->
                 AccountUiState(
                     name = account.name,

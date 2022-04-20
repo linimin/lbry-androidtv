@@ -99,7 +99,7 @@
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Material3.MediumComponent</item>
         <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Material3.LargeComponent</item>
 
-        <item name="android:indeterminateTint">?attr/colorPrimary</item>
+        <item name="android:indeterminateTint">@color/playback_progress_primary_color</item>
         <item name="baseCardViewStyle">@style/Widget.BaseCardViewStyle</item>
         <item name="browsePaddingStart">@dimen/browse_padding_start</item>
         <item name="browseRowsMarginStart">@dimen/browse_rows_margin_start</item>
@@ -118,6 +118,7 @@
         <item name="imageCardViewTitleStyle">@style/Widget.ImageCardView.TitleStyle</item>
         <item name="imageCardViewInfoAreaStyle">@style/Widget.ImageCardView.InfoAreaStyle</item>
         <item name="detailsDescriptionTitleStyle">@style/Widget.DetailsDescriptionTitleStyle</item>
+        <item name="playbackProgressPrimaryColor">@color/playback_progress_primary_color</item>
     </style>
 
     <style name="AppTheme.Overlay.HeaderIcons" parent="">

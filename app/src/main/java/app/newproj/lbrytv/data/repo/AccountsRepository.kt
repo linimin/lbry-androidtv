@@ -33,7 +33,9 @@ import app.newproj.lbrytv.data.AppDatabase
 import app.newproj.lbrytv.data.dto.TokenUser
 import app.newproj.lbrytv.service.LbryIncService
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import javax.inject.Inject
 import javax.inject.Provider
@@ -105,7 +107,7 @@ class AccountsRepository @Inject constructor(
                     } else {
                         lbryIncServiceProvider.get().signOut()
                         clearAccountName()
-                        currentAccount()?.let { account ->
+                        currentAccount().first()?.let { account ->
                             accountManager.removeAccountExplicitly(account)
                             appDatabase.subscriptionDao().clearAll(account.name)
                         }
@@ -115,25 +117,10 @@ class AccountsRepository @Inject constructor(
         }
     }
 
-    suspend fun currentAccount(): Account? {
-        val accountName = appDataStore.data.first()
-            .accountName.takeIf { it.isNotEmpty() }
-            ?: return null
-        // Make sure the account is still in the list.
-        return accounts().find { it.name == accountName }.also { account ->
-            if (account == null) {
-                appDataStore.updateData { appData ->
-                    appData.toBuilder()
-                        .clearAccountName()
-                        .build()
-                }
+    fun currentAccount(): Flow<Account?> =
+        appDataStore.data
+            .map { it.accountName }
+            .map { accountName ->
+                accounts().find { it.name == accountName }
             }
-        }
-    }
-
-    suspend fun requireAccount(): Account {
-        val account = currentAccount()
-        checkNotNull(account)
-        return account
-    }
 }

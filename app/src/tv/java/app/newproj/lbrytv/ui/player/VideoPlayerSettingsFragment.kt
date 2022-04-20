@@ -29,6 +29,8 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.leanback.preference.LeanbackPreferenceFragmentCompat
 import androidx.leanback.preference.LeanbackSettingsFragmentCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
@@ -37,16 +39,14 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import app.newproj.lbrytv.R
+import app.newproj.lbrytv.data.datasource.PlayerSettingsDataSource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Provider
 
-const val VIDEO_QUALITY_AUTO_SIZE = -1
-const val KEY_VIDEO_SIZE = "KEY_VIDEO_SIZE"
-
 @AndroidEntryPoint
-class VideoQualitySettingsFragment : LeanbackSettingsFragmentCompat() {
+class VideoPlayerSettingsFragment : LeanbackSettingsFragmentCompat() {
     @Inject lateinit var preferenceFragmentProvider: Provider<VideoQualityPreferenceFragment>
 
     override fun onPreferenceStartFragment(
@@ -68,38 +68,39 @@ class VideoQualitySettingsFragment : LeanbackSettingsFragmentCompat() {
 class VideoQualityPreferenceFragment @Inject constructor() : LeanbackPreferenceFragmentCompat() {
     private val viewModel: VideoQualitySettingsViewModel by viewModels({ requireParentFragment() })
     private val navController: NavController by lazy { findNavController() }
+    @Inject lateinit var playerSettingsDataSource: PlayerSettingsDataSource
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect {
-                preferenceScreen.removeAll()
-                preferenceScreen.addPreference(
-                    ListPreference(preferenceManager.context).apply {
-                        key = R.id.video_quality_settings.toString()
-                        title = getString(R.string.video_quality)
-                        entries =
-                            (listOf(getString(R.string.auto_quality)) + it.qualityOptions.map { it.name })
-                                .toTypedArray()
-                        entryValues =
-                            (listOf(VIDEO_QUALITY_AUTO_SIZE.toString())
-                                    + it.qualityOptions.map { it.size.toString() })
-                                .toTypedArray()
-                        setOnPreferenceChangeListener { _, videoSize ->
-                            navController.getBackStackEntry(R.id.videoPlayerFragment)
-                                .savedStateHandle[KEY_VIDEO_SIZE] = videoSize.toString().toInt()
-                            navController.popBackStack()
-                            true
+            viewModel.uiState
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+                .collect {
+                    preferenceScreen.removeAll()
+                    preferenceScreen.addPreference(
+                        ListPreference(preferenceManager.context).apply {
+                            preferenceDataStore = playerSettingsDataSource
+                            key = PlayerSettingsDataSource.KEY_PREFERRED_VIDEO_SIZE
+                            title = getString(R.string.video_quality)
+                            entries = it.videoSizes.map {
+                                it.nameRes?.let(::getString) ?: it.name
+                            }.toTypedArray()
+                            entryValues = it.videoSizes.map { it.size.toString() }.toTypedArray()
+                            summaryProvider =
+                                Preference.SummaryProvider<ListPreference> { preference ->
+                                    it.videoSizes
+                                        .find { it.size.toString() == preference.value }
+                                        ?.let {
+                                            it.nameRes?.let(::getString) ?: it.name
+                                        }
+                                }
+                            setOnPreferenceChangeListener { _, _ ->
+                                navController.popBackStack()
+                                true
+                            }
                         }
-                        summaryProvider = Preference.SummaryProvider<ListPreference> { preference ->
-                            it.qualityOptions
-                                .find { it.size.toString() == preference.value }
-                                ?.name
-                                ?: getString(R.string.auto_quality)
-                        }
-                    }
-                )
-            }
+                    )
+                }
         }
     }
 

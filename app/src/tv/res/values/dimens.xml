@@ -41,4 +41,6 @@
     <dimen name="qrcode_size">256dp</dimen>
     <dimen name="header_vertical_spacing">10dp</dimen>
     <dimen name="details_description_title_text_size">30sp</dimen>
+    <dimen name="lb_control_icon_width">20sp</dimen>
+    <dimen name="lb_control_icon_height">20sp</dimen>
 </resources>

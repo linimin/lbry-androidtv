@@ -24,10 +24,15 @@
 
 package app.newproj.lbrytv.ui.player
 
+import android.util.Size
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.media3.common.C
 import androidx.media3.common.TracksInfo
+import app.newproj.lbrytv.R
+import app.newproj.lbrytv.data.datasource.AUTO_VIDEO_SIZE
+import app.newproj.lbrytv.data.repo.PlayerSettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,14 +43,16 @@ import javax.inject.Inject
 @HiltViewModel
 class VideoQualitySettingsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val playerSettingsRepository: PlayerSettingsRepository,
 ) : ViewModel() {
-    private val args = VideoQualitySettingsFragmentArgs.fromSavedStateHandle(savedStateHandle)
+    private val args = VideoPlayerSettingsFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
-    data class UiState(val qualityOptions: List<VideoQualityUiState> = emptyList())
+    data class UiState(val videoSizes: List<VideoSizeUiState> = emptyList())
 
-    data class VideoQualityUiState(
-        val name: String,
-        val size: Int,
+    data class VideoSizeUiState(
+        val name: String?,
+        @StringRes val nameRes: Int?,
+        val size: Size,
     )
 
     private val _uiState = MutableStateFlow(UiState())
@@ -53,20 +60,26 @@ class VideoQualitySettingsViewModel @Inject constructor(
 
     init {
         val tracksInfo = TracksInfo.CREATOR.fromBundle(args.tracksInfo)
-        val trackGroup = tracksInfo.trackGroupInfos
-            .singleOrNull { it.trackType == C.TRACK_TYPE_VIDEO }
+        val videoTrackGroup = tracksInfo.trackGroupInfos
+            .find { it.trackType == C.TRACK_TYPE_VIDEO }
             ?.trackGroup
-        if (trackGroup != null) {
-            val formats = (0 until trackGroup.length).map { trackGroup.getFormat(it) }
-            val availableQualityOptions = formats.map {
-                VideoQualityUiState(
-                    "${it.width} × ${it.height}",
-                    it.width * it.height,
-                )
-            }
+        if (videoTrackGroup != null) {
+            val autoVideoSize = VideoSizeUiState(
+                name = null, nameRes = R.string.auto_quality,
+                AUTO_VIDEO_SIZE
+            )
+            val videoSizes = (0 until videoTrackGroup.length)
+                .map { videoTrackGroup.getFormat(it) }
+                .map {
+                    val size = Size(it.width, it.height)
+                    VideoSizeUiState(
+                        name = size.toString(), nameRes = null,
+                        size
+                    )
+                }
             _uiState.update {
                 it.copy(
-                    qualityOptions = availableQualityOptions
+                    videoSizes = listOf(autoVideoSize) + videoSizes
                 )
             }
         }

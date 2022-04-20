@@ -7,4 +7,5 @@ message AppData {
   string installation_id = 1;
   string account_name = 2;
   string wallpaper_url = 3;
+  string preferred_video_size = 4;
 }

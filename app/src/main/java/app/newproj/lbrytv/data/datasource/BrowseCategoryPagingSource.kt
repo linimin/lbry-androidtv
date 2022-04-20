@@ -32,6 +32,7 @@ import app.newproj.lbrytv.data.repo.AccountsRepository
 import app.newproj.lbrytv.data.repo.SettingsRepository
 import app.newproj.lbrytv.data.repo.SubscriptionsRepository
 import app.newproj.lbrytv.data.repo.VideosRepository
+import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
 class BrowseCategoryPagingSource @Inject constructor(
@@ -42,11 +43,11 @@ class BrowseCategoryPagingSource @Inject constructor(
 ) : PagingSource<Int, BrowseCategory>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, BrowseCategory> {
         val categories = mutableListOf<BrowseCategory>()
-        val account = accountsRepository.currentAccount()
+        val account = accountsRepository.currentAccount().firstOrNull()
         if (account != null) {
             categories.add(
                 BrowseCategory(
-                    id = R.id.browse_category_subscriptions.toLong(),
+                    id = R.id.browse_category_subscription_videos,
                     name = R.string.from_your_subscriptions, icon = R.drawable.star,
                     items = videosRepository.subscriptionVideos(account.name)
                 )
@@ -54,7 +55,7 @@ class BrowseCategoryPagingSource @Inject constructor(
         }
         categories.add(
             BrowseCategory(
-                id = R.id.browse_category_odysee_featured.toLong(),
+                id = R.id.browse_category_odysee_featured,
                 name = R.string.odysee_featured, icon = R.drawable.whatshot,
                 items = videosRepository.featuredVideos()
             )
@@ -62,7 +63,7 @@ class BrowseCategoryPagingSource @Inject constructor(
         if (account != null) {
             categories.add(
                 BrowseCategory(
-                    id = R.id.browse_category_channels.toLong(),
+                    id = R.id.browse_category_subscriptions,
                     name = R.string.subscriptions, icon = R.drawable.subscriptions,
                     items = subscriptionsRepository.subscriptions(account.name)
                 )
@@ -70,7 +71,7 @@ class BrowseCategoryPagingSource @Inject constructor(
         }
         categories.add(
             BrowseCategory(
-                id = R.id.browse_category_settings.toLong(),
+                id = R.id.browse_category_settings,
                 name = R.string.settings, icon = R.drawable.settings,
                 items = settingsRepository.settings()
             )

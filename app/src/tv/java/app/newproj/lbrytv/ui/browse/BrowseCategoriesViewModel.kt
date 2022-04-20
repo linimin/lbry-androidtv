@@ -37,29 +37,27 @@ import app.newproj.lbrytv.data.dto.BrowseItemUiStateComparator
 import app.newproj.lbrytv.data.dto.LocalizableHeaderItem
 import app.newproj.lbrytv.data.dto.PagingListRow
 import app.newproj.lbrytv.data.dto.Wallet
-import app.newproj.lbrytv.data.repo.AccountsRepository
 import app.newproj.lbrytv.data.repo.BrowseCategoriesRepository
-import app.newproj.lbrytv.data.repo.SubscriptionsRepository
 import app.newproj.lbrytv.data.repo.WalletRepository
 import app.newproj.lbrytv.ui.presenter.BrowseItemUiStatePresenterSelector
+import app.newproj.lbrytv.usecase.DoOnSubscriptionsChanged
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class BrowseCategoriesViewModel @Inject constructor(
     walletRepository: WalletRepository,
     browseCategoriesRepository: BrowseCategoriesRepository,
-    private val subscriptionsRepository: SubscriptionsRepository,
-    private val accountsRepository: AccountsRepository,
+    private val doOnSubscriptionsChanged: DoOnSubscriptionsChanged,
 ) : ViewModel() {
     private val _headersWindowAlignOffsetTop = MutableStateFlow(0)
     val headersWindowAlignOffsetTop: StateFlow<Int> = _headersWindowAlignOffsetTop.asStateFlow()
@@ -76,56 +74,47 @@ class BrowseCategoriesViewModel @Inject constructor(
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     val browseCategories: Flow<PagingData<Row>> =
-        browseCategoriesRepository
-            .browseCategories()
+        browseCategoriesRepository.browseCategories()
             .map { pagingData ->
                 pagingData.map { BrowseCategoryUiState.fromBrowseCategory(it) }
             }
             .map { it.toRows() }
             .cachedIn(viewModelScope)
 
-    private val subscriptionsAdapter =
+    private val subscriptionVideosAdapter =
         PagingDataAdapter(BrowseItemUiStatePresenterSelector, BrowseItemUiStateComparator())
 
-    private fun PagingData<BrowseCategoryUiState>.toRows(): PagingData<Row> = map {
-        PagingListRow(
-            it.id,
-            LocalizableHeaderItem(it.id, it.iconRes, it.nameRes),
-            pagingDataAdapter = if (it.id == R.id.browse_category_subscriptions.toLong()) {
-                subscriptionsAdapter
-            } else {
-                PagingDataAdapter(
-                    BrowseItemUiStatePresenterSelector,
-                    BrowseItemUiStateComparator()
-                )
-            },
-            it.items
-        )
-    }
+    private fun PagingData<BrowseCategoryUiState>.toRows(): PagingData<Row> =
+        map { category ->
+            PagingListRow(
+                category.id.toLong(),
+                LocalizableHeaderItem(category.id.toLong(), category.iconRes, category.nameRes),
+                pagingDataAdapter = if (category.id == R.id.browse_category_subscription_videos) {
+                    subscriptionVideosAdapter
+                } else {
+                    PagingDataAdapter(
+                        BrowseItemUiStatePresenterSelector,
+                        BrowseItemUiStateComparator()
+                    )
+                },
+                category.items
+            )
+        }
 
     init {
         viewModelScope.launch {
-            while (true) {
-                try {
+            walletRepository.wallet()
+                .retryWhen { _, _ -> true }
+                .collectLatest { wallet ->
                     _uiState.update {
-                        it.copy(wallet = walletRepository.wallet())
+                        it.copy(wallet = wallet)
                     }
-                } catch (error: Throwable) {
-                    _uiState.update {
-                        it.copy(wallet = null)
-                    }
-                } finally {
-                    delay(5.seconds)
                 }
-            }
         }
         viewModelScope.launch {
-            val account = accountsRepository.currentAccount() ?: return@launch
-            subscriptionsRepository
-                .subscriptionsFlow(account.name)
-                .collect {
-                    subscriptionsAdapter.refresh()
-                }
+            doOnSubscriptionsChanged {
+                subscriptionVideosAdapter.refresh()
+            }
         }
     }
 

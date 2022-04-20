@@ -30,7 +30,7 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 
 data class BrowseCategory(
-    val id: Long,
+    val id: Int,
     @StringRes val name: Int,
     @DrawableRes val icon: Int,
     val items: Flow<PagingData<out BrowseItem>>,

@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 data class BrowseCategoryUiState(
-    val id: Long,
+    val id: Int,
     @StringRes val nameRes: Int,
     @DrawableRes val iconRes: Int,
     val items: Flow<PagingData<BrowseItemUiState>>,

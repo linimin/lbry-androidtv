@@ -24,10 +24,12 @@
 
 package app.newproj.lbrytv.ui.player
 
+import android.util.Size
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.newproj.lbrytv.data.dto.StreamingUrl
+import app.newproj.lbrytv.data.repo.PlayerSettingsRepository
 import app.newproj.lbrytv.data.repo.StreamingUrlRepository
 import app.newproj.lbrytv.data.repo.VideosRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,6 +47,7 @@ class VideoPlayerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val videosRepository: VideosRepository,
     private val streamingUrlRepository: StreamingUrlRepository,
+    private val playerSettingsRepository: PlayerSettingsRepository,
 ) : ViewModel() {
     private val args = VideoPlayerFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
@@ -57,6 +60,7 @@ class VideoPlayerViewModel @Inject constructor(
         val channelId: String? = null,
         val errorMessage: String? = null,
         val isLoadingData: Boolean = true,
+        val preferredVideoSize: Size? = null,
     )
 
     private val _uiState = MutableStateFlow(UiState())
@@ -85,6 +89,13 @@ class VideoPlayerViewModel @Inject constructor(
             } catch (error: Throwable) {
                 _uiState.update {
                     it.copy(errorMessage = error.localizedMessage)
+                }
+            }
+        }
+        viewModelScope.launch {
+            playerSettingsRepository.preferredVideoSize().collectLatest { videoSize ->
+                _uiState.update {
+                    it.copy(preferredVideoSize = videoSize)
                 }
             }
         }
