@@ -26,7 +26,6 @@
 <!-- [App Manifest Overview](https://developer.android.com/guide/topics/manifest/manifest-intro) -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="app.newproj.lbrytv"
     tools:ignore="ImpliedTouchscreenHardware,MissingLeanbackLauncher,MissingLeanbackSupport">
 
     <!-- [Permissions](https://developer.android.com/guide/topics/permissions/overview) -->
