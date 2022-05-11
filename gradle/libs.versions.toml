@@ -1,5 +1,5 @@
 [versions]
-android-plugin = "7.2.0-beta04"
+android-plugin = "7.2.0"
 bitcoinj = "0.16.1"
 blitz = "1.0.9"
 coil = "2.0.0-rc03"
