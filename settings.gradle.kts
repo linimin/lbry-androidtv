@@ -22,14 +22,16 @@
  * SOFTWARE.
  */
 
-// [Plugin Management](https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_management)
+// Plugin Management
+// https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_management
 pluginManagement {
     repositories {
         gradlePluginPortal()
         google()
         mavenCentral()
     }
-    // [Resolution strategy for plugins without Plugin Marker Artifact](https://docs.gradle.org/current/userguide/custom_plugins.html#note_for_plugins_published_without_java_gradle_plugin)
+    // Resolution strategy for plugins without Plugin Marker Artifact
+    // https://docs.gradle.org/current/userguide/custom_plugins.html#note_for_plugins_published_without_java_gradle_plugin
     resolutionStrategy {
         eachPlugin {
             // https://github.com/google/dagger/issues/2774#issuecomment-894385513
@@ -40,7 +42,8 @@ pluginManagement {
     }
 }
 
-// [Centralizing repositories declaration](https://docs.gradle.org/current/userguide/dependency_management.html#sub:centralized-repository-declaration)
+// Centralizing repositories declaration
+// https://docs.gradle.org/current/userguide/dependency_management.html#sub:centralized-repository-declaration
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
