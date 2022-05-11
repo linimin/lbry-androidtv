@@ -50,11 +50,11 @@ plugins {
 android {
     // https://developer.android.com/studio/build/configure-app-module#set-namespace
     namespace = "app.newproj.lbrytv"
-    compileSdk = 31
+    compileSdk = 32
     defaultConfig {
         applicationId = "app.newproj.lbrytv"
         minSdk = 26
-        targetSdk = 31
+        targetSdk = 32
         versionCode = 7
         versionName = "1.0.1-beta.4"
         javaCompileOptions {
