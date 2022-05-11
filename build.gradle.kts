@@ -25,12 +25,13 @@
 @Suppress("DSL_SCOPE_VIOLATION") // https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
     alias(libs.plugins.versions)
-    alias(libs.plugins.versionCatalogUpdate)
+    alias(libs.plugins.version.catalog.update)
 }
 
+// https://github.com/littlerobots/version-catalog-update-plugin#configuration
 versionCatalogUpdate {
     pin {
-        // https://stackoverflow.com/questions/71799448/the-app-cannot-declare-different-versions-of-google-play-services-depending-on-t
+        // https://issuetracker.google.com/issues/232007221
         plugins.add(libs.plugins.android.application)
     }
 }
