@@ -147,7 +147,7 @@ tasks.withType<KotlinCompile>().configureEach {
 
 protobuf {
     protoc {
-        artifact = libs.protoc.get().toString()
+        artifact = libs.protobuf.protoc.get().toString()
     }
 
     // Generates the java Protobuf-lite code for the Protobufs in this project. See
@@ -186,7 +186,7 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.paging)
-    implementation(libs.protobuf.javaLite)
+    implementation(libs.protobuf.javalite)
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
     implementation(libs.splashscreen)
