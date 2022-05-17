@@ -24,6 +24,7 @@
   -->
 
 <!-- [App Manifest Overview](https://developer.android.com/guide/topics/manifest/manifest-intro) -->
+<!-- https://developer.android.com/studio/build/manage-manifests#inject_build_variables_into_the_manifest -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="ImpliedTouchscreenHardware,MissingLeanbackLauncher,MissingLeanbackSupport">

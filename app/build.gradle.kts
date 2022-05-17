@@ -30,55 +30,49 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.FileInputStream
 import java.util.Properties
 
-// [Configure your build](https://developer.android.com/studio/build)
+// https://docs.gradle.org/current/dsl/
 
-@Suppress("DSL_SCOPE_VIOLATION") // https://youtrack.jetbrains.com/issue/KTIJ-19369
+// https://youtrack.jetbrains.com/issue/KTIJ-19369
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.android)
+    // https://kotlinlang.org/docs/ksp-overview.html
+    alias(libs.plugins.kotlin.ksp)
+    // https://kotlinlang.org/docs/kapt.html
     alias(libs.plugins.kotlin.kapt)
-    alias(libs.plugins.kotlin.parcelize)
-    alias(libs.plugins.navigation.safeargs)
+    alias(libs.plugins.jetpack.navigation.safeargs)
     alias(libs.plugins.protobuf)
+
+    // https://developers.google.com/android/guides/google-services-plugin
     alias(libs.plugins.google.services)
+
     // https://github.com/firebase/firebase-android-sdk/issues/2665#issuecomment-849897741
     alias(libs.plugins.firebase.crashlytics)
 }
 
 // https://developer.android.com/studio/build/configure-app-module
+// https://developer.android.com/studio/build/gradle-tips
 android {
     // https://developer.android.com/studio/build/configure-app-module#set-namespace
     namespace = "app.newproj.lbrytv"
-    compileSdk = 32
+    compileSdk = libs.versions.buildOptions.compileSdk.get().toInt()
+
     defaultConfig {
+        // https://developer.android.com/studio/build/configure-app-module#set-application-id
         applicationId = "app.newproj.lbrytv"
-        minSdk = 26
-        targetSdk = 32
+        minSdk = libs.versions.buildOptions.minSdk.get().toInt()
+        targetSdk = libs.versions.buildOptions.targetSdk.get().toInt()
         versionCode = 7
         versionName = "1.0.1-beta.4"
-        javaCompileOptions {
-            annotationProcessorOptions {
-                /*
-                 * [Configuring compiler options for Room](https://developer.android.com/jetpack/androidx/releases/room#compiler-options)
-                 */
-                arguments(
-                    mapOf(
-                        "room.schemaLocation" to "$projectDir/schemas",
-                        "room.incremental" to "true",
-                    )
-                )
-            }
-        }
-        // https://developer.android.com/training/testing/instrumented-tests#set-testing
+        // https://developer.android.com/training/dependency-injection/hilt-testing#instrumented-tests
         testInstrumentationRunner = "app.newproj.lbrytv.HiltTestRunner"
-    }
-    flavorDimensions += "device"
-
-    productFlavors {
-        create("tv")
+        // https://developer.android.com/studio/build/shrink-code#unused-alt-resources
+        resourceConfigurations += listOf("en", "zh-rTW")
     }
 
+    // https://developer.android.com/studio/build/build-variants#signing
     signingConfigs {
         register("release") {
             rootProject.file("keystore.properties")
@@ -94,10 +88,18 @@ android {
         }
     }
 
+    // https://developer.android.com/studio/build/build-variants#build-types
     buildTypes {
         release {
-            isMinifyEnabled = true
             signingConfig = signingConfigs.getByName("release")
+            // https://developer.android.com/studio/build/shrink-code#enable
+            isMinifyEnabled = true
+            isShrinkResources = true
+            // https://developer.android.com/studio/build/optimize-your-build#disable_crunching
+            isCrunchPngs = false
+            // https://developer.android.com/studio/build/shrink-code#android_gradle_plugin_version_41_or_later
+            ndk.debugSymbolLevel = "SYMBOL_TABLE"
+            // https://developer.android.com/studio/build/shrink-code#configuration-files
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -105,25 +107,38 @@ android {
         }
     }
 
-    // [Use Java 8 language features and APIs](https://developer.android.com/studio/write/java8-support)
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+    flavorDimensions += "device"
+
+    // https://developer.android.com/studio/build/build-variants#product-flavors
+    productFlavors {
+        create("tv")
     }
-    kotlinOptions.jvmTarget = "1.8"
+
+    // https://developer.android.com/studio/write/java8-support
+    compileOptions {
+        sourceCompatibility(libs.versions.java.get())
+        targetCompatibility(libs.versions.java.get())
+    }
+    kotlinOptions.jvmTarget = libs.versions.java.get()
 
     buildFeatures {
-        viewBinding = true // https://developer.android.com/topic/libraries/view-binding
-        dataBinding = true // https://developer.android.com/topic/libraries/data-binding
+        // https://developer.android.com/topic/libraries/view-binding
+        viewBinding = true
+
+        // https://developer.android.com/topic/libraries/data-binding
+        dataBinding = true
     }
 
+    // https://developer.android.com/studio/test/advanced-test-setup#configure-gradle-test-options
     testOptions {
-        unitTests.all {
-            // https://docs.gradle.org/current/userguide/java_testing.html#using_junit5
-            // https://www.lordcodes.com/articles/testing-on-android-using-junit-5
-            it.useJUnitPlatform()
+        unitTests {
+            all {
+                // https://docs.gradle.org/current/userguide/java_testing.html#using_junit5
+                // https://www.lordcodes.com/articles/testing-on-android-using-junit-5
+                it.useJUnitPlatform()
+            }
+            isIncludeAndroidResources = true
         }
-        unitTests.isIncludeAndroidResources = true
     }
 
     packagingOptions {
@@ -132,12 +147,6 @@ android {
             excludes.add("META-INF/LICENSE*")
         }
     }
-}
-
-// [Using kapt](https://kotlinlang.org/docs/kapt.html)
-kapt {
-    // Required by Hilt: https://dagger.dev/hilt/gradle-setup.html
-    correctErrorTypes = true
 }
 
 // [Opt-in requirements](https://kotlinlang.org/docs/opt-in-requirements.html)
@@ -150,9 +159,7 @@ protobuf {
         artifact = libs.protobuf.protoc.get().toString()
     }
 
-    // Generates the java Protobuf-lite code for the Protobufs in this project. See
     // https://github.com/google/protobuf-gradle-plugin#customizing-protobuf-compilation
-    // for more information.
     generateProtoTasks {
         all().forEach { task ->
             task.builtins {
@@ -164,46 +171,73 @@ protobuf {
     }
 }
 
-// [Gradle dependency configurations](https://docs.gradle.org/current/userguide/declaring_dependencies.html)
+kapt {
+    // https://kotlinlang.org/docs/kapt.html#non-existent-type-correction
+    // https://dagger.dev/hilt/gradle-setup
+    correctErrorTypes = true
+}
+
+ksp {
+    // https://developer.android.com/jetpack/androidx/releases/room#compiler-options
+
+    // Configures and enables exporting database schemas into JSON files in the
+    // given directory.
+    arg("room.schemaLocation", "$projectDir/schemas")
+
+    // Enables Gradle incremental annotation processor.
+    arg("room.incremental", "true")
+
+    // Configures Room to rewrite queries such that their top star projection is
+    // expanded to only contain the columns defined in the DAO method return type.
+    arg("room.expandProjection", "true")
+}
+
+// https://docs.gradle.org/current/userguide/declaring_dependencies.html
 dependencies {
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.bundles.firebase)
+
+    implementation(libs.bundles.jetpack.room)
+    ksp(libs.jetpack.room.compiler)
+
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    testImplementation(libs.hilt.android.testing)
+    kaptTest(libs.hilt.compiler)
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest(libs.hilt.compiler)
+
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converters.gson)
+
+    implementation(libs.bundles.jetpack.datastore)
+    implementation(libs.bundles.jetpack.leanback)
+    implementation(libs.bundles.jetpack.lifecycle)
+    implementation(libs.bundles.jetpack.media3)
+
     implementation(libs.bitcoinj.core)
     implementation(libs.blitz)
-    implementation(libs.bundles.firebase)
-    implementation(libs.bundles.leanback)
-    implementation(libs.bundles.lifecycle)
-    implementation(libs.bundles.media3)
-    implementation(libs.bundles.room)
     implementation(libs.coil)
-    implementation(libs.constraintlayout)
-    implementation(libs.core)
-    implementation(libs.bundles.datastore)
-    implementation(libs.fragment)
     implementation(libs.gson)
-    implementation(libs.hilt.android)
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.material)
-    implementation(libs.navigation.fragment)
-    implementation(libs.navigation.ui)
-    implementation(libs.okhttp.logging.interceptor)
-    implementation(libs.paging)
+    implementation(libs.jetpack.constraintLayout)
+    implementation(libs.jetpack.core)
+    implementation(libs.jetpack.core.splashScreen)
+    implementation(libs.jetpack.fragment)
+    implementation(libs.jetpack.navigation.fragment)
+    implementation(libs.jetpack.navigation.ui)
+    implementation(libs.jetpack.paging)
+    implementation(libs.jetpack.startup)
+    implementation(libs.jetpack.swipeRefreshLayout)
+    implementation(libs.jetpack.tvProvider)
+    implementation(libs.jetpack.work.runtime)
+    implementation(libs.kotlin.coroutines.android)
+    implementation(libs.materialDesign3)
+    implementation(libs.okhttp.loggingInterceptor)
     implementation(libs.protobuf.javalite)
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.gson)
-    implementation(libs.splashscreen)
-    implementation(libs.startup)
-    implementation(libs.swiperefreshlayout)
     implementation(libs.timber)
-    implementation(libs.tvprovider)
-    implementation(libs.work.runtime)
     implementation(libs.zxing)
-    implementation(platform(libs.firebase.bom))
-
-    kapt(libs.hilt.compiler)
-    kapt(libs.room.compiler)
-    kaptAndroidTest(libs.hilt.compiler)
-    kaptTest(libs.hilt.compiler)
 
     androidTestImplementation(libs.bundles.test.instrumented)
     testImplementation(libs.bundles.test.local)
-    testRuntimeOnly(libs.bundles.test.local.runtime)
+    testRuntimeOnly(libs.junit5.vintageEngine)
 }

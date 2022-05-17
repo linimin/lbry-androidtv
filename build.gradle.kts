@@ -22,18 +22,14 @@
  * SOFTWARE.
  */
 
-@Suppress("DSL_SCOPE_VIOLATION") // https://youtrack.jetbrains.com/issue/KTIJ-19369
-plugins {
-    alias(libs.plugins.versions)
-    alias(libs.plugins.version.catalog.update)
-}
+// https://docs.gradle.org/current/dsl/
 
-// https://github.com/littlerobots/version-catalog-update-plugin#configuration
-versionCatalogUpdate {
-    pin {
-        // https://issuetracker.google.com/issues/232007221
-        plugins.add(libs.plugins.android.application)
-    }
+// https://youtrack.jetbrains.com/issue/KTIJ-19369
+@Suppress("DSL_SCOPE_VIOLATION")
+plugins {
+    // https://github.com/littlerobots/version-catalog-update-plugin
+    alias(libs.plugins.versions)
+    alias(libs.plugins.versionCatalogUpdate)
 }
 
 tasks.register("clean", Delete::class) {

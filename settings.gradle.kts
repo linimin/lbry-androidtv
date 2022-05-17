@@ -22,7 +22,8 @@
  * SOFTWARE.
  */
 
-// Plugin Management
+// https://docs.gradle.org/current/userguide/build_lifecycle.html#sec:settings_file
+
 // https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_management
 pluginManagement {
     repositories {
@@ -30,8 +31,8 @@ pluginManagement {
         google()
         mavenCentral()
     }
-    // Resolution strategy for plugins without Plugin Marker Artifact
     // https://docs.gradle.org/current/userguide/custom_plugins.html#note_for_plugins_published_without_java_gradle_plugin
+    // https://docs.gradle.org/current/userguide/kotlin_dsl.html#sec:plugins_resolution_strategy
     resolutionStrategy {
         eachPlugin {
             // https://github.com/google/dagger/issues/2774#issuecomment-894385513
@@ -42,10 +43,11 @@ pluginManagement {
     }
 }
 
-// Centralizing repositories declaration
-// https://docs.gradle.org/current/userguide/dependency_management.html#sub:centralized-repository-declaration
+// https://docs.gradle.org/current/userguide/dependency_management.html#sub:centralized-repository-declaration.
 dependencyResolutionManagement {
+    // Enforce that only settings repositories are used.
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    // https://docs.gradle.org/current/userguide/dependency_management.html#declaring-repositories
     repositories {
         google()
         mavenCentral()
@@ -53,5 +55,6 @@ dependencyResolutionManagement {
     }
 }
 
+// https://docs.gradle.org/current/userguide/multi_project_builds.html#naming_recommendations
 rootProject.name = "LBRYtv"
 include(":app")
