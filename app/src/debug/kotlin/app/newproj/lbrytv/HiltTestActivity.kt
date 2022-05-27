@@ -16,8 +16,9 @@
 
 package app.newproj.lbrytv
 
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import dagger.hilt.android.AndroidEntryPoint
 
+// https://github.com/android/architecture-samples/blob/dev-hilt/app/src/androidTest/java/com/example/android/architecture/blueprints/todoapp/HiltExt.kt#L38
 @AndroidEntryPoint
-class HiltTestActivity : AppCompatActivity()
+class HiltTestActivity : FragmentActivity()

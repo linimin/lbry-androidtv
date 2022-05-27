@@ -34,6 +34,7 @@ import androidx.test.core.app.ApplicationProvider
  * [HiltTestActivity] in the debug folder and include it in the debug AndroidManifest.xml file
  * as can be found in this project.
  */
+// https://developer.android.com/training/dependency-injection/hilt-testing#launchfragment
 // https://github.com/google/dagger/issues/2210
 // https://github.com/android/architecture-samples/blob/dev-hilt/app/src/androidTest/java/com/example/android/architecture/blueprints/todoapp/HiltExt.kt#L38
 inline fun <reified T : Fragment> launchFragmentInHiltContainer(

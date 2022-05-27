@@ -22,19 +22,12 @@
  * SOFTWARE.
  */
 
-package app.newproj.lbrytv
+package app.newproj.lbrytv.test
 
-import android.app.Application
-import android.content.Context
-import androidx.test.runner.AndroidJUnitRunner
-import dagger.hilt.android.testing.HiltTestApplication
-
-/**
- * A custom runner to set up the instrumented application class for tests.
- */
-// https://developer.android.com/training/dependency-injection/hilt-testing#instrumented-tests
-class HiltTestRunner : AndroidJUnitRunner() {
-    override fun newApplication(cl: ClassLoader?, name: String?, context: Context?): Application {
-        return super.newApplication(cl, HiltTestApplication::class.java.name, context)
-    }
+// https://www.lordcodes.com/articles/testing-on-android-using-junit-5
+// https://medium.com/@boonkeat/android-unit-testing-with-junit5-d1b8f9c620b6
+// https://docs.gradle.org/current/userguide/java_testing.html#using_junit5
+// https://mannodermaus.de/posts/junit5-instrumentation-bts/
+// https://github.com/mannodermaus/android-junit5
+class ExampleUnitTest {
 }
