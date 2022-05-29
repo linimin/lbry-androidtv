@@ -23,21 +23,24 @@
   ~ SOFTWARE.
   -->
 
-<!-- [App Manifest Overview](https://developer.android.com/guide/topics/manifest/manifest-intro) -->
+<!-- https://developer.android.com/guide/topics/manifest/manifest-intro -->
+<!-- https://developer.android.com/studio/build/manage-manifests -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- [Declare Leanback support](https://developer.android.com/training/tv/start/start#leanback-req) -->
+    <!-- https://developer.android.com/guide/topics/manifest/manifest-intro#compatibility -->
+
+    <!-- https://developer.android.com/training/tv/start/start#leanback-req -->
     <uses-feature
         android:name="android.software.leanback"
         android:required="true" />
 
-    <!-- [Declare touchscreen not required](https://developer.android.com/training/tv/start/start#no-touchscreen) -->
+    <!-- https://developer.android.com/training/tv/start/start#no-touchscreen -->
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
-    <!-- [Declaring hardware requirements for TV](https://developer.android.com/training/tv/start/hardware#declare-hardware-requirements) -->
+    <!-- https://developer.android.com/training/tv/start/hardware#declare-hardware-requirements -->
     <uses-feature
         android:name="android.hardware.microphone"
         android:required="false" />
@@ -50,8 +53,8 @@
         tools:ignore="MissingApplicationIcon"
         tools:replace="android:name">
 
-        <!-- [Declare a TV activity](https://developer.android.com/training/tv/start/start#tv-activity) -->
-        <!-- [Splash screen](https://developer.android.com/guide/topics/ui/splash-screen/migrate) -->
+        <!-- https://developer.android.com/training/tv/start/start#tv-activity -->
+        <!-- https://developer.android.com/guide/topics/ui/splash-screen/migrate -->
         <activity
             android:name=".ui.TvActivity"
             android:banner="@drawable/banner"
@@ -84,16 +87,12 @@
             <intent-filter>
                 <!-- Our app has been installed and should create its channel in the launcher. -->
                 <action android:name="android.media.tv.action.INITIALIZE_PROGRAMS" />
-
                 <!-- User has added a program to the system's watch next channel. -->
                 <action android:name="android.media.tv.action.PREVIEW_PROGRAM_ADDED_TO_WATCH_NEXT" />
-
                 <!-- User has removed a program from one of our channels. -->
                 <action android:name="android.media.tv.action.PREVIEW_PROGRAM_BROWSABLE_DISABLED" />
-
                 <!-- User has removed a program from the system's watch next channel. -->
                 <action android:name="android.media.tv.action.WATCH_NEXT_PROGRAM_BROWSABLE_DISABLED" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>

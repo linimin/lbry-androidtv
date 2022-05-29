@@ -50,17 +50,8 @@ class TvActivity : FragmentActivity() {
     private lateinit var viewBinding: TvActivityBinding
     @Inject lateinit var backgroundManager: BackgroundManager
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        val options = NavOptions.Builder()
-            .setPopUpTo(R.id.browseCategoriesFragment, inclusive = true, saveState = false)
-            .build()
-        findNavController(R.id.nav_host_fragment)
-            .navigate(R.id.browseCategoriesFragment, null, options)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        // This must be called before calling super.onCreate().
+        // `installSplashScreen()` must be called before calling super.onCreate(), see:
         // https://developer.android.com/guide/topics/ui/splash-screen/migrate#migrate_your_splash_screen_implementation
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -72,10 +63,20 @@ class TvActivity : FragmentActivity() {
             color = getColor(R.color.md_theme_dark_background)
         }
         lifecycleScope.launch {
+            // https://developer.android.com/topic/libraries/architecture/coroutines#restart
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.wallpaperUrl.collectLatest(::loadWallpaper)
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        val options = NavOptions.Builder()
+            .setPopUpTo(R.id.browseCategoriesFragment, inclusive = true, saveState = false)
+            .build()
+        findNavController(R.id.nav_host_fragment)
+            .navigate(R.id.browseCategoriesFragment, null, options)
     }
 
     private fun loadWallpaper(url: String) = imageLoader.enqueue(

@@ -97,7 +97,7 @@ class BrowseCategoriesFragment : BrowseSupportFragment() {
                 adapter = rowsAdapter
             }
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.uiState.collect {
                         walletTitleView?.setWallet(it.wallet)

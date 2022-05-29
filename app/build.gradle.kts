@@ -44,10 +44,8 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.jetpack.navigation.safeargs)
     alias(libs.plugins.protobuf)
-
     // https://developers.google.com/android/guides/google-services-plugin
     alias(libs.plugins.google.services)
-
     // https://github.com/firebase/firebase-android-sdk/issues/2665#issuecomment-849897741
     alias(libs.plugins.firebase.crashlytics)
 }

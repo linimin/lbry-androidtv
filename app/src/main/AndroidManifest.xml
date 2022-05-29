@@ -23,17 +23,18 @@
   ~ SOFTWARE.
   -->
 
-<!-- [App Manifest Overview](https://developer.android.com/guide/topics/manifest/manifest-intro) -->
+<!-- https://developer.android.com/guide/topics/manifest/manifest-intro -->
 <!-- https://developer.android.com/studio/build/manage-manifests#inject_build_variables_into_the_manifest -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="ImpliedTouchscreenHardware,MissingLeanbackLauncher,MissingLeanbackSupport">
 
-    <!-- [Permissions](https://developer.android.com/guide/topics/permissions/overview) -->
+    <!-- https://developer.android.com/guide/topics/manifest/manifest-intro#perms -->
+    <!-- https://developer.android.com/guide/topics/permissions/overview -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- [Provide a home screen banner](https://developer.android.com/training/tv/start/start#banner) -->
+    <!-- https://developer.android.com/training/tv/start/start#banner -->
     <application
         android:name=".BaseApplication"
         android:allowBackup="true"
@@ -45,7 +46,19 @@
         android:supportsRtl="true"
         tools:targetApi="s">
 
-        <!-- [App Startup](https://developer.android.com/topic/libraries/app-startup#manifest-entries) -->
+        <!-- https://developer.android.com/training/id-auth/custom_auth#TaskFour -->
+        <service
+            android:name=".AccountAuthenticatorService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+
+        <!-- https://developer.android.com/topic/libraries/app-startup#manifest-entries -->
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
@@ -64,17 +77,5 @@
                 android:name="app.newproj.lbrytv.startup.HomeScreenChannelInitializer"
                 android:value="androidx.startup" />
         </provider>
-
-        <!-- [Create an authenticator service](https://developer.android.com/training/id-auth/custom_auth#TaskFour) -->
-        <service
-            android:name=".AccountAuthenticatorService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
-            </intent-filter>
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator" />
-        </service>
     </application>
 </manifest>
