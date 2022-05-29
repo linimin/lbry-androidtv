@@ -24,22 +24,11 @@
 
 package app.newproj.lbrytv.test
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Test
-import org.junit.runner.RunWith
 
-// https://www.lordcodes.com/articles/testing-on-android-using-junit-5
-// https://medium.com/@boonkeat/android-unit-testing-with-junit5-d1b8f9c620b6
-// https://docs.gradle.org/current/userguide/java_testing.html#using_junit5
-// https://mannodermaus.de/posts/junit5-instrumentation-bts/
-// https://github.com/mannodermaus/android-junit5
-@RunWith(AndroidJUnit4::class)
-class ExampleUnitTest {
+class ExampleInstrumentedTest {
     @Test
     fun test() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        println(context)
+
     }
 }
