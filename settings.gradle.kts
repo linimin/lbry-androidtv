@@ -43,6 +43,7 @@ pluginManagement {
     }
 }
 
+// Declare repositories for all projects, for details, see:
 // https://docs.gradle.org/current/userguide/dependency_management.html#sub:centralized-repository-declaration.
 dependencyResolutionManagement {
     // Enforce that only settings repositories are used.
