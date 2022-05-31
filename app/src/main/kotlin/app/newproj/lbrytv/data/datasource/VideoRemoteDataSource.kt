@@ -57,7 +57,7 @@ class VideoRemoteDataSource @Inject constructor(
         val request = ClaimSearchRequest(
             channelIds = channelIds,
             claimTypes = listOf("stream"),
-            streamTypes = listOf("video"),
+            streamTypes = listOf("video", "audio"),
             orderBy = listOf("trending_group", "trending_mixed"),
             hasSource = true,
             page = 1,
@@ -77,7 +77,7 @@ class VideoRemoteDataSource @Inject constructor(
         val request = ClaimSearchRequest(
             channelIds = subscriptionChannelIds,
             claimTypes = listOf("stream"),
-            streamTypes = listOf("video"),
+            streamTypes = listOf("video", "audio"),
             orderBy = listOf("release_time"),
             hasSource = true,
             page = 1,

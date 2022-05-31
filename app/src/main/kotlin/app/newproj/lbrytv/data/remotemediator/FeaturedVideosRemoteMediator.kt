@@ -86,7 +86,7 @@ class FeaturedVideosRemoteMediator @Inject constructor(
             val request = ClaimSearchRequest(
                 channelIds = primaryContent?.channelIds,
                 claimTypes = listOf("stream"),
-                streamTypes = listOf("video"),
+                streamTypes = listOf("video", "audio"),
                 orderBy = listOf("trending_group", "trending_mixed"),
                 hasSource = true,
                 page = page,

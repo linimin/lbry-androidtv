@@ -76,7 +76,7 @@ class ChannelVideosRemoteMediator @AssistedInject constructor(
             val request = ClaimSearchRequest(
                 channelIds = listOf(channelId),
                 claimTypes = listOf("stream"),
-                streamTypes = listOf("video"),
+                streamTypes = listOf("video", "audio"),
                 orderBy = listOf("release_time"),
                 hasSource = true,
                 page = page,
