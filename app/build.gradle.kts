@@ -62,8 +62,8 @@ android {
         applicationId = "app.newproj.lbrytv"
         minSdk = libs.versions.buildOptions.minSdk.get().toInt()
         targetSdk = libs.versions.buildOptions.targetSdk.get().toInt()
-        versionCode = 7
-        versionName = "1.0.1-beta.4"
+        versionCode = 8
+        versionName = "1.0.1-beta.5"
         // https://developer.android.com/training/dependency-injection/hilt-testing#instrumented-tests
         testInstrumentationRunner = "app.newproj.lbrytv.HiltTestRunner"
         // https://developer.android.com/studio/build/shrink-code#unused-alt-resources
